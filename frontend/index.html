@@ -7,7 +7,8 @@
   <title>DermaNetra – Skin Analysis</title>
   <meta name="description" content="DermaNetra Skin Disease expert system." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap"
     rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="assets/js/tailwind-config-index.js"></script>
@@ -17,137 +18,135 @@
 <body class="min-h-screen">
   <div id="tooltip"></div>
 
-  <!-- ═══════════ PAGE 1: INTAKE ═══════════ -->
-  <div id="page-intake" class="page min-h-screen flex flex-col items-center justify-center p-6"
-    style="background:linear-gradient(135deg,#f0f7ff,#e9f0f8 50%,#f1f5f9)">
-    <div class="mb-8 flex flex-col items-center">
-      <div class="flex items-center gap-3 mb-1">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center"
-          style="background:linear-gradient(135deg,#0891b2,#0e7490)">
-          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-        </div>
-        <span class="text-3xl font-extrabold tracking-tight" style="color:#0e7490">DermaNetra</span>
+  <!-- ═══════════ STICKY HEADER: Controls ═══════════ -->
+  <header class="fixed top-0 left-0 right-0 h-[var(--header-height)] z-[100] border-b border-slate-200 bg-white/80 backdrop-blur-xl flex items-center px-4 md:px-8 transition-all print:hidden">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary/20">
+        <span class="font-black text-sm">DN</span>
       </div>
-      <p class="text-sm text-slate-500 font-medium">Skin Disease Expert System</p>
+      <div>
+        <h1 class="font-black text-lg tracking-tight text-slate-900 leading-tight">DermaNetra</h1>
+        <div class="flex items-center gap-2">
+          <p id="header-context" class="text-[9px] font-bold text-primary tracking-widest uppercase opacity-80" data-i18n="appTagline">Skin Disease Expert System</p>
+          <span id="header-mode-badge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 uppercase tracking-tighter"></span>
+        </div>
+      </div>
     </div>
 
-    <div class="w-full max-w-lg bg-white rounded-2xl p-8" style="box-shadow:0 4px 40px rgba(14,116,144,.12)">
-      <h1 class="text-xl font-bold text-slate-800 mb-1">Patient Intake Form</h1>
-      <p class="text-sm text-slate-500 mb-6">Complete all fields to begin your skin analysis.</p>
+    <div class="ml-auto flex items-center gap-4">
+      <!-- Action Buttons (Dynamic) -->
+      <div id="header-actions" class="hidden md:flex items-center gap-2 border-r border-slate-200 pr-4 mr-2">
+        <button id="btn-header-print" onclick="window.print()" class="hidden flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-primary text-white shadow-md hover:shadow-lg transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span data-i18n="printPdf">Cetak PDF</span>
+        </button>
+        <button id="btn-header-back" onclick="goBackToDiagnosis()" class="hidden flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border-2 border-slate-100 text-slate-700 hover:bg-slate-50 transition-all">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span data-i18n="backToMap">Back to Map</span>
+        </button>
+        <button id="btn-header-restart" onclick="resetAll()" class="hidden flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg text-slate-400 hover:text-red-500 transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span data-i18n="startOver">Start Over</span>
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Language -->
+        <div class="flex items-center bg-slate-100 rounded-full p-1 border border-slate-200">
+          <button id="lang-id" onclick="setLanguage('id')" class="px-3 py-1 text-[10px] font-bold rounded-full transition-all bg-white shadow-sm text-teal-700">ID</button>
+          <button id="lang-en" onclick="setLanguage('en')" class="px-3 py-1 text-[10px] font-bold rounded-full transition-all text-slate-500">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════ PAGE 1: INTAKE ═══════════ -->
+  <div id="page-intake" class="page min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden"
+    style="background:linear-gradient(135deg,#f0f7ff,#e9f0f8 50%,#f1f5f9)">
+    <!-- Decorative background elements -->
+    <div class="intake-bg-pattern"></div>
+    <div class="intake-decor-circle top-right"></div>
+    <div class="intake-decor-circle bottom-left"></div>
+    <div class="mb-8 flex flex-col items-center pt-8">
+      <h1 class="text-3xl font-black text-slate-900 tracking-tighter" data-i18n="appTitle">DermaNetra</h1>
+      <p class="text-sm text-slate-500 font-medium" data-i18n="appTagline">Skin Disease Expert System</p>
+    </div>
+
+    <div class="w-full max-w-lg bg-white rounded-2xl p-8 relative z-10" style="box-shadow:0 8px 60px rgba(14,116,144,.14), 0 2px 12px rgba(0,0,0,.04)">
+      <h1 class="text-xl font-bold text-slate-800 mb-1" data-i18n="intakeTitle">Patient Intake Form</h1>
+      <p class="text-sm text-slate-500 mb-6" data-i18n="intakeDesc">Complete all fields to begin your skin analysis.</p>
       <div class="space-y-6">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Age</label>
-          <input id="input-age" type="number" min="1" max="120" placeholder="e.g. 24" oninput="checkForm()"
-            class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 text-slate-800 font-semibold text-sm focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-cyan-100 transition-all" />
-        </div>
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Biological Sex</label>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3" data-i18n="sexLabel">Biological Sex</label>
           <div class="flex gap-4">
             <button id="sex-male" class="sex-btn" onclick="selectSex('male')">
-              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <circle cx="10.5" cy="13.5" r="5.5" />
-                <path stroke-linecap="round" d="M15.5 8.5l4-4m0 0h-3m3 0v3" />
-              </svg>Male
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span class="text-slate-700 dark:text-slate-200" data-i18n="male">Male</span>
             </button>
             <button id="sex-female" class="sex-btn" onclick="selectSex('female')">
-              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <circle cx="12" cy="9" r="5" />
-                <path stroke-linecap="round" d="M12 14v6m-3-3h6" />
-              </svg>Female
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span class="text-slate-700 dark:text-slate-200" data-i18n="female">Female</span>
             </button>
           </div>
         </div>
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Skin Type</label>
-          <div class="relative">
+        <div class="grid grid-cols-2 gap-6 mt-6">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3" data-i18n="ageLabel">Age (Years)</label>
+            <input type="number" id="input-age" placeholder="e.g. 24" oninput="checkForm()"
+              class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-teal-500 focus:ring-4 focus:ring-teal-100 outline-none font-semibold text-slate-700 bg-slate-50 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3" data-i18n="skinLabel">Skin Type</label>
             <select id="input-skin" onchange="checkForm()"
-              class="w-full appearance-none border-2 border-slate-200 rounded-xl px-4 py-3 text-slate-800 font-semibold text-sm bg-white focus:outline-none focus:border-primary-600 focus:ring-2 focus:ring-cyan-100 transition-all cursor-pointer">
-              <option value="" disabled selected>Select skin type…</option>
-              <option value="normal">Normal</option>
-              <option value="dry">Dry</option>
-              <option value="oily">Oily</option>
-              <option value="combination">Combination</option>
-              <option value="sensitive">Sensitive</option>
+              class="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-teal-500 focus:ring-4 focus:ring-teal-100 outline-none font-semibold text-slate-700 bg-slate-50 transition-all cursor-pointer">
+              <option value="" disabled selected data-i18n="selectSkin">Select skin type</option>
+              <option value="normal" data-i18n="skinNormal">Normal</option>
+              <option value="dry" data-i18n="skinDry">Dry</option>
+              <option value="oily" data-i18n="skinOily">Oily</option>
+              <option value="combination" data-i18n="skinCombo">Combination</option>
+              <option value="sensitive" data-i18n="skinSensitive">Sensitive</option>
             </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4"><svg
-                class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path d="M19 9l-7 7-7-7" />
-              </svg></div>
           </div>
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Symptom Duration</label>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3" data-i18n="durationLabel">Symptom Duration</label>
           <div class="flex flex-wrap gap-2">
-            <button class="dur-btn" data-val="lt3days" onclick="selectDuration(this)">&lt; 3 Days</button>
-            <button class="dur-btn" data-val="1to2weeks" onclick="selectDuration(this)">1–2 Weeks</button>
-            <button class="dur-btn" data-val="gt1month" onclick="selectDuration(this)">&gt; 1 Month</button>
+            <button class="dur-btn" data-val="lt3days" onclick="selectDuration(this)" data-i18n="durShort">&lt; 3 Days</button>
+            <button class="dur-btn" data-val="1to2weeks" onclick="selectDuration(this)" data-i18n="durMed">1–2 Weeks</button>
+            <button class="dur-btn" data-val="gt1month" onclick="selectDuration(this)" data-i18n="durLong">&gt; 1 Month</button>
           </div>
         </div>
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-          <label class="flex items-start gap-3 cursor-pointer">
-            <div class="relative flex-shrink-0 mt-0.5">
-              <input id="chk-disclaimer" type="checkbox" class="absolute opacity-0 w-5 h-5 cursor-pointer" />
-              <div class="disc-box">
-                <svg class="disc-check-icon w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              </div>
-            </div>
-            <span class="text-xs text-slate-600 leading-relaxed">I understand that <strong
-                class="text-primary-700">DermaNetra</strong> provides preliminary analysis only and <strong>does not
-                replace</strong> a professional medical diagnosis from a licensed dermatologist.</span>
-          </label>
-        </div>
+        <label class="mt-8 flex items-start gap-3 cursor-pointer group">
+          <input type="checkbox" id="chk-disclaimer" class="hidden" onchange="checkForm()" />
+          <div class="disc-box mt-0.5">
+            <svg class="disc-check-icon w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed font-medium group-hover:text-slate-700" data-i18n="disclaimerText">
+            I understand that this is for educational purposes and not a formal medical diagnosis.
+          </p>
+        </label>
       </div>
       <button id="btn-start" disabled onclick="startAnalysis()"
         class="mt-8 w-full py-4 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-        style="background:linear-gradient(135deg,#0891b2,#0e7490);color:white;box-shadow:0 4px 20px rgba(14,116,144,.3)">
+        style="background:linear-gradient(135deg,#0e7490,#115e73);color:white;box-shadow:0 6px 28px rgba(14,116,144,.35);font-size:15px;letter-spacing:0.02em">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
         </svg>
-        Start Skin Analysis
+        <span data-i18n="startBtn">Start Skin Analysis</span>
       </button>
     </div>
-    <p class="mt-6 text-xs text-slate-400 text-center">DermaNetra v4.0 · Educational &amp; screening purposes only</p>
+    <p class="mt-6 text-xs text-slate-400 text-center relative z-10"><span data-i18n="versionText">DermaNetra v6.0</span> · <span data-i18n="legalText">Educational &amp; screening purposes only</span></p>
   </div>
 
   <!-- ═══════════ PAGE 2: DIAGNOSIS ═══════════ -->
   <div id="page-diagnosis" class="page hidden min-h-screen flex flex-col" style="background:#f0f4f8">
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-50"
-      style="box-shadow:0 1px 8px rgba(0,0,0,.06)">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center"
-          style="background:linear-gradient(135deg,#0891b2,#0e7490)">
-          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-        </div>
-        <span class="text-lg font-extrabold tracking-tight" style="color:#0e7490">DermaNetra</span>
-        <span
-          class="hidden sm:inline text-xs font-semibold text-slate-400 border border-slate-200 rounded-full px-2 py-0.5 ml-1">Diagnosis
-          Mode</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <span id="header-patient"
-          class="hidden sm:inline text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full"></span>
-        <button onclick="resetAll()"
-          class="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg border-2 border-slate-200 text-slate-600 hover:border-primary-600 hover:text-primary-700 transition-all">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Start Over
-        </button>
-      </div>
-    </header>
 
     <!-- Full-width centered body map -->
     <main class="flex-1 flex flex-col overflow-hidden bg-transparent" style="height:calc(100vh - 49px);">
@@ -155,20 +154,20 @@
       <!-- Title row + Toggle (Tight spacing) -->
       <div class="flex items-center justify-between px-8 pt-2 pb-0 max-w-4xl mx-auto w-full">
         <div>
-          <h2 class="text-lg font-bold text-slate-700">Interactive Body Map</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Hover to identify regions &middot; Click to add symptoms</p>
+          <h2 class="text-lg font-bold text-slate-700 dark:text-slate-100" data-i18n="mapTitle">Interactive Body Map</h2>
+          <p class="text-sm text-slate-500 mt-0.5 font-medium dark:text-slate-400">
+            <span data-i18n="mapDesc">Tap the pulsing dots to add symptoms</span>
+          </p>
         </div>
         <div class="toggle-track" onclick="toggleView()">
           <div class="toggle-slider" id="toggle-slider"></div>
-          <div class="toggle-option active" id="lbl-front">FRONT</div>
-          <div class="toggle-option" id="lbl-back">BACK</div>
+          <span class="toggle-option active" id="lbl-front" data-i18n="front">FRONT</span>
+          <span class="toggle-option" id="lbl-back" data-i18n="back">BACK</span>
         </div>
       </div>
 
       <!-- Body map — Centered, scaled to fit exactly in one screen without scrolling -->
-      <div class="flex-1 flex items-start justify-center overflow-hidden mt-1 pb-4">
-        <div id="body-map-container" class="w-full h-full max-w-3xl max-h-[72vh] mx-auto relative bg-transparent"></div>
-      </div>
+      <div id="body-map-container" class="flex-1 flex items-start justify-center overflow-hidden mt-1 pb-4 w-full h-full max-w-3xl mx-auto relative bg-transparent"></div>
 
       <!-- Mini-legend -->
       <div class="flex gap-6 justify-center pb-3 flex-wrap">
@@ -190,58 +189,31 @@
   </div>
 
   <!-- ═══════════ FLOATING ACTION BAR ═══════════ -->
-  <div id="floating-bar" class="hidden">
+  <div class="floating-pill-wrap">
     <div class="float-pill">
       <div class="float-count">
         <div class="float-dot"></div>
-        <span id="floating-count">No Symptoms Yet</span>
+        <div id="floating-count" data-i18n="noSymptoms">No Symptoms Yet</div>
       </div>
       <button id="btn-analyze" class="float-btn" disabled onclick="analyzeCondition()">
-        Analyze Condition
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        <span data-i18n="analyzeBtn">Analyze Now</span>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
         </svg>
+      </button>
+      <button id="btn-restart-floating" onclick="resetAll()"
+        class="float-btn-secondary hidden md:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg text-slate-400 hover:text-red-500 transition-all">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span data-i18n="startOver">Start Over</span>
       </button>
     </div>
   </div>
 
   <!-- ═══════════ PAGE 3: RESULTS ═══════════ -->
   <div id="page-results" class="page hidden min-h-screen flex flex-col" style="background:#f0f4f8">
-    <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-50"
-      style="box-shadow:0 1px 8px rgba(0,0,0,.06)">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg flex items-center justify-center"
-          style="background:linear-gradient(135deg,#0891b2,#0e7490)">
-          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-        </div>
-        <span class="text-lg font-extrabold tracking-tight" style="color:#0e7490">DermaNetra</span>
-        <span
-          class="hidden sm:inline text-xs font-semibold text-slate-400 border border-slate-200 rounded-full px-2 py-0.5 ml-1">Analysis
-          Results</span>
-      </div>
-      <div class="flex items-center gap-3">
-        <button onclick="goBackToDiagnosis()"
-          class="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg border-2 border-primary-200 text-primary-700 hover:bg-primary-50 transition-all">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Map
-        </button>
-        <button onclick="resetAll()"
-          class="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg border-2 border-slate-200 text-slate-600 hover:border-primary-600 hover:text-primary-700 transition-all">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Start Over
-        </button>
-      </div>
-    </header>
     <main class="flex-1 overflow-y-auto p-6 max-w-4xl w-full mx-auto" style="padding-bottom:40px">
       <div id="results-loading" class="flex flex-col items-center justify-center h-64">
         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
@@ -252,28 +224,27 @@
               d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
         </div>
-        <h3 class="text-base font-bold text-slate-700 mb-2">Expert System Analyzing…</h3>
-        <p class="text-xs text-slate-400 mb-5 text-center">Running forward-chaining inference engine<br />against
-          dermatological knowledge base</p>
+        <h3 class="text-base font-bold text-slate-700 mb-2">Analyzing Symptoms…</h3>
+        <p class="text-xs text-slate-400 mb-5 text-center">Inference engine: <strong>Naive Bayes Probability Classifier</strong><br />processing dermatological knowledge base</p>
         <div class="loading-dots"><span></span><span></span><span></span></div>
       </div>
       <div id="results-content" class="hidden"></div>
     </main>
   </div>
 
-  <!-- ═══════════ SYMPTOM MODAL ═══════════ -->
+  <!-- ═══════════ SYMPTOM SIDE DRAWER ═══════════ -->
   <div id="modal-overlay" onclick="closeModal()"></div>
   <div id="symptom-modal" role="dialog" aria-modal="true">
 
-    <!-- Sticky Header -->
+    <!-- Drawer Header -->
     <div class="modal-head">
       <div class="modal-title-row">
         <div>
           <span id="modal-view-badge"
             class="inline-block text-xs font-bold uppercase tracking-widest bg-cyan-50 text-cyan-700 px-3 py-1 rounded-full mb-2"
             style="border:1px solid #a5f3fc"></span>
-          <h3 id="modal-region" class="text-xl font-extrabold text-slate-800"></h3>
-          <p class="text-xs text-slate-400 mt-0.5">Select all symptoms that apply to this area</p>
+          <h3 id="modal-region" class="text-xl font-extrabold text-slate-800 dark:text-slate-50"></h3>
+          <p class="text-sm text-slate-500 mt-1 dark:text-slate-400" data-i18n="drawerSub">Select all symptoms that apply</p>
         </div>
         <button class="modal-close-btn" onclick="closeModal()">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -287,21 +258,22 @@
           stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
-        <input id="modal-search" type="text" placeholder="Search symptoms…" oninput="filterSymptoms(this.value)" />
+        <input id="modal-search" type="text" placeholder="Search symptoms…" data-i18n-attr="placeholder:searchPlaceholder" oninput="filterSymptoms(this.value)" />
       </div>
-      <div id="modal-selected-count" class="text-xs font-semibold text-primary-600 mb-2 hidden"></div>
+      <div id="modal-selected-count" class="text-xs font-semibold mt-2 hidden" style="color:#0891b2"></div>
     </div>
 
     <!-- Scrollable symptom list -->
     <div class="modal-body" id="modal-symptom-list"></div>
 
-    <!-- Sticky Footer -->
+    <!-- Drawer Footer -->
     <div class="modal-foot">
-      <button id="modal-add-btn" onclick="confirmModal()">Add Symptom(s)</button>
+      <button id="modal-add-btn" onclick="confirmModal()" data-i18n="addBtn">Add Symptom(s)</button>
     </div>
   </div>
 
   <script src="assets/js/data.js"></script>
+  <script src="assets/js/diseases.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 

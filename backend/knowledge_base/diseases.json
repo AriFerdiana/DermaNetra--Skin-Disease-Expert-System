@@ -1,0 +1,422 @@
+[
+  {
+    "id": "D001",
+    "name": "Seborrheic Dermatitis",
+    "name_id": "Dermatitis Seboroik (Ketombe Parah)",
+    "prior": 0.10,
+    "description": "Peradangan kulit kronis pada area berminyak (kulit kepala, wajah, dada). Ditandai sisik kekuningan berminyak dan kemerahan. Dipicu jamur Malassezia.",
+    "regions": ["head", "neck", "pelvis", "back"],
+    "icd10": "L21.9",
+    "contagious": false
+  },
+  {
+    "id": "D002",
+    "name": "Atopic Dermatitis",
+    "name_id": "Dermatitis Atopik (Eksim)",
+    "prior": 0.09,
+    "description": "Eksim kronis kambuhan dengan rasa gatal intens, kulit kering, dan peradangan. Sering muncul di lipatan siku, lutut, dan wajah. Erat kaitannya dengan asma dan rinitis alergi.",
+    "regions": ["head", "chest", "abdomen", "arms", "legs"],
+    "icd10": "L20.9",
+    "contagious": false
+  },
+  {
+    "id": "D003",
+    "name": "Folliculitis",
+    "name_id": "Folikulitis (Radang Folikel/Bisul Kecil)",
+    "prior": 0.08,
+    "description": "Peradangan folikel rambut akibat bakteri (S. aureus), jamur, atau iritasi. Tampak sebagai bintik merah/pustul di sekitar folikel rambut.",
+    "regions": ["head", "chest", "abdomen", "arms", "legs", "back"],
+    "icd10": "L73.9",
+    "contagious": false
+  },
+  {
+    "id": "D004",
+    "name": "Scabies",
+    "name_id": "Skabies (Kudis)",
+    "prior": 0.08,
+    "description": "Infeksi tungau Sarcoptes scabiei yang membuat terowongan di bawah kulit. Sangat menular. Gatal hebat terutama malam hari, sering di sela jari, pinggang, dan kelamin.",
+    "regions": ["head", "chest", "abdomen", "pelvis", "arms", "legs", "back"],
+    "icd10": "B86",
+    "contagious": true
+  },
+  {
+    "id": "D005",
+    "name": "Miliaria",
+    "name_id": "Miliaria (Biang Keringat)",
+    "prior": 0.07,
+    "description": "Sumbatan kelenjar keringat akibat panas dan kelembapan. Muncul sebagai bintik merah/transparan kecil yang perih di area tubuh tertutup pakaian.",
+    "regions": ["head", "chest", "abdomen", "back"],
+    "icd10": "L74.3",
+    "contagious": false
+  },
+  {
+    "id": "D006",
+    "name": "Psoriasis",
+    "name_id": "Psoriasis",
+    "prior": 0.07,
+    "description": "Penyakit autoimun kulit kronik dengan plak merah tebal bersisik keperakan. Sering di siku, lutut, kulit kepala, dan punggung bawah.",
+    "regions": ["head", "chest", "abdomen", "arms", "legs", "back"],
+    "icd10": "L40.0",
+    "contagious": false
+  },
+  {
+    "id": "D007",
+    "name": "Tinea Capitis",
+    "name_id": "Tinea Kapitis (Jamur Kepala)",
+    "prior": 0.06,
+    "description": "Infeksi jamur dermatofita pada kulit kepala dan rambut. Menyebabkan kebotakan bercak, sisik, dan gatal. Paling umum pada anak-anak.",
+    "regions": ["head"],
+    "icd10": "B35.0",
+    "contagious": true
+  },
+  {
+    "id": "D008",
+    "name": "Pediculosis Capitis",
+    "name_id": "Pedikulosis Kapitis (Kutu Rambut)",
+    "prior": 0.05,
+    "description": "Infestasi kutu kepala (Pediculus humanus capitis). Gatal hebat akibat gigitan kutu, telur kutu (nits) menempel di batang rambut.",
+    "regions": ["head"],
+    "icd10": "B85.0",
+    "contagious": true
+  },
+  {
+    "id": "D009",
+    "name": "Impetigo",
+    "name_id": "Impetigo (Infeksi Bakteri)",
+    "prior": 0.05,
+    "description": "Infeksi bakteri kulit superfisial (S. aureus / S. pyogenes). Sangat menular, ditandai krusta berwarna kuning madu atau lepuh berisi cairan.",
+    "regions": ["head", "neck", "chest", "abdomen", "arms", "legs", "back"],
+    "icd10": "L01.0",
+    "contagious": true
+  },
+  {
+    "id": "D010",
+    "name": "Alopecia Areata",
+    "name_id": "Alopecia Areata (Kebotakan Koin)",
+    "prior": 0.03,
+    "description": "Kerontokan rambut autoimun yang menyebabkan bercak botak berbentuk bulat/oval. Tidak ada tanda inflamasi aktif pada kulit.",
+    "regions": ["head"],
+    "icd10": "L63.9",
+    "contagious": false
+  },
+  {
+    "id": "D011",
+    "name": "Acne Vulgaris",
+    "name_id": "Jerawat (Akne Vulgaris)",
+    "prior": 0.12,
+    "description": "Inflamasi folikel sebasea akibat sumbatan sebum, bakteri C. acnes, dan faktor hormonal. Muncul komedo, papul, pustul, dan kista pada wajah, dada, punggung.",
+    "regions": ["neck", "chest", "back"],
+    "icd10": "L70.0",
+    "contagious": false
+  },
+  {
+    "id": "D012",
+    "name": "Melasma",
+    "name_id": "Melasma (Flek Hitam)",
+    "prior": 0.04,
+    "description": "Hiperpigmentasi simetris berwarna cokelat pada wajah dan leher. Dipicu paparan UV, hormonal (kehamilan, kontrasepsi oral), dan panas.",
+    "regions": ["neck"],
+    "icd10": "L81.1",
+    "contagious": false
+  },
+  {
+    "id": "D013",
+    "name": "Rosacea",
+    "name_id": "Rosacea",
+    "prior": 0.02,
+    "description": "Kondisi inflamasi wajah kronik dengan kemerahan persisten, telangiektasia, dan papulopustul. Dipicu panas, alkohol, paparan matahari.",
+    "regions": ["neck"],
+    "icd10": "L71.9",
+    "contagious": false
+  },
+  {
+    "id": "D014",
+    "name": "Pityriasis Versicolor",
+    "name_id": "Pitiriasis Versikolor (Panu)",
+    "prior": 0.10,
+    "description": "Infeksi jamur superfisial Malassezia yang menghasilkan bercak hipo/hiperpigmentasi dengan sisik halus. Sangat umum di iklim tropis lembap.",
+    "regions": ["neck", "chest", "arms", "back"],
+    "icd10": "B36.0",
+    "contagious": false
+  },
+  {
+    "id": "D015",
+    "name": "Contact Dermatitis",
+    "name_id": "Dermatitis Kontak",
+    "prior": 0.09,
+    "description": "Peradangan kulit akibat kontak dengan iritan atau alergen. Pola ruam mengikuti area kontak (sabuk, kalung, alas kaki, sabun).",
+    "regions": ["neck", "chest", "abdomen", "arms", "legs", "back"],
+    "icd10": "L25.9",
+    "contagious": false
+  },
+  {
+    "id": "D016",
+    "name": "Milia",
+    "name_id": "Milia (Bintik Putih Keras)",
+    "prior": 0.03,
+    "description": "Kista keratin kecil berwarna putih keras tepat di bawah permukaan kulit. Tidak meradang, tidak nyeri. Sering di pipi, hidung, dan kelopak mata.",
+    "regions": ["neck"],
+    "icd10": "L72.0",
+    "contagious": false
+  },
+  {
+    "id": "D017",
+    "name": "Herpes Simplex",
+    "name_id": "Herpes Simpleks",
+    "prior": 0.04,
+    "description": "Infeksi virus HSV-1/HSV-2 yang menyebabkan lepuh berkelompok berisi cairan bening, terasa panas/perih. Kambuhan, dipicu stres atau penyakit.",
+    "regions": ["neck"],
+    "icd10": "B00.9",
+    "contagious": true
+  },
+  {
+    "id": "D018",
+    "name": "Urticaria",
+    "name_id": "Urtikaria (Biduran)",
+    "prior": 0.07,
+    "description": "Reaksi alergi kulit dengan bentol merah menonjol (wheal) yang gatal intens, muncul tiba-tiba dan bisa berpindah. Dipicu makanan, obat, atau trigger fisik.",
+    "regions": ["neck", "chest", "abdomen", "back"],
+    "icd10": "L50.9",
+    "contagious": false
+  },
+  {
+    "id": "D019",
+    "name": "Molluscum Contagiosum",
+    "name_id": "Moluskum Kontagiosum",
+    "prior": 0.04,
+    "description": "Infeksi virus poxvirus yang menghasilkan benjolan kecil keras berwarna daging dengan lekukan di tengah (umbilikasi). Mudah menyebar lewat kontak.",
+    "regions": ["chest", "pelvis"],
+    "icd10": "B08.1",
+    "contagious": true
+  },
+  {
+    "id": "D020",
+    "name": "Tinea Corporis",
+    "name_id": "Tinea Korporis (Kurap Badan)",
+    "prior": 0.06,
+    "description": "Infeksi jamur dermatofita pada kulit halus badan. Lesi berbentuk cincin merah dengan tepi aktif menonjol dan pusat membaik (central clearing).",
+    "regions": ["abdomen", "arms", "legs", "back"],
+    "icd10": "B35.4",
+    "contagious": true
+  },
+  {
+    "id": "D021",
+    "name": "Candidiasis",
+    "name_id": "Kandidiasis (Jamur Ragi Lipatan)",
+    "prior": 0.06,
+    "description": "Infeksi jamur Candida albicans pada lipatan kulit lembap (perut, selangkangan, ketiak). Lesi basah/maserasi kemerahan dengan lesi satelit di pinggirnya.",
+    "regions": ["abdomen", "pelvis", "back"],
+    "icd10": "B37.2",
+    "contagious": false
+  },
+  {
+    "id": "D022",
+    "name": "Tinea Cruris",
+    "name_id": "Tinea Kruris (Jamur Selangkangan / Jock Itch)",
+    "prior": 0.07,
+    "description": "Infeksi dermatofita di lipatan paha dan selangkangan. Lesi anular merah gatal berbentuk bulan sabit, khas tidak mengenai skrotum.",
+    "regions": ["pelvis"],
+    "icd10": "B35.6",
+    "contagious": true
+  },
+  {
+    "id": "D023",
+    "name": "Erythrasma",
+    "name_id": "Eritrasma",
+    "prior": 0.03,
+    "description": "Infeksi bakteri Corynebacterium minutissimum pada lipatan kulit. Bercak kemerahan-cokelat datar, hampir tidak gatal. Fluoresensi merah coral di lampu Wood.",
+    "regions": ["pelvis", "legs"],
+    "icd10": "L08.1",
+    "contagious": false
+  },
+  {
+    "id": "D024",
+    "name": "Ecthyma",
+    "name_id": "Ektima (Impetigo Dalam)",
+    "prior": 0.02,
+    "description": "Infeksi bakteri kulit yang lebih dalam dari impetigo, membentuk ulkus (borok) dengan krusta tebal di atasnya. Meninggalkan bekas luka.",
+    "regions": ["pelvis", "legs"],
+    "icd10": "L08.0",
+    "contagious": true
+  },
+  {
+    "id": "D025",
+    "name": "Hidradenitis Suppurativa",
+    "name_id": "Hidradenitis Supurativa (Bisul Kronis Lipatan)",
+    "prior": 0.02,
+    "description": "Penyakit inflamasi kronik kelenjar apokrin di lipatan tubuh. Bisul bernanah nyeri yang berulang di ketiak, selangkangan, membentuk sinus/fistula.",
+    "regions": ["pelvis"],
+    "icd10": "L73.2",
+    "contagious": false
+  },
+  {
+    "id": "D026",
+    "name": "Intertrigo",
+    "name_id": "Intertriginosa (Lecet Lipatan Lembap)",
+    "prior": 0.05,
+    "description": "Peradangan kulit akibat gesekan, panas, dan kelembapan di lipatan tubuh (paha, perut, ketiak). Kulit merah, lecet, nyeri. Bisa bersama infeksi sekunder.",
+    "regions": ["pelvis", "back"],
+    "icd10": "L30.4",
+    "contagious": false
+  },
+  {
+    "id": "D027",
+    "name": "Granuloma Inguinale",
+    "name_id": "Granuloma Inguinale (Donovanosis)",
+    "prior": 0.01,
+    "description": "Infeksi menular seksual bakteri Klebsiella granulomatis. Luka borok tanpa rasa sakit yang terus meluas, mudah berdarah. Jarang di luar daerah tropis.",
+    "regions": ["pelvis"],
+    "icd10": "A58",
+    "contagious": true
+  },
+  {
+    "id": "D028",
+    "name": "Dyshidrotic Eczema",
+    "name_id": "Eksim Dishidrotik (Eksim Tangan/Kaki)",
+    "prior": 0.05,
+    "description": "Eksim dengan vesikel (bintik berair) kecil sangat gatal di telapak tangan, tepi jari, dan telapak kaki. Sering kambuh, dipicu stres dan paparan alergen.",
+    "regions": ["arms"],
+    "icd10": "L30.1",
+    "contagious": false
+  },
+  {
+    "id": "D029",
+    "name": "Tinea Manuum",
+    "name_id": "Tinea Manuum (Jamur Telapak Tangan)",
+    "prior": 0.04,
+    "description": "Infeksi jamur dermatofita pada telapak dan punggung tangan. Menyebabkan penebalan, sisik, dan pecah-pecah pada telapak. Sering menyertai tinea pedis.",
+    "regions": ["arms"],
+    "icd10": "B35.2",
+    "contagious": true
+  },
+  {
+    "id": "D030",
+    "name": "Leprosy",
+    "name_id": "Lepra (Kusta)",
+    "prior": 0.01,
+    "description": "Infeksi kronis bakteri Mycobacterium leprae yang menyerang saraf tepi dan kulit. Gejala khas: bercak kulit mati rasa, kelemahan otot.",
+    "regions": ["arms"],
+    "icd10": "A30.9",
+    "contagious": true
+  },
+  {
+    "id": "D031",
+    "name": "Cellulitis",
+    "name_id": "Selulitis (Infeksi Kulit Dalam)",
+    "prior": 0.04,
+    "description": "Infeksi bakteri pada lapisan dermis dan jaringan subkutan. Area kulit merah, bengkak, panas, dan nyeri berdenyut. Bisa disertai demam.",
+    "regions": ["arms", "legs"],
+    "icd10": "L03.9",
+    "contagious": false
+  },
+  {
+    "id": "D032",
+    "name": "Pityriasis Rosea",
+    "name_id": "Pitiriasis Rosea",
+    "prior": 0.03,
+    "description": "Ruam bersisik oval merah muda yang khas menyerupai pola ranting pohon cemara di batang tubuh. Dimulai dengan 'herald patch' besar, sembuh sendiri dalam 6–12 minggu.",
+    "regions": ["arms"],
+    "icd10": "L42",
+    "contagious": false
+  },
+  {
+    "id": "D033",
+    "name": "Viral Warts",
+    "name_id": "Kutil (Veruka Vulgaris)",
+    "prior": 0.05,
+    "description": "Pertumbuhan kulit jinak akibat Human Papillomavirus (HPV). Benjolan keras kasar seperti kembang kol di tangan, jari, dan kaki.",
+    "regions": ["arms", "legs"],
+    "icd10": "B07",
+    "contagious": true
+  },
+  {
+    "id": "D034",
+    "name": "Paronychia",
+    "name_id": "Paronikia (Cantengan / Infeksi Kuku)",
+    "prior": 0.04,
+    "description": "Infeksi pada lipatan kuku (akut: bakteri; kronik: Candida). Bengkak merah nyeri di sekitar pangkal/sisi kuku, bisa keluar nanah.",
+    "regions": ["arms"],
+    "icd10": "L03.0",
+    "contagious": false
+  },
+  {
+    "id": "D035",
+    "name": "Tinea Pedis",
+    "name_id": "Tinea Pedis (Kutu Air / Athlete's Foot)",
+    "prior": 0.08,
+    "description": "Infeksi jamur paling umum pada kaki, terutama sela jari. Kulit putih basah, mengelupas, pecah-pecah, dan gatal. Sering menjalar ke kuku.",
+    "regions": ["legs"],
+    "icd10": "B35.3",
+    "contagious": true
+  },
+  {
+    "id": "D036",
+    "name": "Cutaneous Larva Migrans",
+    "name_id": "Cutaneous Larva Migrans (Infeksi Cacing Tambang)",
+    "prior": 0.02,
+    "description": "Larva cacing tambang anjing/kucing yang bermigrasi di bawah kulit, meninggalkan jalur merah berkelok yang sangat gatal. Tertular dari tanah/pasir terkontaminasi.",
+    "regions": ["legs"],
+    "icd10": "B76.9",
+    "contagious": false
+  },
+  {
+    "id": "D037",
+    "name": "Discoid Eczema",
+    "name_id": "Eksim Diskoid (Eksim Koin)",
+    "prior": 0.03,
+    "description": "Eksim berbentuk bulat seperti koin dengan batas tegas, sangat gatal, berair, dan berkerak. Sering di tungkai, lengan, badan.",
+    "regions": ["legs"],
+    "icd10": "L30.0",
+    "contagious": false
+  },
+  {
+    "id": "D038",
+    "name": "Insect Bite",
+    "name_id": "Gigitan Serangga / Urtikaria Papular",
+    "prior": 0.06,
+    "description": "Reaksi kulit terhadap gigitan nyamuk, kutu, atau serangga lainnya. Bentol merah gatal berkelompok, sering dengan titik/bekas gigitan di tengah.",
+    "regions": ["legs"],
+    "icd10": "T14.0",
+    "contagious": false
+  },
+  {
+    "id": "D039",
+    "name": "Onychomycosis",
+    "name_id": "Onikomikosis (Jamur Kuku Kaki)",
+    "prior": 0.07,
+    "description": "Infeksi jamur pada kuku kaki menyebabkan kuku menebal, rapuh, rapuh, dan berubah warna menjadi kuning/cokelat kehitaman. Sering menyertai tinea pedis.",
+    "regions": ["legs"],
+    "icd10": "B35.1",
+    "contagious": true
+  },
+  {
+    "id": "D040",
+    "name": "Pitted Keratolysis",
+    "name_id": "Pitted Keratolysis (Kaki Berlubang & Bau)",
+    "prior": 0.04,
+    "description": "Infeksi bakteri pada stratum korneum telapak kaki. Ditandai lubang-lubang kecil dangkal dan bau kaki sangat menyengat (sulfur). Dipicu keringat berlebih.",
+    "regions": ["legs"],
+    "icd10": "L87.0",
+    "contagious": false
+  },
+  {
+    "id": "D041",
+    "name": "Corn / Callus",
+    "name_id": "Mata Ikan / Kapalan",
+    "prior": 0.05,
+    "description": "Penebalan kulit keras akibat tekanan/gesekan berulang dari alas kaki. Corn: kecil keras dengan inti, nyeri saat ditekan. Callus: lebih luas, tidak nyeri.",
+    "regions": ["legs"],
+    "icd10": "L84",
+    "contagious": false
+  },
+  {
+    "id": "D042",
+    "name": "Herpes Zoster",
+    "name_id": "Herpes Zoster (Cacar Ular / Shingles)",
+    "prior": 0.03,
+    "description": "Reaktivasi virus Varicella-Zoster di ganglion saraf. Ruam lepuh berair nyeri yang menjalar mengikuti dermatom (hanya SATU sisi tubuh), disertai nyeri neuropatik.",
+    "regions": ["back"],
+    "icd10": "B02.9",
+    "contagious": true
+  }
+]

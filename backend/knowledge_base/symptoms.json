@@ -1,0 +1,382 @@
+[
+  {
+    "id": "G001",
+    "name": "Gatal hebat di kulit kepala / wajah",
+    "regions": ["head"]
+  },
+  {
+    "id": "G002",
+    "name": "Gatal memburuk di malam hari",
+    "regions": ["head", "abdomen", "pelvis", "arms"]
+  },
+  {
+    "id": "G003",
+    "name": "Kulit kepala bersisik putih / ketombe rontok",
+    "regions": ["head"]
+  },
+  {
+    "id": "G004",
+    "name": "Sisik tebal berlapis warna keperakan",
+    "regions": ["head", "chest", "arms", "legs", "back"]
+  },
+  {
+    "id": "G005",
+    "name": "Bercak kemerahan di wajah / dahi / leher",
+    "regions": ["head", "neck"]
+  },
+  {
+    "id": "G006",
+    "name": "Bintik / benjolan kecil berisi nanah",
+    "regions": ["head", "chest", "back"]
+  },
+  {
+    "id": "G007",
+    "name": "Keropeng / kerak berwarna kuning madu",
+    "regions": ["head", "neck", "chest", "arms", "legs"]
+  },
+  {
+    "id": "G008",
+    "name": "Rambut rontok / pitak (Bercak botak)",
+    "regions": ["head"]
+  },
+  {
+    "id": "G009",
+    "name": "Rambut rapuh dan mudah patah di pangkal",
+    "regions": ["head"]
+  },
+  {
+    "id": "G010",
+    "name": "Terlihat telur kutu / kutu hidup di rambut",
+    "regions": ["head"]
+  },
+  {
+    "id": "G011",
+    "name": "Bintik kemerahan kecil, perih saat berkeringat",
+    "regions": ["head", "chest", "abdomen", "back"]
+  },
+  {
+    "id": "G012",
+    "name": "Kulit wajah terasa sangat kering dan kasar",
+    "regions": ["head", "neck"]
+  },
+  {
+    "id": "G013",
+    "name": "Benjolan merah, nyeri, ada komedo / nanah",
+    "regions": ["neck", "chest", "back"]
+  },
+  {
+    "id": "G014",
+    "name": "Bercak kecokelatan / gelap tanpa rasa gatal",
+    "regions": ["neck"]
+  },
+  {
+    "id": "G015",
+    "name": "Kemerahan kronis dengan urat darah halus (telangiektasia)",
+    "regions": ["neck", "head"]
+  },
+  {
+    "id": "G016",
+    "name": "Bercak putih / cokelat muda dengan sisik halus",
+    "regions": ["neck", "chest", "arms", "back"]
+  },
+  {
+    "id": "G017",
+    "name": "Gatal sangat memburuk saat berkeringat",
+    "regions": ["neck", "chest", "abdomen", "back"]
+  },
+  {
+    "id": "G018",
+    "name": "Ruam merah gatal setelah pakai kalung / parfum / produk kimia",
+    "regions": ["neck", "arms", "abdomen"]
+  },
+  {
+    "id": "G019",
+    "name": "Bintik putih kecil, keras seperti mutiara",
+    "regions": ["neck", "head"]
+  },
+  {
+    "id": "G020",
+    "name": "Lepuh air berkelompok, terasa perih / panas",
+    "regions": ["neck", "back"]
+  },
+  {
+    "id": "G021",
+    "name": "Bentol merah menonjol, tebal, muncul tiba-tiba",
+    "regions": ["neck", "chest", "abdomen", "legs", "arms"]
+  },
+  {
+    "id": "G022",
+    "name": "Bentol sangat gatal dan bisa berpindah tempat",
+    "regions": ["neck", "chest", "abdomen", "legs", "arms"]
+  },
+  {
+    "id": "G023",
+    "name": "Keropeng kuning madu / kerak mengering",
+    "regions": ["neck", "chest", "legs"]
+  },
+  {
+    "id": "G024",
+    "name": "Bintik kecil keras seperti kubah dengan lekukan / titik di tengah (umbilikasi)",
+    "regions": ["chest", "pelvis"]
+  },
+  {
+    "id": "G025",
+    "name": "Bercak putih / cokelat muda di dada tengah, bersisik saat digaruk",
+    "regions": ["chest", "back"]
+  },
+  {
+    "id": "G026",
+    "name": "Jerawat / bisul merah di area dada / punggung yang tertutup baju",
+    "regions": ["chest", "back"]
+  },
+  {
+    "id": "G027",
+    "name": "Ruam sangat gatal, kering, menebal di sekitar puting / lipatan ketiak",
+    "regions": ["chest"]
+  },
+  {
+    "id": "G028",
+    "name": "Bercak merah tebal dengan sisik perak di area dada",
+    "regions": ["chest", "back"]
+  },
+  {
+    "id": "G029",
+    "name": "Bercak merah berbentuk cincin dengan tepi menonjol / aktif",
+    "regions": ["abdomen", "arms", "legs"]
+  },
+  {
+    "id": "G030",
+    "name": "Ruam merah basah / lecet di lipatan dengan bintik-bintik satelit di sekitarnya",
+    "regions": ["abdomen", "pelvis"]
+  },
+  {
+    "id": "G031",
+    "name": "Bintik sangat gatal di sekitar pusar, gatal memuncak malam hari",
+    "regions": ["abdomen"]
+  },
+  {
+    "id": "G032",
+    "name": "Ruam gatal dan kemerahan di area gesekan kancing celana / sabuk",
+    "regions": ["abdomen", "back"]
+  },
+  {
+    "id": "G033",
+    "name": "Plak merah tebal dengan sisik keperakan di dalam / sekitar pusar",
+    "regions": ["abdomen"]
+  },
+  {
+    "id": "G034",
+    "name": "Bintik kemerahan menyebar di perut akibat keringat yang tertahan pakaian",
+    "regions": ["abdomen", "chest", "back"]
+  },
+  {
+    "id": "G035",
+    "name": "Bercak merah gatal berbentuk bulan sabit di paha dalam, kemaluan tidak terkena",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G036",
+    "name": "Ruam lecet kemerahan dengan bintik-bintik satelit menyebar di sekitarnya",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G037",
+    "name": "Bercak merah-kecokelatan di lipatan paha, tidak terlalu gatal",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G038",
+    "name": "Bisul meradang, bernanah, nyeri, sering kambuh di tempat yang sama",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G039",
+    "name": "Kemerahan lecet murni karena gesekan paha (gemuk / olahraga)",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G040",
+    "name": "Luka borok (ulkus) tertutup keropeng keras dan dalam",
+    "regions": ["pelvis", "legs"]
+  },
+  {
+    "id": "G041",
+    "name": "Bintik gatal hebat di malam hari pada area lipatan bokong / kemaluan",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G042",
+    "name": "Benjolan keras sebesar mutiara dengan lekukan atau titik putih di tengah (umbilikasi)",
+    "regions": ["pelvis", "chest"]
+  },
+  {
+    "id": "G043",
+    "name": "Luka terbuka (borok) tanpa rasa sakit, mudah berdarah, terus membesar",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G044",
+    "name": "Sisik kekuningan berminyak pada area kulit berambut di daerah kelamin",
+    "regions": ["pelvis"]
+  },
+  {
+    "id": "G045",
+    "name": "Bintik berair kecil sangat gatal di telapak / sela jari tangan",
+    "regions": ["arms"]
+  },
+  {
+    "id": "G046",
+    "name": "Bercak kulit berwarna lebih terang yang MATI RASA",
+    "regions": ["arms", "legs"]
+  },
+  {
+    "id": "G047",
+    "name": "Lengan bengkak merah, teraba panas, nyeri berdenyut",
+    "regions": ["arms"]
+  },
+  {
+    "id": "G048",
+    "name": "Ruam merah oval bersisik dengan pola ranting pohon cemara (Christmas tree)",
+    "regions": ["arms", "chest", "back"]
+  },
+  {
+    "id": "G049",
+    "name": "Benjolan keras kasar seperti kembang kol (kutil)",
+    "regions": ["arms", "legs"]
+  },
+  {
+    "id": "G050",
+    "name": "Bengkak merah, nyeri, bernanah persis di pinggir kuku",
+    "regions": ["arms"]
+  },
+  {
+    "id": "G051",
+    "name": "Garis terowongan di sela jari, gatal parah malam hari",
+    "regions": ["arms"]
+  },
+  {
+    "id": "G052",
+    "name": "Telapak tangan kering, menebal, bersisik, pecah-pecah",
+    "regions": ["arms"]
+  },
+  {
+    "id": "G053",
+    "name": "Tangan gatal / bruntusan setelah kena sabun / bahan kimia / deterjen",
+    "regions": ["arms"]
+  },
+  {
+    "id": "G054",
+    "name": "Kulit sela jari kaki / telapak mengelupas, pecah-pecah, putih basah, gatal",
+    "regions": ["legs"]
+  },
+  {
+    "id": "G055",
+    "name": "Garis merah berkelok-kelok seperti cacing bergerak di bawah kulit, gatal parah",
+    "regions": ["legs"]
+  },
+  {
+    "id": "G056",
+    "name": "Kuku kaki menebal, rapuh, hancur, warna kuning / cokelat",
+    "regions": ["legs"]
+  },
+  {
+    "id": "G057",
+    "name": "Telapak kaki berbau sangat menyengat dengan lubang-lubang kecil dangkal",
+    "regions": ["legs"]
+  },
+  {
+    "id": "G058",
+    "name": "Penebalan kulit keras menonjol di telapak / jari kaki, nyeri saat ditekan / berjalan",
+    "regions": ["legs"]
+  },
+  {
+    "id": "G059",
+    "name": "Bentol merah berkelompok sangat gatal, ada titik / bekas gigitan di tengahnya",
+    "regions": ["legs", "arms"]
+  },
+  {
+    "id": "G060",
+    "name": "Ruam merah berbentuk bulat seperti koin, sangat gatal, sering berair / berkerak",
+    "regions": ["legs", "arms"]
+  },
+  {
+    "id": "G061",
+    "name": "Tungkai bawah bengkak merah, teraba panas, nyeri berdenyut, disertai demam",
+    "regions": ["legs"]
+  },
+  {
+    "id": "G062",
+    "name": "Ruam merah gatal / lecet persis di area yang menempel tali sandal / bahan sepatu",
+    "regions": ["legs"]
+  },
+  {
+    "id": "G063",
+    "name": "Ruam lepuh berair yang menjalar melingkar HANYA di satu sisi tubuh, disertai nyeri saraf / panas terbakar",
+    "regions": ["back", "abdomen", "chest"]
+  },
+  {
+    "id": "G064",
+    "name": "Jerawat meradang, komedo, dan bintik nanah tersebar di area punggung atas (Bacne)",
+    "regions": ["back"]
+  },
+  {
+    "id": "G065",
+    "name": "Bercak panu lebar menyatu menutupi area punggung, gatal saat berkeringat",
+    "regions": ["back"]
+  },
+  {
+    "id": "G066",
+    "name": "Gatal dan ruam kemerahan persis di sepanjang garis karet celana dalam / sabuk pinggang",
+    "regions": ["back", "abdomen"]
+  },
+  {
+    "id": "G067",
+    "name": "Demam tinggi, menggigil, dan badan terasa lemas (Gejala Sistemik)",
+    "regions": ["head", "neck", "chest", "abdomen", "back", "arms", "legs"]
+  },
+  {
+    "id": "G068",
+    "name": "Pembengkakan kelenjar getah bening di lipatan paha/ketiak/leher terdekat",
+    "regions": ["neck", "pelvis", "arms"]
+  },
+  {
+    "id": "G069",
+    "name": "Kulit menebal, kasar seperti kayu, dan garis kulit terlihat sangat jelas akibat sering digaruk",
+    "regions": ["arms", "legs", "neck"]
+  },
+  {
+    "id": "G070",
+    "name": "Sensasi panas terbakar hebat pada kulit, bahkan sebelum ruamnya muncul",
+    "regions": ["head", "chest", "abdomen", "back", "arms", "legs"]
+  },
+  {
+    "id": "G071",
+    "name": "Keluar nanah kental berwarna kuning/hijau dan berbau busuk menyengat",
+    "regions": ["head", "chest", "abdomen", "back", "arms", "legs"]
+  },
+  {
+    "id": "G072",
+    "name": "Pasien memiliki riwayat alergi asma, bersin pagi hari (rinitis), atau alergi debu/makanan",
+    "regions": ["head", "chest", "arms"]
+  },
+  {
+    "id": "G073",
+    "name": "Ruam muncul setelah sering kontak erat/tidur dengan hewan peliharaan (kucing/anjing)",
+    "regions": ["arms", "legs", "chest"]
+  },
+  {
+    "id": "G074",
+    "name": "Ruam atau flek sangat memburuk/makin gelap setelah terpapar sinar matahari langsung",
+    "regions": ["head", "neck"]
+  },
+  {
+    "id": "G075",
+    "name": "Muncul bintik perdarahan sekecil jarum saat sisik kulit dikelupas/digaruk pelan",
+    "regions": ["head", "chest", "back", "arms", "legs"]
+  },
+  {
+    "id": "G076",
+    "name": "Luka selalu kambuh berulang kali di titik lokasi yang sama persis setiap bulan/tahun",
+    "regions": ["head", "pelvis"]
+  }
+]

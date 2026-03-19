@@ -1,21 +1,223 @@
 // ═══════════════════════════════════════════════════════════
-//  DermaNetra — Application Logic v5
-//  Centered body map · Premium modal with search · Floating pill
+//  DermaNetra — Application Logic v6 (Premium Redesign)
+//  Side drawer · Pulsing dots · Circular gauge · Clean cards
 // ═══════════════════════════════════════════════════════════
 
-const state = {
-  age:'', sex:'', skinType:'', duration:'', disclaimer:false,
-  view:'front',
-  activeRegion:null,
-  symptoms:{},
-  results:null,
+let state = {
+  sex: null,
+  age: '',
+  skinType: '',
+  duration: '',
+  symptoms: {}, // region_key -> Set(symptom_ids)
+  currentView: 'front', // 'front' or 'back'
+  viewMode: 'adult',
+  results: null,
+  language: localStorage.getItem('dn-lang') || 'id'
 };
 
+// ── Translation Map ──────────────────────────────────────
+const I18N = {
+  id: {
+    appTitle: 'DermaNetra',
+    appTagline: 'Sistem Pakar Penyakit Kulit',
+    intakeTitle: 'Formulir Pasien',
+    intakeDesc: 'Lengkapi data berikut untuk memulai analisis.',
+    sexLabel: 'Jenis Kelamin Biologis',
+    male: 'Laki-laki',
+    female: 'Perempuan',
+    ageLabel: 'Usia (Tahun)',
+    skinLabel: 'Tipe Kulit',
+    selectSkin: 'Pilih tipe kulit',
+    skinNormal: 'Normal',
+    skinDry: 'Kering',
+    skinOily: 'Berminyak',
+    skinCombo: 'Kombinasi',
+    skinSensitive: 'Sensitif',
+    durationLabel: 'Durasi Gejala',
+    durShort: '< 3 Hari',
+    durMed: '1–2 Minggu',
+    durLong: '> 1 Bulan',
+    disclaimerText: 'Saya mengerti bahwa ini adalah untuk tujuan edukasi dan bukan diagnosis medis formal.',
+    startBtn: 'Mulai Analisis Kulit',
+    versionText: 'DermaNetra v6.0',
+    legalText: 'Hanya untuk tujuan edukasi & skrining',
+    mapTitle: 'Peta Tubuh Interaktif',
+    mapDesc: 'Ketuk titik kuning untuk menambah gejala',
+    front: 'DEPAN',
+    back: 'BELAKANG',
+    noSymptoms: 'Belum Ada Gejala',
+    analyzeBtn: 'Analisis Sekarang',
+    drawerSub: 'Pilih semua gejala yang sesuai',
+    searchPlaceholder: 'Cari gejala...',
+    addBtn: 'Tambah Gejala',
+    topMatch: 'Hasil Analisis Utama',
+    contextMale: 'Laki-laki',
+    contextFemale: 'Perempuan',
+    downloadReport: 'Unduh Laporan Medis',
+    clinicalReport: 'Laporan Klinis DermaNetra',
+    confidential: 'Ringkasan Medis Rahasia',
+    icdLabel: 'ICD-10',
+    clinicalFeatures: 'Fitur Klinis',
+    causesLabel: 'Penyebab & Faktor Risiko',
+    treatmentPlan: 'Rencana Perawatan Umum',
+    otherConditions: 'Kemungkinan Kondisi Lain',
+    notSpecified: 'Tidak ditentukan.',
+    blueprintTitle: 'Blueprint Analisis',
+    medicalDisclaimer: 'Penafian Medis: Sistem ini menggunakan algoritma Naive Bayes untuk skrining awal dan BUKAN diagnosis medis. Selalu konsultasikan dengan dokter spesialis kulit berlisensi.',
+    whenToSee: 'Kapan harus ke dokter:',
+    otc: 'Obat Bebas',
+    rx: 'Resep Dokter',
+    lifestyle: 'Gaya Hidup',
+    confidenceHigh: 'Tinggi',
+    confidenceMed: 'Sedang',
+    confidenceLow: 'Rendah',
+    viewFront: 'Tampilan Depan',
+    viewBack: 'Tampilan Belakang',
+    backToMap: 'Kembali ke Peta',
+    noSymptomsYet: 'Belum Ada Gejala',
+    noMatchesFound: 'Tidak ada hasil',
+    resultsTitle: 'Hasil Analisis',
+    diagnosisMode: 'Mode Diagnosis',
+    printPdf: 'Cetak PDF',
+    startOver: 'Mulai Ulang',
+    symptomsCount: (n) => `${n} Gejala Terpilih`
+  },
+  en: {
+    appTitle: 'DermaNetra',
+    appTagline: 'Skin Disease Expert System',
+    intakeTitle: 'Patient Intake Form',
+    intakeDesc: 'Complete all fields to begin your skin analysis.',
+    sexLabel: 'Biological Sex',
+    male: 'Male',
+    female: 'Female',
+    ageLabel: 'Age (Years)',
+    skinLabel: 'Skin Type',
+    selectSkin: 'Select skin type',
+    skinNormal: 'Normal',
+    skinDry: 'Dry',
+    skinOily: 'Oily',
+    skinCombo: 'Combination',
+    skinSensitive: 'Sensitive',
+    durationLabel: 'Symptom Duration',
+    durShort: '< 3 Days',
+    durMed: '1–2 Weeks',
+    durLong: '> 1 Month',
+    disclaimerText: 'I understand that this is for educational purposes and not a formal medical diagnosis.',
+    startBtn: 'Start Skin Analysis',
+    versionText: 'DermaNetra v6.0',
+    legalText: 'Educational & screening purposes only',
+    mapTitle: 'Interactive Body Map',
+    mapDesc: 'Tap the pulsing dots to add symptoms',
+    front: 'FRONT',
+    back: 'BACK',
+    noSymptoms: 'No Symptoms Yet',
+    analyzeBtn: 'Analyze Now',
+    drawerSub: 'Select all symptoms that apply',
+    searchPlaceholder: 'Search symptoms...',
+    addBtn: 'Add Symptom(s)',
+    topMatch: 'Top Match Analysis',
+    contextMale: 'Male',
+    contextFemale: 'Female',
+    downloadReport: 'Download Medical Report',
+    clinicalReport: 'DermaNetra Clinical Report',
+    confidential: 'Confidential Medical Summary',
+    icdLabel: 'ICD-10',
+    clinicalFeatures: 'Clinical Features',
+    causesLabel: 'Causes & Risk Factors',
+    treatmentPlan: 'Common Treatment Plan',
+    otherConditions: 'Other Possible Conditions',
+    notSpecified: 'Not specified.',
+    blueprintTitle: 'Analysis Blueprint',
+    medicalDisclaimer: 'Medical Disclaimer: This system uses a Naive Bayes algorithm for preliminary screening and is NOT a medical diagnosis. Always consult a board-certified dermatologist.',
+    whenToSee: 'When to see a doctor:',
+    otc: 'OTC',
+    rx: 'RX',
+    lifestyle: 'Life',
+    confidenceHigh: 'High',
+    confidenceMed: 'Medium',
+    confidenceLow: 'Low',
+    viewFront: 'Front View',
+    viewBack: 'Back View',
+    backToMap: 'Back to Map',
+    noSymptomsYet: 'No Symptoms Yet',
+    noMatchesFound: 'No matches found',
+    resultsTitle: 'Analysis Results',
+    diagnosisMode: 'Diagnosis Mode',
+    printPdf: 'Print PDF',
+    startOver: 'Start Over',
+    symptomsCount: (n) => `${n} Symptom(s) Selected`
+  }
+};
+
+const SKIN_LABELS = {
+  id: {
+    normal: 'Normal',
+    dry: 'Kering',
+    oily: 'Berminyak',
+    combination: 'Kombinasi',
+    sensitive: 'Sensitif'
+  },
+  en: {
+    normal: 'Normal',
+    dry: 'Dry',
+    oily: 'Oily',
+    combination: 'Combination',
+    sensitive: 'Sensitive'
+  }
+};
+
+// ── Pulse Dots & Badges ─────────────────────────────────────
+function updateRegionInteractions() {
+  const isMale = state.sex === 'male';
+  const isFront = state.currentView === 'front';
+  let regions;
+  if (isMale) { regions = isFront ? REGIONS_FRONT : REGIONS_BACK; }
+  else { regions = isFront ? REGIONS_FEMALE_FRONT : REGIONS_FEMALE_BACK; }
+
+  // Clear existing dots/badges
+  document.querySelectorAll('.pulse-dot, .region-badge').forEach(el => el.remove());
+
+  regions.forEach(r => {
+    const count = state.symptoms[r.key] ? state.symptoms[r.key].size : 0;
+    const container = document.getElementById('body-map-wrap');
+    if(!container) return;
+    
+    // Calculate center for positioning (calibrated for 640x640)
+    const pts = r.points.split(/\s+/).map(p => p.split(',').map(Number));
+    let minX = 1000, maxX = 0, minY = 1000, maxY = 0;
+    pts.forEach(([x, y]) => {
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+    });
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    const posX = (cx / 640 * 100) + '%';
+    const posY = (cy / 640 * 100) + '%';
+
+    // 1. Add Pulsing Dot (only on main key points)
+    const dot = document.createElement('div');
+    dot.className = `pulse-dot ${count > 0 ? 'has-symptoms' : ''}`;
+    dot.style.left = posX;
+    dot.style.top = posY;
+    container.appendChild(dot);
+
+    // 2. Add Badge if symptoms selected
+    if (count > 0) {
+      const badge = document.createElement('div');
+      badge.className = 'region-badge';
+      badge.textContent = count;
+      badge.style.left = posX;
+      badge.style.top = posY;
+      container.appendChild(badge);
+    }
+  });
+}
+
 // ── Intake Form ─────────────────────────────────────────────
-function selectSex(sex){
-  state.sex = sex;
-  document.getElementById('sex-male').classList.toggle('active', sex==='male');
-  document.getElementById('sex-female').classList.toggle('active', sex==='female');
+function selectSex(s){
+  state.sex = s;
+  document.getElementById('sex-male').classList.toggle('active', s === 'male');
+  document.getElementById('sex-female').classList.toggle('active', s === 'female');
   checkForm();
 }
 function selectDuration(btn){
@@ -32,18 +234,68 @@ function checkForm(){
   document.getElementById('btn-start').disabled = !ok;
 }
 
-// ── Disclaimer visual ────────────────────────────────────
+// ── Disclaimer visual (Backwards compatibility) ───────────
 function updateDisclaimerVisual(checked){
-  const box  = document.querySelector('.disc-box');
-  const icon = document.querySelector('.disc-check-icon');
-  if(!box) return;
-  box.style.background  = checked ? '#0891b2' : 'white';
-  box.style.borderColor = checked ? '#0891b2' : '#cbd5e1';
-  if(icon) icon.style.display = checked ? 'block' : 'none';
+  // Logic handled by CSS in v6
 }
 document.addEventListener('DOMContentLoaded',()=>{
   const chk = document.getElementById('chk-disclaimer');
-  if(chk) chk.addEventListener('change', function(){ updateDisclaimerVisual(this.checked); checkForm(); });
+  if(chk) chk.addEventListener('change', function(){ checkForm(); });
+});
+
+// ── Preference Handlers ──────────────────────────────
+function updateUIText() {
+  const lang = state.language;
+  const dict = I18N[lang];
+
+  // Update elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+
+  // Update elements with data-i18n-attr (e.g. placeholders)
+  document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+    const attrPair = el.getAttribute('data-i18n-attr'); // "placeholder:key"
+    const [attr, key] = attrPair.split(':');
+    if (dict[key]) el.setAttribute(attr, dict[key]);
+  });
+}
+
+function setLanguage(lang) {
+  state.language = lang;
+  localStorage.setItem('dn-lang', lang);
+  
+  // Update toggle buttons in header
+  const btnId = document.getElementById('lang-id');
+  const btnEn = document.getElementById('lang-en');
+  if(btnId && btnEn) {
+    btnId.className = lang === 'id' 
+      ? 'px-3 py-1 text-[10px] font-bold rounded-full transition-all bg-white dark:bg-slate-700 shadow-sm text-teal-700' 
+      : 'px-3 py-1 text-[10px] font-bold rounded-full transition-all text-slate-500';
+    btnEn.className = lang === 'en' 
+      ? 'px-3 py-1 text-[10px] font-bold rounded-full transition-all bg-white dark:bg-slate-700 shadow-sm text-teal-700' 
+      : 'px-3 py-1 text-[10px] font-bold rounded-full transition-all text-slate-500';
+  }
+
+  updateUIText();
+  
+  // Re-render if in state where dynamic content exists
+  if (state.results) buildResultsUI(state.results);
+  renderBodyMap();
+  updateFloatingPill();
+}
+
+function applyTheme() {
+  // Always light mode as requested
+  document.documentElement.classList.remove('dark');
+}
+
+// ── Lifecycle ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+  setLanguage(state.language);
+  checkForm();
 });
 
 // ── Page Transitions ──────────────────────────────────────
@@ -51,6 +303,38 @@ function showPage(from, to){
   const fEl = document.getElementById('page-'+from);
   fEl.style.transition = 'opacity .3s ease,transform .3s ease';
   fEl.style.opacity = '0'; fEl.style.transform = 'translateY(-14px)';
+  
+  // Update Header State
+  const meta = document.getElementById('header-meta');
+  const badge = document.getElementById('header-mode-badge');
+  const hActions = document.getElementById('header-actions');
+  const btnPrint = document.getElementById('btn-header-print');
+  const btnBack = document.getElementById('btn-header-back');
+  const btnRestart = document.getElementById('btn-header-restart');
+  const dict = I18N[state.language];
+
+  if(to === 'intake') {
+    if(meta) meta.classList.add('hidden');
+    if(hActions) hActions.classList.add('hidden');
+  } else {
+    if(meta) meta.classList.remove('hidden');
+    if(hActions) hActions.classList.remove('hidden');
+    if(badge) {
+      badge.classList.remove('hidden');
+      badge.textContent = to === 'diagnosis' ? dict.diagnosisMode : dict.resultsTitle;
+    }
+  }
+
+  if(to === 'results') {
+    if(btnPrint) btnPrint.classList.remove('hidden');
+    if(btnBack) btnBack.classList.remove('hidden');
+    if(btnRestart) btnRestart.classList.add('hidden');
+  } else if(to === 'diagnosis') {
+    if(btnPrint) btnPrint.classList.add('hidden');
+    if(btnBack) btnBack.classList.add('hidden');
+    if(btnRestart) btnRestart.classList.remove('hidden');
+  }
+
   setTimeout(()=>{
     fEl.classList.add('hidden');
     const tEl = document.getElementById('page-'+to);
@@ -70,21 +354,33 @@ function startAnalysis(){
   setTimeout(()=>renderBodyMap(), 380);
 }
 function resetAll(){
-  Object.assign(state,{age:'',sex:'',skinType:'',duration:'',disclaimer:false,view:'front',activeRegion:null,symptoms:{},results:null});
+  Object.assign(state,{age:'',sex:'',skinType:'',duration:'',disclaimer:false,currentView:'front',activeRegion:null,symptoms:{},results:null});
+  
+  // Clear inputs
   document.getElementById('input-age').value = '';
   document.getElementById('input-skin').value = '';
   const chk = document.getElementById('chk-disclaimer');
   if(chk) chk.checked = false;
-  updateDisclaimerVisual(false);
+  
   document.querySelectorAll('.sex-btn,.dur-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('btn-start').disabled = true;
+  
+  // Reset body map view
   const slider = document.getElementById('toggle-slider');
   if(slider) slider.classList.remove('back');
   const lF = document.getElementById('lbl-front');
   const lB = document.getElementById('lbl-back');
   if(lF){ lF.classList.add('active'); }
   if(lB){ lB.classList.remove('active'); }
-  showPage('diagnosis','intake');
+  
+  // Navigation
+  // If we are on results, go to intake
+  // If we are on diagnosis, go to intake
+  const from = !document.getElementById('page-results').classList.contains('hidden') ? 'results' : 'diagnosis';
+  showPage(from, 'intake');
+  
+  const pill = document.querySelector('.floating-pill-wrap');
+  if(pill) pill.classList.remove('visible');
 }
 function goBackToDiagnosis(){
   showPage('results','diagnosis');
@@ -92,30 +388,20 @@ function goBackToDiagnosis(){
 }
 
 // ── Patient Info ──────────────────────────────────────────
-const SKIN_LABELS = {normal:'Normal Skin',dry:'Dry Skin',oily:'Oily Skin',combination:'Combination Skin',sensitive:'Sensitive Skin'};
 const DUR_LABELS  = {lt3days:'< 3 Days','1to2weeks':'1–2 Weeks',gt1month:'> 1 Month'};
 function populatePatientInfo(){
-  const sL  = state.sex==='male' ? 'Male' : 'Female';
-  const skL = SKIN_LABELS[state.skinType] || state.skinType;
+  const dict = I18N[state.language];
+  const sL  = state.sex==='male' ? dict.male : dict.female;
+  const skL = SKIN_LABELS[state.language][state.skinType] || state.skinType;
   const hp  = document.getElementById('header-patient');
   if(hp) hp.textContent = `${sL}, ${state.age} · ${skL}`;
 }
 
 // ═══════════════════════════════════════════════════════════
-//  BODY MAP — SVG hotspot overlay
-//  ViewBox: 0 0 100 180 — calibrated per sex (female offset +6Y)
+//  BODY MAP CONSTANTS — Calibrated for 640x640 PNGs
 // ═══════════════════════════════════════════════════════════
 
-// ═══════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════
-
-// Male (front) — calibrated to male_front.png (1:1 square image)
-// viewBox is now 0 0 640 640
+// Male (front)
 const REGIONS_FRONT = [
   {key:'head', label:'Head & Face', shape:'polygon', points:'320,25 340,32 347,65 335,95 320,100 305,95 293,65 300,32'},
   {key:'neck', label:'Neck', shape:'polygon', points:'305,100 335,100 350,128 320,131 290,128'},
@@ -132,6 +418,7 @@ const REGIONS_FRONT = [
   {key:'feet', label:'Left Foot', shape:'polygon', points:'370,565 345,565 345,595 360,615 380,605'},
 ];
 
+// Male (back)
 const REGIONS_BACK = [
   {key:'head', label:'Head (Back)', shape:'polygon', points:'320,25 340,32 347,65 335,95 320,100 305,95 293,65 300,32'},
   {key:'neck', label:'Neck (Back)', shape:'polygon', points:'305,100 335,100 350,128 320,131 290,128'},
@@ -148,88 +435,49 @@ const REGIONS_BACK = [
   {key:'feet', label:'Left Foot', shape:'polygon', points:'370,565 345,565 345,595 360,615 380,605'},
 ];
 
-// Female Front — perfectly symmetric coordinates (Right side = ground truth; Left = mirror x→640-x)
+// Female (front)
 const REGIONS_FEMALE_FRONT = [
-  // ── Head & Neck ────────────────────────────────────────────
   {key:'head',    label:'Head & Face',    shape:'polygon', points:'320,34 308,38 297,48 294,65 295,81 299,94 310,102 320,105 330,102 341,94 345,81 346,65 343,48 332,38'},
   {key:'neck',    label:'Neck',           shape:'polygon', points:'308,105 306,116 304,128 312,132 320,133 328,132 336,128 334,116 332,105'},
-  // ── Torso ──────────────────────────────────────────────────
   {key:'chest',   label:'Chest',          shape:'polygon', points:'278,130 272,155 270,185 276,202 300,204 320,204 340,204 364,202 370,185 368,155 362,130'},
   {key:'abdomen', label:'Abdomen',        shape:'polygon', points:'276,202 274,228 272,252 268,272 295,275 320,276 345,275 372,272 368,252 366,228 364,202'},
   {key:'pelvis',  label:'Pelvis & Groin', shape:'polygon', points:'268,272 278,292 292,310 308,325 320,330 332,325 348,310 362,292 372,272'},
-  // ── Arms (Right = ground truth, Left = mirror) ─────────────
-  // Right Arm  (screen-right = patient right)  → x as-is
   {key:'arms',    label:'Right Arm',      shape:'polygon', points:'372,128 388,158 396,198 414,250 424,296 430,304 418,310 402,278 389,232 374,192 370,152'},
-  // Left Arm   (screen-left = patient left)   → x = 640 - x_right
   {key:'arms',    label:'Left Arm',       shape:'polygon', points:'268,128 252,158 244,198 226,250 216,296 210,304 222,310 238,278 251,232 266,192 270,152'},
-  // ── Hands (Right = ground truth, Left = mirror) ────────────
-  // Right Hand
   {key:'hands',   label:'Right Hand',     shape:'polygon', points:'420,308 422,330 426,354 436,364 448,362 454,350 454,324 430,306'},
-  // Left Hand  → x = 640 - x_right
   {key:'hands',   label:'Left Hand',      shape:'polygon', points:'220,308 218,330 214,354 204,364 192,362 186,350 186,324 210,306'},
-  // ── Legs (Right = ground truth, Left = mirror) ─────────────
-  // Right Leg — clean top, natural inner edge, properly tapered calf
   {key:'legs',    label:'Right Leg',      shape:'polygon', points:'376,340 374,395 368,460 360,522 350,568 338,574 326,568 322,500 324,450 326,400 328,340'},
-  // Left Leg   → x = 640 - x_right
   {key:'legs',    label:'Left Leg',       shape:'polygon', points:'264,340 266,395 272,460 280,522 290,568 302,574 314,568 318,500 316,450 314,400 312,340'},
-  // ── Feet (Right = ground truth, Left = mirror) ─────────────
-  // Right Foot — cleaner smaller shape
   {key:'feet',    label:'Right Foot',     shape:'polygon', points:'340,572 338,600 354,614 370,610 356,576'},
-  // Left Foot  → x = 640 - x_right
   {key:'feet',    label:'Left Foot',      shape:'polygon', points:'300,572 302,600 286,614 270,610 284,576'},
 ];
 
-// Female Back — perfectly symmetric coordinates (Right side = ground truth; Left = mirror x→640-x)
+// Female (back)
 const REGIONS_FEMALE_BACK = [
-  // ── Head & Neck ────────────────────────────────────────────
-  // Head — enlarged, properly centered at x=320
   {key:'head',    label:'Head (Back)',    shape:'polygon', points:'320,20 305,30 292,46 288,64 292,84 306,96 320,100 334,96 348,84 352,64 348,46 335,30'},
-  // Neck — wider and taller to properly cover neck area
   {key:'neck',    label:'Neck (Back)',    shape:'polygon', points:'310,98 306,112 312,122 320,125 328,122 334,112 330,98'},
-  // ── Torso ──────────────────────────────────────────────────
-  {key:'back',    label:'Back',          shape:'polygon', points:'265,122 266,155 274,184 300,186 320,185 340,186 366,184 374,155 375,122'},
-  {key:'abdomen', label:'Lower Back',    shape:'polygon', points:'268,202 270,240 266,278 294,280 320,282 346,280 374,278 370,240 372,202'},
-  {key:'pelvis',  label:'Buttocks',      shape:'polygon', points:'266,276 260,310 258,332 264,342 294,346 320,348 346,346 376,342 382,332 380,310 374,276'},
-  // ── Arms (Right = ground truth, Left = mirror) ─────────────
-  // Right Arm
-  {key:'arms',    label:'Right Arm',     shape:'polygon', points:'380,130 394,154 402,206 412,258 416,312 408,312 392,264 382,212 370,152'},
-  // Left Arm  → x = 640 - x_right
-  {key:'arms',    label:'Left Arm',      shape:'polygon', points:'260,130 246,154 238,206 228,258 224,312 232,312 248,264 258,212 270,152'},
-  // ── Hands (Right = ground truth, Left = mirror) ────────────
-  // Right Hand
-  {key:'hands',   label:'Right Hand',    shape:'polygon', points:'404,314 402,340 406,364 414,370 420,358 422,330 418,314'},
-  // Left Hand  → x = 640 - x_right
-  {key:'hands',   label:'Left Hand',     shape:'polygon', points:'236,314 238,340 234,364 226,370 220,358 218,330 222,314'},
-  // ── Legs (Right = ground truth, Left = mirror) ─────────────
-  // Right Leg — natural thigh gap inner edge, better contour matching model silhouette
-  {key:'legs',    label:'Right Leg',     shape:'polygon', points:'378,346 374,410 368,472 360,535 350,578 338,584 326,578 320,535 322,472 324,410 328,346'},
-  // Left Leg  → x = 640 - x_right
-  {key:'legs',    label:'Left Leg',      shape:'polygon', points:'262,346 266,410 272,472 280,535 290,578 302,584 314,578 320,535 318,472 316,410 312,346'},
-  // ── Feet (Right = ground truth, Left = mirror) ─────────────
-  // Right Foot — clean small shape matching ankle width
-  {key:'feet',    label:'Right Foot',    shape:'polygon', points:'340,582 338,608 352,618 364,612 352,586'},
-  // Left Foot  → x = 640 - x_right
-  {key:'feet',    label:'Left Foot',     shape:'polygon', points:'300,582 302,608 288,618 276,612 288,586'},
+  {key:'back',    label:'Back',           shape:'polygon', points:'265,122 266,155 274,184 300,186 320,185 340,186 366,184 374,155 375,122'},
+  {key:'abdomen', label:'Lower Back',     shape:'polygon', points:'268,202 270,240 266,278 294,280 320,282 346,280 374,278 370,240 372,202'},
+  {key:'pelvis',  label:'Buttocks',       shape:'polygon', points:'266,276 260,310 258,332 264,342 294,346 320,348 346,346 376,342 382,332 380,310 374,276'},
+  {key:'arms',    label:'Right Arm',      shape:'polygon', points:'380,130 394,154 402,206 412,258 416,312 408,312 392,264 382,212 370,152'},
+  {key:'arms',    label:'Left Arm',       shape:'polygon', points:'260,130 246,154 238,206 228,258 224,312 232,312 248,264 258,212 270,152'},
+  {key:'hands',   label:'Right Hand',     shape:'polygon', points:'404,314 402,340 406,364 414,370 420,358 422,330 418,314'},
+  {key:'hands',   label:'Left Hand',      shape:'polygon', points:'236,314 238,340 234,364 226,370 220,358 218,330 222,314'},
+  {key:'legs',    label:'Right Leg',      shape:'polygon', points:'378,346 374,410 368,472 360,535 350,578 338,584 326,578 320,535 322,472 324,410 328,346'},
+  {key:'legs',    label:'Left Leg',       shape:'polygon', points:'262,346 266,410 272,472 280,535 290,578 302,584 314,578 320,535 318,472 316,410 312,346'},
+  {key:'feet',    label:'Right Foot',     shape:'polygon', points:'340,582 338,608 352,618 364,612 352,586'},
+  {key:'feet',    label:'Left Foot',      shape:'polygon', points:'300,582 302,608 288,618 276,612 288,586'},
 ];
 
+// ── Region Helper Logic ────────────────────────────────────
 function regionHasSymptoms(key){ return state.symptoms[key] && state.symptoms[key].size>0; }
-function regionFill(key)  { return regionHasSymptoms(key) ? 'rgba(8,145,178,0.20)' : 'rgba(255,255,255,0.01)'; }
+function regionFill(key)  { return regionHasSymptoms(key) ? 'rgba(8,145,178,0.15)' : 'rgba(255,255,255,0.01)'; }
 function regionStroke(key){ return regionHasSymptoms(key) ? '#0891b2' : 'rgba(0,0,0,0)'; }
-
-// ── Visual Group Rules ─────────────────────────────────────
-// Regions in the same MERGE_GROUP will all be highlighted together on hover.
-// e.g. hovering "Right Arm" also highlights "Left Arm", "Right Hand", "Left Hand".
-// Label keywords used to detect left/right side:
-const MERGE_GROUPS = [
-  // arms + hands (both sides merged into one visual group)
-  { keys: ['arms', 'hands'] },
-  // legs + feet (both sides merged into one visual group)
-  { keys: ['legs', 'feet'] },
-];
 
 // Returns the merged key-set for a given region key, or just [key] if standalone
 function getMergedKeys(key){
-  for(const g of MERGE_GROUPS){
+  const groups = [ { keys: ['arms', 'hands'] }, { keys: ['legs', 'feet'] } ];
+  for(const g of groups){
     if(g.keys.includes(key)) return g.keys;
   }
   return [key];
@@ -238,47 +486,38 @@ function getMergedKeys(key){
 // ── Render Body Map ────────────────────────────────────────
 function renderBodyMap(){
   const isMale  = state.sex === 'male';
-  const isFront = state.view === 'front';
+  const isFront = state.currentView === 'front';
   const imgSrc  = isMale
     ? (isFront ? 'assets/images/male_front.png'   : 'assets/images/male_back.png')
     : (isFront ? 'assets/images/female_front.png' : 'assets/images/female_back.png');
 
-  // Use sex-specific coordinate sets
   let regions;
   if(isMale)  { regions = isFront ? REGIONS_FRONT : REGIONS_BACK; }
   else        { regions = isFront ? REGIONS_FEMALE_FRONT : REGIONS_FEMALE_BACK; }
 
   const container = document.getElementById('body-map-container');
   container.innerHTML = '';
+  container.style.position = 'relative';
 
-  // Full-height wrap — no background, no border-radius
   const wrap = document.createElement('div');
-  wrap.style.cssText = 'position:relative;width:100%;height:100%;cursor:default;';
+  wrap.id = 'body-map-wrap';
+  wrap.style.cssText = 'position:relative; width:100%; height:100%; aspect-ratio:1/1; max-height:100%; margin:0 auto; cursor:default;';
 
   const img = document.createElement('img');
   img.src = imgSrc; img.alt = 'Body diagram';
+  img.style.cssText = 'width:100%;height:100%;display:block;object-fit:contain;object-position:top center;mix-blend-mode:multiply;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.18)) contrast(1.05);';
   
-  // mix-blend-mode: multiply menghapus warna putih/abu terang dari background bawaan gambar. 
-  // filter: drop-shadow & contrast memberikan efek embos 3D yang menonjolkan bentuk tubuh.
-  img.style.cssText = 'width:100%;height:100%;display:block;object-fit:contain;object-position:top center;mix-blend-mode:multiply;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.2)) contrast(1.1);';
-  
-  img.onerror = ()=>{
-    img.style.display = 'none';
-  };
+  img.onerror = ()=>{ img.style.display = 'none'; };
 
   const svgNS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(svgNS,'svg');
-  // Calibrated viewbox: perfectly matches the 640x640 PNG image coordinates
   svg.setAttribute('viewBox','0 0 640 640');
   svg.setAttribute('preserveAspectRatio','xMidYMin meet');
-  svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:all;';
+  svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:all;z-index:10;';
 
-  // Build an index: key -> [shape elements]
-  // so we can bulk-highlight all shapes sharing a visual group
-  const shapesByKey = {}; // { 'arms': [shapeEl, shapeEl], 'hands': [...], ... }
+  const shapesByKey = {};
 
-  // First pass — create all shapes
-  const shapeInfos = regions.map(r => {
+  regions.forEach(r => {
     const g = document.createElementNS(svgNS,'g');
     g.style.cursor = 'pointer';
 
@@ -286,46 +525,41 @@ function renderBodyMap(){
     shape.setAttribute('points', r.points);
     shape.setAttribute('fill', regionFill(r.key));
     shape.setAttribute('stroke', regionStroke(r.key));
-    shape.setAttribute('stroke-width','0.8');
-    shape.style.transition = 'fill .15s, stroke .15s';
+    shape.setAttribute('stroke-width','1.2');
+    shape.style.transition = 'fill .2s ease, stroke .2s ease, filter .2s ease';
     g.appendChild(shape);
     svg.appendChild(g);
 
     if(!shapesByKey[r.key]) shapesByKey[r.key] = [];
-    shapesByKey[r.key].push({ shape, key: r.key });
+    shapesByKey[r.key].push({ shape, key: r.key, label: r.label });
 
-    return { g, shape, r };
-  });
-
-  // Helper: get all shapes that belong to the visual group of a key
-  function getSiblingShapes(key){
-    const groupKeys = getMergedKeys(key);
-    const result = [];
-    groupKeys.forEach(k => { if(shapesByKey[k]) shapesByKey[k].forEach(s => result.push(s)); });
-    return result;
-  }
-
-  // Second pass — attach events (now shapesByKey is fully populated)
-  shapeInfos.forEach(({ g, shape, r }) => {
+    // Events
     g.addEventListener('mouseenter', e=>{
-      // Highlight all shapes in the same visual group (arms+hands, or legs+feet)
-      getSiblingShapes(r.key).forEach(({ shape: s }) => {
-        s.setAttribute('fill','rgba(0,191,255,0.15)');
-        s.setAttribute('stroke','cyan');
-        s.setAttribute('stroke-width','0.6');
+      const groupKeys = getMergedKeys(r.key);
+      groupKeys.forEach(k => {
+        if(shapesByKey[k]) shapesByKey[k].forEach(s => {
+          s.shape.setAttribute('fill','rgba(8,145,178,0.18)');
+          s.shape.setAttribute('stroke','#0891b2');
+          s.shape.style.filter = 'drop-shadow(0 0 8px rgba(8,145,178,0.4))';
+        });
       });
       showTooltip(r.label, e);
     });
+
     g.addEventListener('mousemove', e=>showTooltip(r.label, e));
+
     g.addEventListener('mouseleave', ()=>{
-      // Restore all shapes in the same visual group
-      getSiblingShapes(r.key).forEach(({ shape: s, key: k }) => {
-        s.setAttribute('fill', regionFill(k));
-        s.setAttribute('stroke', regionStroke(k));
-        s.setAttribute('stroke-width','0.8');
+      const groupKeys = getMergedKeys(r.key);
+      groupKeys.forEach(k => {
+        if(shapesByKey[k]) shapesByKey[k].forEach(s => {
+          s.shape.setAttribute('fill', regionFill(s.key));
+          s.shape.setAttribute('stroke', regionStroke(s.key));
+          s.shape.style.filter = 'none';
+        });
       });
       hideTooltip();
     });
+
     g.addEventListener('click', ()=>{ hideTooltip(); openModal(r.key); });
   });
 
@@ -333,10 +567,11 @@ function renderBodyMap(){
   wrap.appendChild(svg);
   container.appendChild(wrap);
 
-  updateAnalyzeBar();
+  updateRegionInteractions();
+  updateFloatingPill();
 }
 
-// ── Pill Tooltip (cursor-following, fixed) ────────────────
+// ── Pill Tooltip ──────────────────────────────────────────
 function showTooltip(text, e){
   const t = document.getElementById('tooltip');
   t.textContent = text.toUpperCase();
@@ -350,11 +585,11 @@ function hideTooltip(){
 
 // ── View Toggle ───────────────────────────────────────────
 function toggleView(){
-  state.view = state.view==='front' ? 'back' : 'front';
+  state.currentView = state.currentView==='front' ? 'back' : 'front';
   const slider = document.getElementById('toggle-slider');
   const lF = document.getElementById('lbl-front');
   const lB = document.getElementById('lbl-back');
-  if(state.view==='back'){
+  if(state.currentView==='back'){
     slider.classList.add('back'); lF.classList.remove('active'); lB.classList.add('active');
   } else {
     slider.classList.remove('back'); lF.classList.add('active'); lB.classList.remove('active');
@@ -362,40 +597,34 @@ function toggleView(){
   renderBodyMap();
 }
 
-// ── Floating Action Bar (pill at bottom center) ──────────
-function updateAnalyzeBar(){
-  const allEntries = Object.entries(state.symptoms).filter(([,s])=>s.size>0);
-  const total = allEntries.reduce((n,[,s])=>n+s.size, 0);
-  const btn     = document.getElementById('btn-analyze');
-  const counter = document.getElementById('floating-count');
-  const bar     = document.getElementById('floating-bar');
+// ── Floating Action Bar ──────────────────────────────────
+function updateFloatingPill() {
+  const pill = document.querySelector('.floating-pill-wrap');
+  if(!pill) return;
+  
+  const countLabel = document.getElementById('floating-count');
+  const btn = document.getElementById('btn-analyze');
+  const dict = I18N[state.language];
 
-  if(bar) {
-    if(total > 0 && state.view === 'front' && window.getComputedStyle(document.getElementById('page-diagnosis')).display !== 'none') {
-      bar.classList.remove('hidden');
-    } else if (total === 0) {
-      bar.classList.add('hidden');
-    }
-    // Also if we have total > 0 but we are on intake or results, app.js logic normally hides it.
-    // However, the bar is globally sticky. The original design unconditionally showed/hid it.
-    if(total > 0) bar.classList.remove('hidden');
-    else bar.classList.add('hidden');
-  }
+  // Only show if we are NOT on the results page
+  const isResultsPage = !document.getElementById('page-results').classList.contains('hidden');
+  
+  let total = 0;
+  for (let k in state.symptoms) total += state.symptoms[k].size;
 
-  if(counter){
-    counter.textContent = total > 0
-      ? `${total} Symptom${total>1?'s':''} Added`
-      : 'No Symptoms Yet';
-    counter.style.color = total > 0 ? '#0891b2' : '#94a3b8';
-  }
-  if(btn){
-    btn.disabled = total === 0;
-    btn.style.opacity = total > 0 ? '1' : '0.4';
+  if (total > 0 && !isResultsPage) {
+    pill.classList.add('visible');
+    countLabel.textContent = dict.symptomsCount(total);
+    btn.disabled = false;
+  } else {
+    pill.classList.remove('visible');
+    countLabel.textContent = dict.noSymptoms;
+    btn.disabled = true;
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SYMPTOM MODAL — with search, dynamic button count
+//  SYMPTOM SIDE DRAWER (v6)
 // ═══════════════════════════════════════════════════════════
 let _currentModalSyms = [];
 
@@ -405,22 +634,16 @@ function openModal(regionKey){
   const db = SYMPTOM_DB[regionKey];
   if(!db) return;
 
-  const syms = (db[state.view]&&db[state.view].length) ? db[state.view] : (db.front||[]);
+  const syms = (db[state.currentView]&&db[state.currentView].length) ? db[state.currentView] : (db.front||[]);
   _currentModalSyms = syms;
   const existing = state.symptoms[regionKey] || new Set();
 
-  // Set header
-  document.getElementById('modal-region').textContent = db.label + ' Symptoms';
-  document.getElementById('modal-view-badge').textContent = state.view==='front' ? 'FRONT VIEW' : 'BACK VIEW';
+  document.getElementById('modal-region').textContent = db.label;
+  document.getElementById('modal-view-badge').textContent = state.currentView==='front' ? I18N[state.language].viewFront : I18N[state.language].viewBack;
 
-  // Reset search
   const searchEl = document.getElementById('modal-search');
   if(searchEl) searchEl.value = '';
 
-  // Reset selected count display
-  updateModalSelectedCount();
-
-  // Render symptoms
   renderModalSymptoms(syms, existing, '');
 
   document.getElementById('symptom-modal').classList.add('open');
@@ -432,32 +655,43 @@ function renderModalSymptoms(syms, existing, query){
   const list = document.getElementById('modal-symptom-list');
   list.innerHTML = '';
   const rKey = state.activeRegion;
+  const dict = I18N[state.language];
 
-  if(!syms.length || (syms[0]&&syms[0].startsWith('Referred'))){
-    list.innerHTML = `<div style="text-align:center;padding:32px 16px;color:#94a3b8;">
-      <svg style="width:32px;height:32px;margin:0 auto 10px;color:#cbd5e1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-      <p style="font-size:13px;">Switch to <strong>Back View</strong><br/>to select symptoms for this region.</p>
+  if(!syms.length || (typeof syms[0]==='string' && syms[0].startsWith('Referred'))){
+    list.innerHTML = `<div style="text-align:center;padding:48px 20px;color:#94a3b8;">
+      <svg style="width:40px;height:40px;margin:0 auto 16px;opacity:0.4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+      <p style="font-size:14px;line-height:1.5">This region is best viewed from the <strong>${state.currentView==='front'?dict.viewBack.toUpperCase():dict.viewFront.toUpperCase()}</strong> side.<br>Please toggle the view and try again.</p>
     </div>`;
-    document.getElementById('modal-add-btn').textContent = 'Add Symptom(s)';
+    document.getElementById('modal-add-btn').style.display = 'none';
     return;
   }
+  document.getElementById('modal-add-btn').style.display = 'block';
 
   const q = query.toLowerCase().trim();
-  const filtered = q ? syms.filter(s=>s.toLowerCase().includes(q)) : syms;
+  const filtered = q ? syms.filter(s=>s.name.toLowerCase().includes(q)) : syms;
 
   if(!filtered.length){
-    list.innerHTML = `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">No symptoms match "<strong>${query}</strong>"</div>`;
-    document.getElementById('modal-add-btn').textContent = 'Add Symptom(s)';
+    list.innerHTML = `<div style="text-align:center;padding:32px;color:#94a3b8;font-size:14px;">${dict.noMatchesFound.replace('{query}', `<strong>${query}</strong>`)}</div>`;
     return;
   }
 
   filtered.forEach((sym,i)=>{
-    const id = `msym-${rKey}-${i}`;
+    const elemId = `msym-${rKey}-${i}`;
     const div = document.createElement('div');
     div.className = 'sym-check-item';
     const currentSet = state.symptoms[rKey] || new Set();
-    div.innerHTML = `<input type="checkbox" id="${id}" value="${sym}" ${currentSet.has(sym)?'checked':''}/>
-      <label for="${id}"><span class="chk-box"></span><span>${sym}</span></label>`;
+    const isChecked = currentSet.has(sym.id);
+    
+    div.innerHTML = `
+      <input type="checkbox" id="${elemId}" value="${sym.id}" ${isChecked?'checked':''}/>
+      <label for="${elemId}">
+        <span class="sym-check-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </span>
+        <span>${sym.name}</span>
+      </label>`;
     div.querySelector('input').addEventListener('change', updateModalSelectedCount);
     list.appendChild(div);
   });
@@ -474,18 +708,17 @@ function updateModalSelectedCount(){
   const checked = document.querySelectorAll('#modal-symptom-list input:checked').length;
   const countEl = document.getElementById('modal-selected-count');
   const btn = document.getElementById('modal-add-btn');
+  const dict = I18N[state.language];
 
   if(countEl){
     if(checked > 0){
-      countEl.textContent = `${checked} symptom${checked>1?'s':''} selected`;
+      countEl.textContent = dict.symptomsCount(checked);
       countEl.classList.remove('hidden');
     } else {
       countEl.classList.add('hidden');
     }
   }
-  if(btn){
-    btn.textContent = checked > 0 ? `Add ${checked} Symptom${checked>1?'s':''}` : 'Add Symptom(s)';
-  }
+  if(btn) btn.textContent = checked > 0 ? `${dict.addBtn} (${checked})` : dict.addBtn;
 }
 
 function closeModal(){
@@ -498,206 +731,257 @@ function closeModal(){
 function confirmModal(){
   if(!state.activeRegion) return;
   const checked = document.querySelectorAll('#modal-symptom-list input:checked');
-  const set = new Set(); checked.forEach(c=>set.add(c.value));
-  if(set.size > 0){
-    state.symptoms[state.activeRegion] = set;
-  } else {
-    delete state.symptoms[state.activeRegion];
-  }
+  const set = new Set();
+  checked.forEach(c => set.add(parseInt(c.value) || c.value)); // handles numeric ids too
+  if(set.size > 0) state.symptoms[state.activeRegion] = set;
+  else delete state.symptoms[state.activeRegion];
+  
   closeModal();
   renderBodyMap();
 }
 
-// ── Expert System Engine ──────────────────────────────────
-function runExpertSystem(){
-  const allSelected = new Set();
-  Object.values(state.symptoms).forEach(s=>s.forEach(v=>allSelected.add(v)));
-  if(!allSelected.size) return null;
+// ── Analyze Flow ─────────────────────────────────────────
+async function analyzeCondition(){
+  const allIds = [];
+  Object.values(state.symptoms).forEach(s => s.forEach(id => allIds.push(id)));
+  if(!allIds.length) return;
 
-  const scores = DISEASE_DB.map(disease=>{
-    let score = 0;
-    const matched = new Set();
-
-    disease.trigger_symptoms.forEach(ts=>{
-      if(allSelected.has(ts)){ score+=2; matched.add(ts); }
-    });
-    allSelected.forEach(sel=>{
-      const selWords = sel.toLowerCase().split(/[\s/(),\-]+/).filter(w=>w.length>3);
-      disease.trigger_symptoms.forEach(ts=>{
-        if(matched.has(ts)) return;
-        const tsLow = ts.toLowerCase();
-        if(selWords.some(w=>tsLow.includes(w))){ score+=0.7; matched.add(ts); }
-      });
-    });
-    const selRegions = Object.keys(state.symptoms).filter(k=>state.symptoms[k].size>0);
-    selRegions.forEach(r=>{
-      const rAlt = r==='pelvis'?'groin':r;
-      if(disease.affected_regions.includes(r)||disease.affected_regions.includes(rAlt)) score+=0.8;
-    });
-    if(state.skinType==='oily'      && ['acne','rosacea','seborrheic_dermatitis','tinea_versicolor'].includes(disease.id)) score+=1;
-    if(state.skinType==='dry'       && ['eczema','psoriasis','contact_dermatitis'].includes(disease.id)) score+=1;
-    if(state.skinType==='sensitive' && ['eczema','contact_dermatitis','urticaria'].includes(disease.id)) score+=0.5;
-
-    const maxPossible = disease.trigger_symptoms.length * 2.5;
-    const confidence  = Math.min(97, Math.max(10, Math.round((score/maxPossible)*100)));
-    return {disease, score, confidence};
-  });
-
-  scores.sort((a,b)=>b.score-a.score);
-  const top = scores.filter(s=>s.score>0.5).slice(0,3);
-  return top.length ? top : null;
-}
-
-// ── Analyze Flow ──────────────────────────────────────────
-function analyzeCondition(){
-  const results = runExpertSystem();
-  state.results = results;
-  document.getElementById('floating-bar').classList.add('hidden');
+  const pill = document.querySelector('.floating-pill-wrap');
+  if(pill) pill.classList.remove('visible');
+  
   showPage('diagnosis','results');
-  setTimeout(()=>renderResults(results), 380);
+
+  let apiResults = null;
+  try {
+    const resp = await fetchDiagnosis(allIds);
+    if(resp && resp.results) apiResults = resp.results;
+  } catch(e) { console.error('[DermaNetra] API Error:', e); }
+  
+  state.results = apiResults;
+  setTimeout(()=>renderResults(apiResults), 380);
 }
+
 function renderResults(results){
   const loadEl    = document.getElementById('results-loading');
   const contentEl = document.getElementById('results-content');
   loadEl.classList.remove('hidden');
   contentEl.classList.add('hidden');
+  
   setTimeout(()=>{
     loadEl.classList.add('hidden');
     contentEl.classList.remove('hidden');
     buildResultsUI(results);
     contentEl.style.opacity = '0';
-    requestAnimationFrame(()=>{ contentEl.style.transition='opacity .5s'; contentEl.style.opacity='1'; });
-  }, 2500);
+    requestAnimationFrame(()=>{ contentEl.style.transition='opacity .6s ease-out'; contentEl.style.opacity='1'; });
+  }, 2200);
 }
 
-// ── Disease color dot (no emoji) ─────────────────────────
-const DISEASE_COLOR = {
-  acne:'#f87171', eczema:'#fb923c', psoriasis:'#f59e0b',
-  tinea_corporis:'#22c55e', urticaria:'#eab308', contact_dermatitis:'#a16207',
-  rosacea:'#ec4899', seborrheic_dermatitis:'#6366f1',
-  tinea_pedis:'#0891b2', tinea_versicolor:'#94a3b8', tinea_cruris:'#ef4444',
-};
-function diseaseColorDot(disease, size='44px', radius='12px'){
-  const c = DISEASE_COLOR[disease.id] || '#0891b2';
-  return `<div style="width:${size};height:${size};border-radius:${radius};background:${c}20;border:2px solid ${c};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-    <div style="width:calc(${size} * 0.4);height:calc(${size} * 0.4);border-radius:50%;background:${c}"></div>
-  </div>`;
+// ── Circular Gauge Generator ──────────────────────────────
+function getCircularGauge(percentage) {
+  const dash = (percentage / 100) * 100; // Stroke dasharray value
+  const lang = state.language;
+  const dict = I18N[lang];
+  
+  const risk = percentage >= 80 ? 'high' : (percentage >= 40 ? 'med' : 'low');
+  const riskLabel = percentage >= 80 ? dict.confidenceHigh : (percentage >= 40 ? dict.confidenceMed : dict.confidenceLow);
+
+  return `
+    <div class="confidence-gauge">
+      <svg class="gauge-svg" viewBox="0 0 36 36">
+        <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+        <path class="gauge-fill risk-${risk}" stroke-dasharray="${dash}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+      </svg>
+      <div class="gauge-label">
+        <span class="gauge-percent">${percentage}%</span>
+        <span class="gauge-sub">${riskLabel}</span>
+      </div>
+    </div>`;
+}
+
+// ── Blueprint Report Visualization Generator ──────────────────
+function getReportVisualization() {
+  const isMale = state.sex === 'male';
+  const dict = I18N[state.language];
+  
+  const generateMiniBody = (isFront) => {
+    const regions = isMale 
+      ? (isFront ? REGIONS_FRONT : REGIONS_BACK) 
+      : (isFront ? REGIONS_FEMALE_FRONT : REGIONS_FEMALE_BACK);
+    
+    // ... same as before but with translated labels
+    const imgSrc = isMale
+      ? (isFront ? 'assets/images/male_front.png' : 'assets/images/male_back.png')
+      : (isFront ? 'assets/images/female_front.png' : 'assets/images/female_back.png');
+    
+    let svgContent = '';
+    regions.forEach(r => {
+      const hasSym = state.symptoms[r.key] && state.symptoms[r.key].size > 0;
+      const fill = hasSym ? 'rgba(8,145,178,0.5)' : 'rgba(0,0,0,0.02)';
+      const stroke = hasSym ? '#0891b2' : 'rgba(0,0,0,0.05)';
+      svgContent += `<polygon points="${r.points}" fill="${fill}" stroke="${stroke}" stroke-width="2" />`;
+    });
+
+    return `
+      <div class="report-body-mini">
+        <img src="${imgSrc}" />
+        <svg viewBox="0 0 640 640">${svgContent}</svg>
+        <div style="position:absolute;bottom:4px;width:100%;text-align:center;font-size:8px;font-weight:800;text-transform:uppercase;color:#94a3b8">${isFront ? dict.viewFront : dict.viewBack}</div>
+      </div>`;
+  };
+
+  return `
+    <div class="report-visualization">
+      ${generateMiniBody(true)}
+      ${generateMiniBody(false)}
+    </div>`;
 }
 
 // ── Build Results UI ──────────────────────────────────────
 function buildResultsUI(results){
   const el = document.getElementById('results-content');
-  if(!results||!results.length){
-    el.innerHTML = `<div style="text-align:center;padding:48px;"><h3 style="font-size:18px;font-weight:700;color:#334155;margin-bottom:8px;">No Matches Found</h3>
-      <p style="color:#64748b;font-size:14px;">The selected symptoms did not match our database.<br/>Please add more symptoms or consult a dermatologist directly.</p></div>`;
-    return;
-  }
-  const primary = results[0], alts = results.slice(1), d = primary.disease;
-  el.innerHTML = `
-  <div class="result-context-bar">
-    <span>${state.sex==='male'?'Male':'Female'}, ${state.age} yrs</span>
-    <span style="color:#94a3b8">/</span>
-    <span>${SKIN_LABELS[state.skinType]||state.skinType}</span>
-    <span style="color:#94a3b8">/</span>
-    <span>Duration: ${DUR_LABELS[state.duration]||state.duration}</span>
-  </div>
-
-  <div class="primary-card">
-    <div class="primary-card-header">
-      <span class="primary-badge">PRIMARY DIAGNOSIS</span>
-      <div class="confidence-ring">
-        <svg viewBox="0 0 36 36" class="ring-svg">
-          <path class="ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-          <path class="ring-fill" stroke-dasharray="${primary.confidence}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
-        </svg>
-        <span class="ring-label">${primary.confidence}%</span>
-      </div>
-    </div>
-    <div style="display:flex;align-items:flex-start;gap:16px;padding:20px 24px 24px">
-      ${diseaseColorDot(d)}
-      <div style="flex:1">
-        <div class="disease-name">${d.name}</div>
-        <div class="disease-meta">
-          <span class="meta-chip">ICD-10: ${d.icd10}</span>
-          <span class="meta-chip">${d.prevalence}</span>
-          <span class="meta-chip ${d.contagious?'chip-warn':'chip-ok'}">${d.contagious?'Contagious':'Non-contagious'}</span>
-        </div>
-        <p class="disease-desc">${d.description}</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-card">
-    <div class="section-title">Clinical Features</div>
-    <ul class="feature-list">${d.clinical_features.map(f=>`<li><span class="feat-dot"></span>${f}</li>`).join('')}</ul>
-  </div>
-
-  <div class="section-card two-col">
-    <div><div class="section-title">Causes</div><ul class="plain-list">${d.causes.map(c=>`<li>${c}</li>`).join('')}</ul></div>
-    <div><div class="section-title">Risk Factors</div><ul class="plain-list">${d.risk_factors.map(r=>`<li>${r}</li>`).join('')}</ul></div>
-  </div>
-
-  <div class="section-card">
-    <div class="section-title">Treatment Options</div>
-    <div class="treatment-grid">
-      <div class="treat-block treat-otc"><div class="treat-label">Over-the-Counter</div><ul>${d.treatments.otc.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-      <div class="treat-block treat-rx"><div class="treat-label">Prescription</div><ul>${d.treatments.prescription.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-      <div class="treat-block treat-life"><div class="treat-label">Lifestyle</div><ul>${d.treatments.lifestyle.map(t=>`<li>${t}</li>`).join('')}</ul></div>
-    </div>
-    <div class="see-doctor-box">
-      <svg style="flex-shrink:0;margin-top:2px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-      <span><strong>When to See a Doctor:</strong> ${d.treatments.see_doctor}</span>
-    </div>
-  </div>
-
-  ${alts.length ? `<div class="section-card">
-    <div class="section-title">Other Possible Conditions</div>
-    <div class="alt-grid">${alts.map(r=>`
-      <div class="alt-card">
-        ${diseaseColorDot(r.disease,'32px','8px')}
-        <div><div class="alt-name">${r.disease.name}</div><div class="alt-icd">ICD-10: ${r.disease.icd10}</div><div class="alt-conf">Match: ${r.confidence}%</div></div>
-      </div>`).join('')}
-    </div>
-  </div>` : ''}
-
-  <div class="section-card">
-    <div class="section-title">References & Sources</div>
-    <ol class="ref-list">${d.references.map((r,i)=>`<li>${i+1}. ${r}</li>`).join('')}</ol>
-    <div class="disclaimer-box">
-      <strong>Medical Disclaimer:</strong> DermaNetra provides preliminary screening only and does not constitute a medical diagnosis. Always consult a licensed dermatologist.
-    </div>
-  </div>`;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  BACKEND FETCH — Connect to FastAPI (for future use)
-// ═══════════════════════════════════════════════════════════
-const API_BASE = 'http://localhost:8000';
-
-async function fetchDiagnosis() {
-  const allSymptoms = [];
-  Object.values(state.symptoms).forEach(s => s.forEach(v => allSymptoms.push(v)));
-  if (!allSymptoms.length) { console.warn('[DermaNetra] No symptoms selected'); return null; }
-
-  const payload = {
-    symptoms: allSymptoms,
-    patient: { age: parseInt(state.age), sex: state.sex, skinType: state.skinType, duration: state.duration },
-  };
+  if(!el) return;
+  const dict = I18N[state.language];
 
   try {
-    console.log('[DermaNetra] Sending to API:', payload);
-    const resp = await fetch(`${API_BASE}/api/diagnose`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-    const data = await resp.json();
-    console.log('[DermaNetra] API Response:', data);
-    return data;
+    if(!results || !results.length){
+      el.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20 animate-fade">
+          <div class="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6">
+            <svg class="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">${dict.noMatchesFound}</h3>
+          <p class="text-slate-500 max-w-xs text-center mb-8">The expert system couldn't confidently identify a condition based on these symptoms.</p>
+          <button onclick="resetAll()" class="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:scale-105 transition-all">Start Over</button>
+        </div>`;
+      return;
+    }
+
+    const p = results[0];
+    const alts = results.slice(1, 4);
+    const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[p.disease_id]) || {};
+    const t = db.treatments || {otc:[],prescription:[],lifestyle:[],see_doctor:'Consult a medical professional.'};
+
+    // Helper for localized extraction
+    const _getV = (v) => {
+      if (!v) return '';
+      if (typeof v === 'string') return v;
+      if (Array.isArray(v)) return v; 
+      return v[state.language] || v['id'] || v;
+    };
+
+    const _lst = (arrOrObj) => {
+      const data = _getV(arrOrObj);
+      if (!data || !Array.isArray(data)) return `<li>${dict.notSpecified || 'Not specified.'}</li>`;
+      return data.length ? data.map(x=>`<li>${x}</li>`).join('') : `<li>${dict.notSpecified || 'None.'}</li>`;
+    };
+
+    el.innerHTML = `
+      <div class="result-context-bar animate-fade mb-6">
+        <div class="flex items-center gap-2">
+          <span class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-wider">${state.sex==='male' ? dict.contextMale : dict.contextFemale}, ${state.age}</span>
+          <span class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-wider">${SKIN_LABELS[state.language][state.skinType] || state.skinType}</span>
+        </div>
+      </div>
+
+      <!-- Primary Diagnosis Card -->
+      <div class="primary-card animate-fade shadow-xl border border-slate-100">
+        <div class="primary-card-header p-6 bg-primary text-white flex justify-between items-center rounded-t-2xl">
+          <div class="flex flex-col">
+            <span class="text-[10px] uppercase font-bold tracking-widest opacity-80 mb-1">${dict.topMatch}</span>
+            <h1 class="text-3xl font-extrabold tracking-tight">${state.language === 'en' ? (p.disease_name_en || p.disease_name) : (p.disease_name_id || p.disease_name)}</h1>
+          </div>
+          ${getCircularGauge(Math.round(p.percentage))}
+        </div>
+        
+        <div class="p-8 bg-white">
+          <div class="disease-meta mb-6 flex flex-wrap gap-2">
+            <span class="meta-chip px-3 py-1 border border-slate-200 rounded-lg text-xs font-bold">${dict.icdLabel}: ${p.icd10}</span>
+            <span class="meta-chip px-3 py-1 border border-slate-200 rounded-lg text-xs font-bold">${_getV(db.prevalence) || 'Common'}</span>
+            <span class="meta-chip px-3 py-1 border rounded-lg text-xs font-bold ${p.contagious ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200'}">${p.contagious ? 'CONTAGIOUS' : 'NON-CONTAGIOUS'}</span>
+          </div>
+          <p class="disease-desc text-slate-700 text-lg leading-relaxed">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
+        </div>
+      </div>
+
+      <!-- Blueprint Visualization (PDF ONLY - High Contrast for Blueprint feel) -->
+      <div class="section-card bg-white border border-slate-200 p-6 rounded-2xl shadow-sm my-8 print-only">
+        <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M9 20l-5.447-2.724A2 2 0 013 15.488V5.488a2 2 0 011.553-1.956l10-2A2 2 0 0117 3.488v10.024a2 2 0 01-1.553 1.956L9 20zm0 0V9"/></svg>
+          ${dict.blueprintTitle}
+        </h3>
+        <p class="text-xs text-slate-500 mb-6">Highlighted regions indicate areas where symptoms were reported by the patient.</p>
+        ${getReportVisualization()}
+      </div>
+
+      <!-- Hint for users to see full blueprint in PDF -->
+      <div class="flex items-center justify-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-10 print:hidden">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Lihat Blueprint Lengkap di Laporan PDF</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
+        <div class="flex flex-col gap-6">
+          <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+            <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+              <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              ${dict.clinicalFeatures}
+            </h3>
+            <ul class="space-y-2 text-sm text-slate-700 list-disc pl-4">${_lst(db.clinical_features)}</ul>
+          </div>
+          
+          <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+            <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+              <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              ${dict.causesLabel}
+            </h3>
+            <ul class="space-y-2 text-sm text-slate-700 list-disc pl-4">${_lst(db.causes)}</ul>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex-1">
+            <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+              <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+              ${dict.treatmentPlan}
+            </h3>
+            <div class="space-y-4">
+              <div class="p-4 rounded-xl bg-slate-50 border-l-4 border-green-500">
+                <div class="text-[10px] font-black uppercase tracking-widest text-green-700 mb-2">${dict.otc}</div>
+                <ul class="text-sm text-slate-700 space-y-1">${_lst(t.otc)}</ul>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-50 border-l-4 border-blue-500">
+                <div class="text-[10px] font-black uppercase tracking-widest text-blue-700 mb-2">${dict.rx}</div>
+                <ul class="text-sm text-slate-700 space-y-1">${_lst(t.prescription)}</ul>
+              </div>
+            </div>
+            
+            <div class="see-doctor-box mt-6 p-4 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-900 text-sm flex gap-3">
+              <svg class="w-5 h-5 flex-shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <div><strong class="block mb-1 font-bold">${dict.whenToSee}</strong> ${_getV(t.see_doctor)}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
   } catch (err) {
-    console.error('[DermaNetra] API Error:', err.message);
-    console.info('[DermaNetra] Falling back to client-side expert system');
-    return null;
+    console.error('[DermaNetra] Render Error:', err);
+    el.innerHTML = `<div class="p-10 text-center text-red-500">Render Error: ${err.message}</div>`;
   }
+}
+
+// ── API Helpers ───────────────────────────────────────────
+const API_BASE = 'http://localhost:8000';
+async function fetchDiagnosis(symptomIds) {
+  const payload = {
+    symptom_ids: symptomIds,
+    patient: { age: parseInt(state.age), sex: state.sex, skinType: state.skinType, duration: state.duration },
+    selected_regions: Object.keys(state.symptoms).filter(k=>state.symptoms[k].size>0),
+  };
+  const resp = await fetch(`${API_BASE}/api/diagnose`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!resp.ok) throw new Error('API request failed');
+  return await resp.json();
 }
