@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pelacak Jerawat (Acne Tracker) — DermaNetra</title>
+  <meta name="description" content="Catat pemicu harian dan pantau perkembangan jerawat Anda." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind-config-landing.js"></script>
+  <link rel="stylesheet" href="assets/css/landing.css?v=2" />
+  <style>
+    .tracker-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 10px;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tracker-pill {
+      padding: 8px 16px;
+      border-radius: 99px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .tracker-pill:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    /* Severity Colors */
+    input[type="radio"]:checked + .pill-sev-0 { background: #dcfce7; border-color: #22c55e; color: #166534; }
+    input[type="radio"]:checked + .pill-sev-1 { background: #fef08a; border-color: #eab308; color: #854d0e; }
+    input[type="radio"]:checked + .pill-sev-2 { background: #ffedd5; border-color: #f97316; color: #9a3412; }
+    input[type="radio"]:checked + .pill-sev-3 { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+
+    /* Normal trigger colors */
+    input[type="checkbox"]:checked + .tracker-pill.trigger-pill {
+      background: #ecfeff;
+      border-color: #06b6d4;
+      color: #0891b2;
+    }
+    input[type="radio"]:checked + .tracker-pill.trigger-pill {
+      background: #ecfeff;
+      border-color: #06b6d4;
+      color: #0891b2;
+    }
+
+    input[type="checkbox"], input[type="radio"] {
+      display: none;
+    }
+
+    .log-item {
+      padding: 16px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border-left: 4px solid #cbd5e1;
+      margin-bottom: 12px;
+    }
+    .log-sev-0 { border-left-color: #22c55e; }
+    .log-sev-1 { border-left-color: #eab308; }
+    .log-sev-2 { border-left-color: #f97316; }
+    .log-sev-3 { border-left-color: #ef4444; }
+
+  </style>
+</head>
+
+<body class="font-inter bg-slate-50 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="landing.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-cyan-600 to-cyan-800">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <span class="text-xl font-extrabold tracking-tight text-cyan-800">DermaNetra</span>
+      </a>
+      <a href="landing.html" class="text-sm font-semibold text-slate-500 hover:text-cyan-600 transition-colors">
+        Kembali ke Portal
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-5xl mx-auto w-full px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Title Section -->
+    <div class="lg:col-span-12 text-center mb-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 bg-gradient-to-br from-rose-100 to-rose-200 shadow-inner">
+        <svg class="w-8 h-8 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        </svg>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-800">Pelacak Faktor Jerawat</h1>
+      <p class="text-slate-500 mt-2 max-w-xl mx-auto">Pantau tingkat keparahan jerawat Anda beserta faktor-faktor gaya hidup yang mungkin menjadi pemicu utamanya (diet, tidur, stres).</p>
+    </div>
+
+    <!-- Input Form -->
+    <div class="lg:col-span-7">
+      <div class="tracker-card h-full">
+        <h2 class="text-lg font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Log Hari Ini</h2>
+        
+        <form id="tracker-form">
+          <!-- Severity -->
+          <div class="form-group">
+            <label class="form-label">Tingkat Keparahan Jerawat (Hari Ini)</label>
+            <div class="pill-group">
+              <label><input type="radio" name="severity" value="0" required><span class="tracker-pill pill-sev-0">🟢 Bersih</span></label>
+              <label><input type="radio" name="severity" value="1"><span class="tracker-pill pill-sev-1">🟡 Ringan</span></label>
+              <label><input type="radio" name="severity" value="2"><span class="tracker-pill pill-sev-2">🟠 Sedang</span></label>
+              <label><input type="radio" name="severity" value="3"><span class="tracker-pill pill-sev-3">🔴 Parah / Kistik</span></label>
+            </div>
+          </div>
+
+          <!-- Diet Triggers -->
+          <div class="form-group">
+            <label class="form-label">Diet & Konsumsi (Pilih yang sesuai)</label>
+            <div class="pill-group">
+              <label><input type="checkbox" name="trigger" value="Susu/Dairy"><span class="tracker-pill trigger-pill">🥛 Produk Susu (Dairy)</span></label>
+              <label><input type="checkbox" name="trigger" value="Gula Tinggi"><span class="tracker-pill trigger-pill">🍩 Gula Tingga (Manis)</span></label>
+              <label><input type="checkbox" name="trigger" value="Minyak/Gorengan"><span class="tracker-pill trigger-pill">🍟 Gorengan</span></label>
+            </div>
+          </div>
+
+          <!-- Sleep -->
+          <div class="form-group">
+            <label class="form-label">Kualitas Tidur Semalam</label>
+            <div class="pill-group">
+              <label><input type="radio" name="sleep" value="Kurang (< 6 Jam)" required><span class="tracker-pill trigger-pill">Kurang (&lt; 6 Jam)</span></label>
+              <label><input type="radio" name="sleep" value="Cukup (6-8 Jam)"><span class="tracker-pill trigger-pill">Cukup (6-8 Jam)</span></label>
+              <label><input type="radio" name="sleep" value="Sangat Baik"><span class="tracker-pill trigger-pill">Sangat Baik</span></label>
+            </div>
+          </div>
+
+          <!-- Stress & Hormone -->
+          <div class="form-group">
+            <label class="form-label">Faktor Lainnya</label>
+            <div class="pill-group">
+              <label><input type="checkbox" name="trigger" value="Stres Tinggi"><span class="tracker-pill trigger-pill">🤯 Stres Tinggi</span></label>
+              <label><input type="checkbox" name="trigger" value="Menstruasi/PMS"><span class="tracker-pill trigger-pill">🩸 Menstruasi (PMS)</span></label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Catatan Tambahan (Opsional)</label>
+            <textarea id="notes" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none" rows="2" placeholder="Ganti produk skincare, aktivitas luar, dll..."></textarea>
+          </div>
+
+          <button type="submit" class="cta-btn w-full justify-center">Simpan Log Hari Ini</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- History Panel -->
+    <div class="lg:col-span-5">
+      <div class="tracker-card h-full bg-slate-800 border-none text-white">
+        <h2 class="text-lg font-bold mb-6 border-b border-slate-700 pb-4">Riwayat Log</h2>
+        
+        <div id="history-list" class="space-y-3 overflow-y-auto" style="max-height: 500px">
+          <!-- Populated by JS -->
+          <p class="text-slate-400 text-sm text-center py-6">Belum ada riwayat. Catat kondisi Anda hari ini untuk melihat data.</p>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <button id="btn-clear" class="text-xs text-slate-500 hover:text-red-400 transition-colors">Hapus Semua Data</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('tracker-form');
+      const listContainer = document.getElementById('history-list');
+      const btnClear = document.getElementById('btn-clear');
+      
+      const STORAGE_KEY = 'dermanetra_acne_logs';
+      let logs = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+      renderLogs();
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Ambil severity
+        const sevEl = document.querySelector('input[name="severity"]:checked');
+        if(!sevEl) return;
+        
+        const sleepEl = document.querySelector('input[name="sleep"]:checked');
+        if(!sleepEl) return;
+
+        // Ambil triggers
+        const triggerEls = document.querySelectorAll('input[name="trigger"]:checked');
+        let triggers = Array.from(triggerEls).map(el => el.value);
+        
+        const notes = document.getElementById('notes').value;
+        const dateStr = new Date().toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+        const entry = {
+          id: Date.now(),
+          date: dateStr,
+          severity: parseInt(sevEl.value),
+          sleep: sleepEl.value,
+          triggers: triggers,
+          notes: notes
+        };
+
+        // Simpan
+        logs.unshift(entry); // Taro di atas
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        
+        renderLogs();
+        form.reset();
+        
+        // Show temp success
+        alert('Log berhasil disimpan!');
+      });
+
+      btnClear.addEventListener('click', () => {
+        if(confirm("Yakin ingin menghapus seluruh log?")) {
+          logs = [];
+          localStorage.removeItem(STORAGE_KEY);
+          renderLogs();
+        }
+      });
+
+      function renderLogs() {
+        if (logs.length === 0) {
+          listContainer.innerHTML = '<p class="text-slate-400 text-sm text-center py-6">Belum ada riwayat. Catat kondisi Anda hari ini untuk melihat data.</p>';
+          return;
+        }
+
+        const sevLabels = ["Bersih", "Ringan", "Sedang", "Parah"];
+        
+        listContainer.innerHTML = logs.map(l => {
+          let triggerHtml = '';
+          if(l.triggers.length > 0) {
+            triggerHtml = `<div class="mt-2 flex flex-wrap gap-1">` + 
+                          l.triggers.map(t => `<span class="bg-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded">${t}</span>`).join('') + 
+                          `</div>`;
+          }
+
+          return `
+            <div class="log-item log-sev-${l.severity} bg-slate-700 border-l-4">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-bold text-slate-300">${l.date}</span>
+                <span class="text-xs font-black uppercase tracking-wider ${getTextColorForSev(l.severity)}">${sevLabels[l.severity]}</span>
+              </div>
+              <div class="text-xs text-slate-400">Tidur: ${l.sleep}</div>
+              ${triggerHtml}
+              ${l.notes ? `<p class="mt-2 text-[11px] text-slate-400 italic">"${l.notes}"</p>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      function getTextColorForSev(sev) {
+        if(sev === 0) return 'text-green-400';
+        if(sev === 1) return 'text-yellow-400';
+        if(sev === 2) return 'text-orange-400';
+        return 'text-red-400';
+      }
+    });
+  </script>
+</body>
+</html>

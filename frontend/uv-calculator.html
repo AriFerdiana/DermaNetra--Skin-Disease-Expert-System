@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalkulator UV & Rekomendasi SPF — DermaNetra</title>
+  <meta name="description" content="Cek indeks UV di lokasi Anda dan dapatkan rekomendasi SPF real-time." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind-config-landing.js"></script>
+  <link rel="stylesheet" href="assets/css/landing.css?v=2" />
+  <style>
+    .uv-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid #f1f5f9;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .uv-meter {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #22c55e 0deg 72deg,    /* Rendah 0-2 */
+        #eab308 72deg 180deg,  /* Sedang 3-5 */
+        #f97316 180deg 252deg, /* Tinggi 6-7 */
+        #ef4444 252deg 360deg  /* Ekstrem 8+ */
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 0 auto;
+    }
+    .uv-meter::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      background: white;
+      border-radius: 50%;
+    }
+    .uv-value-container {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+    }
+    
+    .uv-low { color: #15803d; }
+    .uv-moderate { color: #a16207; }
+    .uv-high { color: #c2410c; }
+    .uv-extreme { color: #b91c1c; }
+
+    #loader { display: none; }
+    #result-container { display: none; }
+    
+    .btn-lokasi {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+      border: 2px solid #fbbf24;
+    }
+    .btn-lokasi:hover {
+      background: #fbbf24;
+      color: white;
+      border-color: #f59e0b;
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-slate-50 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="landing.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-cyan-600 to-cyan-800">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+        </div>
+        <span class="text-xl font-extrabold tracking-tight text-cyan-800">DermaNetra</span>
+      </a>
+      <a href="landing.html" class="text-sm font-semibold text-slate-500 hover:text-cyan-600 transition-colors flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Kembali
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col items-center justify-center py-12 px-6">
+    <div class="max-w-2xl w-full">
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 bg-gradient-to-br from-amber-100 to-amber-200 shadow-inner">
+          <svg class="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8-9h1M3 12H2m15.657-6.343l-.707.707M6.343 6.343l.707.707M17.657 17.657l-.707-.707M6.343 17.657l.707-.707M12 8a4 4 0 110 8 4 4 0 010-8z" />
+          </svg>
+        </div>
+        <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight leading-tight">Kalkulator UV & SPF</h1>
+        <p class="text-slate-500 mt-3 font-medium">Lindungi kulit Anda. Dapatkan rekomendasi tabir surya real-time berdasarkan Indeks UV di lokasi Anda saat ini.</p>
+      </div>
+
+      <!-- Action Card -->
+      <div id="action-card" class="uv-card text-center transition-all duration-300">
+        <h2 class="text-xl font-bold text-slate-700 mb-6">Izinkan Akses Lokasi</h2>
+        <p class="text-sm text-slate-500 mb-8 max-w-sm mx-auto">Kami memerlukan lokasi Anda untuk berinteraksi dengan satelit cuaca dan mengambil data Indeks UV terkini di area Anda.</p>
+        <button id="btn-cek-uv" class="cta-btn btn-lokasi font-bold rounded-xl px-8 py-4 w-full md:w-auto shadow-lg transition-transform hover:scale-105">
+          <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Gunakan Lokasi Saat Ini
+        </button>
+      </div>
+
+      <!-- Loader -->
+      <div id="loader" class="text-center py-12">
+        <svg class="w-10 h-10 text-amber-500 animate-spin mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+        </svg>
+        <p class="text-slate-500 font-semibold animate-pulse">Mengambil data dari satelit...</p>
+      </div>
+
+      <!-- Result Card -->
+      <div id="result-container" class="space-y-6">
+        <div class="uv-card bg-gradient-to-br from-white to-slate-50">
+          <div class="flex flex-col md:flex-row items-center gap-8">
+            <div class="uv-meter flex-shrink-0 shadow-inner">
+              <div class="uv-value-container">
+                <div class="text-sm font-extrabold text-slate-400 tracking-widest uppercase mb-1">Indeks UV</div>
+                <div id="uv-value" class="text-5xl font-black text-slate-800">0</div>
+              </div>
+            </div>
+            
+            <div class="flex-1 text-center md:text-left">
+              <div id="uv-level" class="inline-flex px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-2">Resiko Level</div>
+              <h3 id="uv-msg1" class="text-2xl font-bold text-slate-800 mb-2">Mengolah Data...</h3>
+              <p id="uv-msg2" class="text-sm text-slate-500 leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SPF Recommendation -->
+        <div class="uv-card" style="border-top: 4px solid #0891b2">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-cyan-50 flex items-center justify-center flex-shrink-0">
+              <span class="text-2xl">🧴</span>
+            </div>
+            <div>
+              <h4 class="text-lg font-bold text-slate-800 mb-1">Rekomendasi Skincare</h4>
+              <p id="spf-rec" class="text-sm text-slate-600 leading-relaxed font-medium">SPF 30 atau lebih tinggi direkomendasikan hari ini, beserta pelembab dengan antioksidan.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center mt-6">
+           <button id="btn-reset" class="text-sm font-semibold text-slate-400 hover:text-cyan-600 transition-colors underline decoration-dotted">Cek di waktu / lokasi lain</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnCek = document.getElementById('btn-cek-uv');
+      const btnReset = document.getElementById('btn-reset');
+      const actionCard = document.getElementById('action-card');
+      const loader = document.getElementById('loader');
+      const resultContainer = document.getElementById('result-container');
+
+      const uvValEl = document.getElementById('uv-value');
+      const uvLevelEl = document.getElementById('uv-level');
+      const uvMsg1El = document.getElementById('uv-msg1');
+      const uvMsg2El = document.getElementById('uv-msg2');
+      const spfRecEl = document.getElementById('spf-rec');
+
+      btnCek.addEventListener('click', () => {
+        if (!navigator.geolocation) {
+          alert("Browser Anda tidak mendukung geolokasi.");
+          return;
+        }
+
+        actionCard.style.display = 'none';
+        loader.style.display = 'block';
+
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          
+          try {
+            // Panggil Open-Meteo API
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=uv_index&timezone=auto`);
+            const data = await res.json();
+            
+            const uvIndex = data.current.uv_index || 0;
+            displayResult(uvIndex);
+            
+          } catch(e) {
+            console.error(e);
+            alert("Gagal mengambil data cuaca. Memulai ulang...");
+            actionCard.style.display = 'block';
+            loader.style.display = 'none';
+          }
+
+        }, (err) => {
+          alert("Gagal mendapatkan lokasi. Pastikan izin lokasi diaktifkan.");
+          actionCard.style.display = 'block';
+          loader.style.display = 'none';
+        });
+      });
+      
+      btnReset.addEventListener('click', () => {
+        resultContainer.style.display = 'none';
+        actionCard.style.display = 'block';
+      });
+
+      function displayResult(uv) {
+        loader.style.display = 'none';
+        resultContainer.style.display = 'block';
+        
+        uvValEl.textContent = uv.toFixed(1);
+
+        let level = '';
+        let msg1 = '';
+        let msg2 = '';
+        let spf = '';
+        let colorClass = '';
+        let bgClass = '';
+
+        if (uv <= 2) {
+          level = 'RENDA';
+          colorClass = 'uv-low';
+          bgClass = 'bg-green-100 text-green-800';
+          msg1 = 'Aman untuk beraktivitas luar';
+          msg2 = 'Risiko bahaya dari sinar matahari minim. Pakai kacamata hitam di hari yang cerah.';
+          spf = 'Gunakan Moisturizer/Sunscreen dasar SPF 15-30. Ulangi jika beraktivitas lama di luar.';
+        } else if (uv <= 5) {
+          level = 'SEDANG';
+          colorClass = 'uv-moderate';
+          bgClass = 'bg-yellow-100 text-yellow-800';
+          msg1 = 'Waspada paparan.';
+          msg2 = 'Risiko kerusakan kulit sedang. Hindari sinar matahari langsung saat siang bolong jika memungkinkan.';
+          spf = 'Wajib gunakan SPF 30+ berspektrum luas. Gunakan topi dan pakaian pelindung.';
+        } else if (uv <= 7) {
+          level = 'TINGGI';
+          colorClass = 'uv-high';
+          bgClass = 'bg-orange-100 text-orange-800';
+          msg1 = 'Berbahaya bagi kulit sensitif';
+          msg2 = 'Risiko tinggi. Perlindungan matahari ekstra mutlak diperlukan. Kulit bisa terbakar dalam waktu singkat.';
+          spf = 'Gunakan Sunscreen SPF 50+. Wajib re-apply tiap 2 jam. Berteduhlah!';
+        } else {
+          level = 'EKSTREM';
+          colorClass = 'uv-extreme';
+          bgClass = 'bg-red-100 text-red-800';
+          msg1 = 'Hindari sinar matahari!';
+          msg2 = 'Risiko paparan sangat ekstrem. Kulit tak terlindungi dapat terbakar dalam hitungan menit.';
+          spf = 'Sunscreen SPF 50+ PA++++. Tetap di dalam ruangan antara jam 10 pagi hingga 4 sore. Jika harus keluar, lindungi semua area kulit.';
+        }
+
+        uvLevelEl.textContent = level;
+        uvLevelEl.className = `inline-flex px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider mb-2 ${bgClass}`;
+        uvValEl.className = `text-5xl font-black ${colorClass}`;
+        
+        uvMsg1El.textContent = msg1;
+        uvMsg2El.textContent = msg2;
+        spfRecEl.textContent = spf;
+      }
+    });
+  </script>
+</body>
+</html>

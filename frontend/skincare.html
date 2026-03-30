@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perawatan Harian (Skincare) — DermaNetra</title>
+  <meta name="description" content="Panduan rutinitas skincare dasar harian untuk berbagai tipe kulit." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind-config-landing.js"></script>
+  <link rel="stylesheet" href="assets/css/landing.css?v=2" />
+  <style>
+    .routine-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .routine-step {
+      display: flex;
+      gap: 16px;
+      padding-bottom: 24px;
+      border-left: 2px dashed #cbd5e1;
+      margin-left: 24px;
+      position: relative;
+    }
+    .routine-step:last-child {
+      border-left-color: transparent;
+      padding-bottom: 0;
+    }
+    .step-number {
+      position: absolute;
+      left: -17px;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      background: white;
+      border: 2px solid #0891b2;
+      color: #0891b2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .step-content {
+      padding-left: 36px;
+    }
+    
+    .filter-tabs {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    
+    .filter-tab {
+      white-space: nowrap;
+      padding: 10px 20px;
+      border-radius: 99px;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .filter-tab:hover { background: #e2e8f0; }
+    .filter-tab.active {
+      background: #0891b2;
+      color: white;
+      box-shadow: 0 6px 16px rgba(8, 145, 178, 0.25);
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-slate-50">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="landing.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-cyan-600 to-cyan-800">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <span class="text-xl font-extrabold tracking-tight text-cyan-800">DermaNetra</span>
+      </a>
+      <a href="landing.html" class="text-sm font-semibold text-slate-500 hover:text-cyan-600 transition-colors">
+        Kembali ke Portal
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 py-12">
+    <!-- Hero Title -->
+    <div class="text-center mb-12">
+      <div class="inline-flex w-16 h-16 rounded-2xl mb-4 bg-gradient-to-br from-emerald-100 to-emerald-200 shadow-inner items-center justify-center">
+        <span class="text-3xl text-emerald-600">✨</span>
+      </div>
+      <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight leading-tight">Panduan Perawatan Harian</h1>
+      <p class="text-slate-500 mt-3 max-w-2xl mx-auto font-medium">Rutinitas dokter spesialis kulit yang dirancang khusus untuk memelihara kesehatan skin barrier Anda.</p>
+      
+      <div class="mt-6 flex justify-center gap-4">
+          <a href="skin-quiz.html" class="text-sm font-bold text-cyan-600 hover:text-cyan-800 underline">Belum tahu tipe kulit? Ikuti kuis.</a>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-tabs" id="routine-filters">
+      <div class="filter-tab active" data-type="all">Basic (Semua Tipe)</div>
+      <div class="filter-tab" data-type="oily">Berminyak / Berjerawat</div>
+      <div class="filter-tab" data-type="dry">Kering</div>
+      <div class="filter-tab" data-type="sensitive">Sensitif</div>
+    </div>
+
+    <!-- Routines Content -->
+    <div id="routines-container">
+      
+      <!-- Routine: Pagi -->
+      <div class="routine-card routine-all routine-oily routine-dry routine-sensitive">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-50 rounded-bl-full z-0"></div>
+        <h2 class="text-xl font-black text-slate-800 mb-6 flex items-center gap-2 relative z-10">
+          <span class="text-2xl">🌅</span> Rutinitas Pagi
+        </h2>
+        
+        <div class="routine-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3 class="text-sm font-bold text-slate-700">Pembersih (Cleanser)</h3>
+            <p class="text-xs text-slate-500 mt-1">
+              <span class="opt-all opt-dry opt-sensitive">Gunakan pembersih wajah yang lembut (Gentle Wash) dan tidak berbusa banyak. Kulit kering boleh hanya bilas air hangat.</span>
+              <span class="opt-oily hidden font-medium text-cyan-700">Gunakan pembersih dengan kandungan Salicylic Acid (BHA) 0.5-2%.</span>
+            </p>
+          </div>
+        </div>
+        
+        <div class="routine-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3 class="text-sm font-bold text-slate-700">Pelembab (Moisturizer)</h3>
+            <p class="text-xs text-slate-500 mt-1">
+              <span class="opt-all opt-dry opt-sensitive">Gunakan pelembab krim dengan Ceramide saat kulit masih setengah basah untuk mengunci hidrasi.</span>
+              <span class="opt-oily hidden font-medium text-cyan-700">Gunakan pelembab bertekstur gel cair yang ringan dan *oil-free*.</span>
+            </p>
+          </div>
+        </div>
+        
+        <div class="routine-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3 class="text-sm font-bold text-slate-700">Tabir Surya (Sunscreen)</h3>
+            <p class="text-xs text-slate-500 mt-1">
+              Wajib! Minimal SPF 30 spektrum luas. Aplikasikan sebanyak 2 jari tangan untuk merata di wajah dan leher.
+              <span class="opt-sensitive hidden font-medium text-rose-700 block mt-1">⚠️ Pilih Mineral Sunscreen (Titanium/Zinc Oxide) agar tidak iritasi.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Routine: Malam -->
+      <div class="routine-card routine-all routine-oily routine-dry routine-sensitive">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full z-0"></div>
+        <h2 class="text-xl font-black text-slate-800 mb-6 flex items-center gap-2 relative z-10">
+          <span class="text-2xl">🌙</span> Rutinitas Malam
+        </h2>
+        
+        <div class="routine-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3 class="text-sm font-bold text-slate-700">Pembersih Ganda (Double Cleanse)</h3>
+            <p class="text-xs text-slate-500 mt-1">Hapus sunscreen dan kotoran dengan Cleansing Balm / Micellar Water, lalu lanjutkan dengan sabun cuci muka (Face Wash).</p>
+          </div>
+        </div>
+        
+        <div class="routine-step hidden step-treatment">
+          <div class="step-number" style="border-color:#f59e0b; color:#f59e0b">★</div>
+          <div class="step-content">
+            <h3 class="text-sm font-bold text-slate-700">Bahan Aktif (Treatment)</h3>
+            <p class="text-xs text-slate-500 mt-1">
+              <span class="opt-oily hidden font-medium text-amber-700">Aplikasi Serum Niacinamide atau Spot Treatment Benzoyl Peroxide pada jerawat aktif.</span>
+              <span class="opt-dry hidden font-medium text-amber-700">Gunakan serum Hyaluronic Acid atau Lactic Acid untuk membantu mengangkat sel kulit mati tanpa kering.</span>
+              <span class="opt-sensitive hidden font-medium text-amber-700">Fokus pada skin-barrier. Gunakan serum Centella Asiatica / Panthenol. (Lewati tahap asam kasar).</span>
+            </p>
+          </div>
+        </div>
+        
+        <div class="routine-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3 class="text-sm font-bold text-slate-700">Pelembab Ekstra</h3>
+            <p class="text-xs text-slate-500 mt-1">Kunci kelembaban kulit semalaman. 
+              <span class="opt-dry hidden font-medium text-cyan-700 block mt-1">Tambahkan face oil (Squalane) atau slugging Tipis jika ruang ber-AC berat.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.filter-tab');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // Update active class
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const type = tab.getAttribute('data-type');
+          
+          document.querySelectorAll('.step-treatment').forEach(el => {
+            el.classList.add('hidden');
+          });
+
+          if(type !== 'all') {
+             document.querySelectorAll('.step-treatment').forEach(el => el.classList.remove('hidden'));
+          }
+          
+          // Show relevant text options
+          ['all', 'dry', 'oily', 'sensitive'].forEach(cat => {
+            document.querySelectorAll(`.opt-${cat}`).forEach(el => {
+              if (cat === type || (type === 'all' && cat === 'all')) {
+                el.classList.remove('hidden');
+              } else {
+                el.classList.add('hidden');
+              }
+            });
+          });
+
+          // Special logic for generic texts vs specific texts
+          if(type !== 'all') {
+             document.querySelectorAll('.opt-all').forEach(el => el.classList.add('hidden'));
+          }
+        });
+      });
+      
+      // Init defaults
+      document.querySelectorAll('.opt-oily, .opt-dry, .opt-sensitive').forEach(el => el.classList.add('hidden'));
+    });
+  </script>
+</body>
+</html>

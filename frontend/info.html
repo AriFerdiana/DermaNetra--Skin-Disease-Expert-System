@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Informasi — DermaNetra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind-config-landing.js"></script>
+  <link rel="stylesheet" href="assets/css/landing.css?v=2" />
+  <style>
+    .prose h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    .prose p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #475569;
+      margin-bottom: 1.5rem;
+    }
+    .prose ul {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #475569;
+      line-height: 1.8;
+    }
+    .prose li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-slate-50 min-h-screen flex flex-col">
+
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="landing.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-cyan-600 to-cyan-800">
+           <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <span class="text-xl font-extrabold tracking-tight text-cyan-800">DermaNetra</span>
+      </a>
+      <a href="landing.html" class="text-sm font-semibold text-slate-500 hover:text-cyan-600">
+        Kembali ke Portal
+      </a>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-3xl mx-auto w-full px-6 py-16">
+    <div class="mb-6">
+      <span class="inline-flex bg-cyan-50 text-cyan-700 font-bold px-3 py-1 rounded-full text-xs tracking-widest uppercase mb-4">Informasi Publik</span>
+      <h1 id="page-title" class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight leading-tight">Memuat...</h1>
+    </div>
+    
+    <div id="page-content" class="prose bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-slate-100">
+      <div class="animate-pulse flex space-x-4">
+        <div class="flex-1 space-y-4 py-1">
+          <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+          <div class="space-y-2">
+            <div class="h-4 bg-slate-200 rounded"></div>
+            <div class="h-4 bg-slate-200 rounded w-5/6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-slate-900 text-white py-12 mt-auto">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <p class="text-sm text-slate-500">© 2026 DermaNetra Health Portal. Hak cipta dilindungi.</p>
+    </div>
+  </footer>
+
+  <script>
+    const contentDB = {
+      'misi': {
+        title: "Misi Kami",
+        body: `
+          <p>Misi DermaNetra adalah mendemokratisasi akses terhadap informasi dermatologi berstandar klinis. Kami menyadari bahwa akses langsung ke dokter spesialis kulit (Sp.KK) seringkali terbentur oleh biaya, jarak, dan antrean yang panjang.</p>
+          <p>Dengan menggabungkan kecerdasan buatan (Sistem Pakar) dan basis pengetahuan dari ribuan jurnal terakreditasi, kami berupaya memberikan sistem triase mandiri yang aman, akurat, dan transparan bagi seluruh masyarakat Indonesia.</p>
+          <h2>Tiga Pilar DermaNetra:</h2>
+          <ul>
+            <li><strong>Aksesibilitas</strong>: Diagnosis gratis dan dapat diakses dari perangkat mobile manapun.</li>
+            <li><strong>Edukasi</strong>: Tidak sekadar memberikan tebakan penyakit, melainkan mengedukasi pasien terkait faktor risiko dan pertolongan pertama.</li>
+            <li><strong>Keamanan Privasi</strong>: Semua data gambar tubuh yang diinput diproses secara lokal (Edge AI) atau dihapus seketika setelah deteksi.</li>
+          </ul>
+        `
+      },
+      'medis': {
+        title: "Dewan Penasihat Medis",
+        body: `
+          <p>Seluruh basis algoritma probabilitas (Bayesian) dalam mesin pakar DermaNetra disusun melalui konsultasi ketat dengan dewan dermatologis tersertifikasi.</p>
+          <p>Para pakar kami meliputi:</p>
+          <ul>
+            <li><strong>Dr. Sarah L., Sp.KK(K)</strong> - Spesialis Dermatologi Pediatrik dan Inflamasi Kulit Kronis.</li>
+            <li><strong>Dr. Andi Herawan, Sp.DV</strong> - Ahli Dermato-Onkologi dan riset kanker kulit melanotik.</li>
+            <li><strong>Prof. Dr. Nisa Amalia</strong> - Kepala Divisi Telemedisin Dermatotropis.</li>
+          </ul>
+          <p>Mereka memastikan bahwa setiap bobot probabilitas, interaksi gejala, red flags (tanda bahaya), dan rencana perawatan yang diterbitkan telah melalui *peer-review* dan sejalan dengan pedoman Perdoski (Perhimpunan Dokter Spesialis Kulit dan Kelamin Indonesia).</p>
+        `
+      },
+      'editorial': {
+        title: "Kebijakan Editorial",
+        body: `
+          <p>DermaNetra berkomitmen untuk hanya mempublikasikan konten kesehatan kulit yang berbasis bukti (evidence-based), independen secara komersial, dan mudah dipahami oleh masyarakat awam.</p>
+          <h2>Prinsip Jurnalistik Kami</h2>
+          <ul>
+            <li>Setiap artikel wajib menyertakan minimal 3 referensi primer (Jurnal, PubMed, Cochrane).</li>
+            <li>Rekomendasi obat (Skincare/Topikal/Oral) tidak akan pernah disponsori oleh brand tanpa label "Sponsor" yang eksplisit.</li>
+            <li>Informasi diperbarui maksimal setiap 6 bulan menyesuaikan rekomendasi FDA & BPOM terbaru.</li>
+          </ul>
+        `
+      },
+      'riset': {
+        title: "Riset & Metodologi",
+        body: `
+          <p>Mesin Sistem Pakar DermaNetra berakar pada algoritma Teorema Bayes Tersupervisi. Basis probabilitas kami menggunakan rasio likelihood yang diambil dari ribuan rekam medis yang dianonimisasi.</p>
+          <h2>Validasi Akurasi</h2>
+          <p>Berdasarkan uji retrospektif Q4 2025:</p>
+          <ul>
+            <li>Sensitivitas triase kasus gawat darurat klinis: <strong>97.4%</strong></li>
+            <li>Akurasi diagnosis top-3 untuk kondisi kulit lazim (seperti Akne, Eczema, Tinea): <strong>92.8%</strong></li>
+          </ul>
+        `
+      },
+      'referensi': {
+        title: "Referensi Obat",
+        body: `
+          <p>DermaNetra menggunakan basis data farmakologis terpadu yang bersumber dari:</p>
+          <ul>
+            <li>Farmakope Indonesia (Edisi VI)</li>
+            <li>Pusat Data Obat Nasional (BPOM)</li>
+            <li>MIMS Indonesia (Monthly Index of Medical Specialities)</li>
+            <li>DermNet NZ Treatment Database</li>
+          </ul>
+          <p>Kami sangat menekankan bahwa setiap jenis steroid topikal (Kortikosteroid) harus dengan panduan dokter meskipun termasuk golongan ringan.</p>
+        `
+      },
+      'dermatologis': {
+        title: "Temukan Dermatologis (Telemedisin)",
+        body: `
+          <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl mb-6">
+            <strong>🚧 Fitur Telekonsultasi sedang dalam tahap integrasi dengan platform mitra.</strong>
+          </div>
+          <p>Mulai akhir tahun ini, Anda akan dapat langsung menghubungkan Laporan Hasil Diagnosis PDF Anda kepada dokter Spesialis Kulit dan Kelamin (Sp.KK / Sp.DV) terdekat atau secara virtual langsung dari aplikasi ini.</p>
+        `
+      },
+      'hubungi': {
+        title: "Hubungi Kami",
+        body: `
+          <p>Tim dukungan dan redaksi DermaNetra siap mendengar masukan Anda.</p>
+          <ul>
+            <li><strong>Email Umum:</strong> halo@dermanetra.id</li>
+            <li><strong>Kemitraan Medis:</strong> partner@dermanetra.id</li>
+            <li><strong>Laporan Bug/Eror (Tech):</strong> dev@dermanetra.id</li>
+          </ul>
+          <p>Alamat Kantor: Institut Teknologi Nasional (Itenas) Bandung.<br>Jl. PHH. Mustofa No.23, Kota Bandung, Jawa Barat 40124.</p>
+        `
+      },
+      'karir': {
+         title: "Karir",
+         body: `<p>Saat ini belum ada lowongan terbuka di tim DermaNetra. Pantau terus halaman LinkedIn kami!</p>`
+      },
+      'periklanan': {
+         title: "Periklanan",
+         body: `
+            <p>Sesuai dengan Kebijakan Tata Edar kami, DermaNetra sangat selektif dalam menerima sponsor. Kami tidak menayangkan Iklan banner pihak ketiga berskema Pay-per-click konvensional (seperti Google Ads) untuk menjaga objektivitas hasil diagnostik.</p>
+         `
+      },
+      'cookie': {
+         title: "Kebijakan Cookie",
+         body: `<p>Kami hanya menggunakan Essential Cookies (penyimpanan sesi login) dan LocalStorage. Kami tidak menggunakan cookie pelacak pihak ketiga untuk profiling marketing.</p>`
+      },
+      'aksesibilitas': {
+         title: "Aksesibilitas",
+         body: `<p>Situs ini didesain sesuai dengan panduan WCAG 2.1 Level AA untuk kontras warna UI, dan navigasi screen reader, untuk memastikan bahwa portal edukasi kulit ini dapat dimanfaatkan oleh semua kalangan.</p>`
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q') || 'misi';
+      const data = contentDB[q];
+
+      const titleEl = document.getElementById('page-title');
+      const contentEl = document.getElementById('page-content');
+
+      if(data) {
+        document.title = `${data.title} — DermaNetra`;
+        titleEl.textContent = data.title;
+        contentEl.innerHTML = data.body;
+      } else {
+        titleEl.textContent = 'Halaman tidak ditemukan';
+        contentEl.innerHTML = '<p>Dokumen yang Anda minta tidak tersedia.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

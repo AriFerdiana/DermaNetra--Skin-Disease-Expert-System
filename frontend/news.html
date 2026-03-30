@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Berita Kulit Terkini — DermaNetra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/js/tailwind-config-landing.js"></script>
+  <link rel="stylesheet" href="assets/css/landing.css?v=2" />
+  <style>
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 24px;
+    }
+    
+    @media (min-width: 768px) {
+      .news-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    @media (min-width: 1024px) {
+      .news-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    
+    .news-card-hover {
+      background: white;
+      border: 1px solid #f1f5f9;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .news-card-hover:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.1);
+      border-color: #cbd5e1;
+    }
+
+    .news-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-slate-50 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="landing.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-cyan-600 to-cyan-800">
+           <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <span class="text-xl font-extrabold tracking-tight text-cyan-800">DermaNetra</span>
+      </a>
+      <a href="landing.html" class="text-sm font-semibold text-slate-500 hover:text-cyan-600 transition-colors">
+        Kembali ke Portal
+      </a>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-12">
+    
+    <div class="mb-10 text-center">
+      <h1 class="text-4xl font-black text-slate-800 tracking-tight leading-tight">Dermatologi & Berita Klinis</h1>
+      <p class="text-slate-500 mt-3 font-medium">Tetap update dengan penelitian medis terbaru, laporan FDA, dan terobosan dalam sains kulit.</p>
+    </div>
+
+    <!-- Featured News -->
+    <div class="bg-slate-900 rounded-3xl overflow-hidden mb-12 relative flex flex-col md:flex-row group cursor-pointer" onclick="showToast()">
+      <div class="md:w-1/2 relative min-h-[300px]">
+        <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80&w=800" alt="Lab" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500">
+        <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-slate-900 via-slate-900/40 to-transparent"></div>
+        <span class="news-badge bg-emerald-500 text-emerald-50 pointer-events-none">Breaking News</span>
+      </div>
+      <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative z-10">
+        <div class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-3">Penelitian Genetik</div>
+        <h2 class="text-3xl font-black text-white mb-4 leading-tight">Terobosan Pemetaan Genom Psoriasis Tahun 2026</h2>
+        <p class="text-slate-300 mb-8 leading-relaxed">Laboratorium riset internasional mengumumkan identifikasi lima varian genetik baru yang terkait dengan keparahan eksim dan psoriasis plak menengah.</p>
+        <span class="text-sm font-semibold text-white flex items-center gap-2 group-hover:gap-3 transition-all">
+          Baca Selengkapnya
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Grid Layout -->
+    <div class="news-grid">
+      <!-- Card 1 -->
+      <div class="news-card-hover" onclick="showToast()">
+        <div class="h-48 bg-slate-200 relative">
+          <img src="https://images.unsplash.com/photo-1612441808605-7af374ec2f35?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover">
+          <span class="news-badge bg-white text-cyan-700">Persetujuan FDA</span>
+        </div>
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-bold text-slate-800 mb-2 leading-tight">Biologik Skabies Pertama Disetujui</h3>
+          <p class="text-sm text-slate-500 line-clamp-3 mb-6">Studi fase III menunjukkan pembersihan infeksi krustosa parah tanpa kerusakan barrier skin yang masif...</p>
+          <div class="mt-auto flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-400">14 Mar 2026</span>
+            <span class="text-xs font-bold text-cyan-600">Dr. Sarah L.</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card 2 -->
+      <div class="news-card-hover" onclick="showToast()">
+        <div class="h-48 bg-slate-200 relative">
+          <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover">
+          <span class="news-badge bg-white text-amber-700">Analisis Iklim</span>
+        </div>
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-bold text-slate-800 mb-2 leading-tight">Epidemi Melasma Akibat Cuaca Ekstrem</h3>
+          <p class="text-sm text-slate-500 line-clamp-3 mb-6">Meningkatnya paparan indeks UV di sekitar garis khatulistiwa memicu mutasi pigmen melasma pada pasien di atas umur 30.</p>
+          <div class="mt-auto flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-400">12 Mar 2026</span>
+            <span class="text-xs font-bold text-cyan-600">WHO Alert</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card 3 -->
+      <div class="news-card-hover" onclick="showToast()">
+        <div class="h-48 bg-slate-200 relative">
+          <img src="https://images.unsplash.com/photo-1532187863486-abf9dbec1b51?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover">
+          <span class="news-badge bg-white text-purple-700">Sains Bahan</span>
+        </div>
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-bold text-slate-800 mb-2 leading-tight">Nanoteknologi dalam Ceramide</h3>
+          <p class="text-sm text-slate-500 line-clamp-3 mb-6">Penetrasi molekuler moisturizer kini dapat masuk sedalam lapisan dermis berkat bantuan lipid nano sintetik.</p>
+          <div class="mt-auto flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-400">10 Mar 2026</span>
+            <span class="text-xs font-bold text-cyan-600">Cosmetic Journal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-12">
+      <button class="cta-btn !bg-white !text-slate-700 !border-2 !border-slate-200 hover:!border-cyan-600 hover:!text-cyan-600" onclick="showToast()">Muat Artikel Lainnya ↓</button>
+    </div>
+  </main>
+  
+  <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 translate-y-24 opacity-0 z-50">
+    <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <div class="flex-1 pr-4">
+      <h4 class="text-sm font-bold">Laman Segera Tersedia</h4>
+      <p class="text-xs text-slate-400 mt-0.5">Artikel berita lengkap hanya simulasi pratinjau saat ini.</p>
+    </div>
+    <button onclick="document.getElementById('toast').classList.replace('translate-y-0', 'translate-y-24'); document.getElementById('toast').classList.replace('opacity-100', 'opacity-0');" class="text-slate-400 hover:text-white transition-colors">✕</button>
+  </div>
+
+  <script>
+    let toastTimeout;
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
