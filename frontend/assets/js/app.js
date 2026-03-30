@@ -621,6 +621,44 @@ function updateFloatingPill() {
     countLabel.textContent = dict.noSymptoms;
     btn.disabled = true;
   }
+  
+  updateSelectedSymptomsPanel();
+}
+
+// ── Selected Symptoms Panel ──────────────────────────────
+function updateSelectedSymptomsPanel() {
+  const panel = document.getElementById('selected-symptoms-panel');
+  const listEl = document.getElementById('selected-symptoms-list');
+  if (!panel || !listEl) return;
+
+  const isResultsPage = !document.getElementById('page-results').classList.contains('hidden');
+  
+  let total = 0;
+  const allSelectedIds = [];
+  
+  for (let k in state.symptoms) {
+    total += state.symptoms[k].size;
+    state.symptoms[k].forEach(id => {
+      allSelectedIds.push(id);
+    });
+  }
+
+  if (total > 0 && !isResultsPage) {
+    panel.classList.remove('hidden');
+    panel.classList.add('show');
+    
+    listEl.innerHTML = '';
+    
+    allSelectedIds.forEach((id) => {
+      const name = SYMPTOM_MAP[id] || `Gejala ${id}`;
+      const li = document.createElement('li');
+      li.innerHTML = `<div class="sym-bullet"></div> <span>${name}</span>`;
+      listEl.appendChild(li);
+    });
+  } else {
+    panel.classList.add('hidden');
+    panel.classList.remove('show');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -836,7 +874,158 @@ function getReportVisualization() {
     </div>`;
 }
 
-// ── Build Results UI ──────────────────────────────────────
+// ── Symptom Match Analysis (Fase 1) ────────────────────────
+function buildSymptomMatchSection(diseaseId, userSymptomIds) {
+  const lt = (typeof LIKELIHOOD_TABLE !== 'undefined') ? LIKELIHOOD_TABLE[diseaseId] : null;
+  if (!lt) return '';
+
+  const strong = [], partial = [], none = [];
+  
+  userSymptomIds.forEach(sid => {
+    const name = SYMPTOM_MAP[sid] || `Gejala ${sid}`;
+    const prob = lt[sid];
+    if (prob === undefined || prob < 0.2) {
+      none.push({ sid, name, prob: prob || 0 });
+    } else if (prob >= 0.7) {
+      strong.push({ sid, name, prob });
+    } else {
+      partial.push({ sid, name, prob });
+    }
+  });
+
+  // Profile context notes
+  const profileNotes = [];
+  const skinLabels = { dry: 'Kulit Kering', oily: 'Kulit Berminyak', sensitive: 'Kulit Sensitif', combination: 'Kulit Kombinasi', normal: 'Kulit Normal' };
+  if (state.skinType && state.skinType !== 'normal') {
+    profileNotes.push(`<div class="match-profile-item"><span class="match-icon-profile">👤</span> <span><strong>${skinLabels[state.skinType] || state.skinType}</strong> — Dapat memengaruhi sensitivitas dan respons kulit terhadap kondisi ini.</span></div>`);
+  }
+  if (state.duration) {
+    const durLabels = { lt3days: '< 3 Hari (Akut)', '1to2weeks': '1-2 Minggu', gt1month: '> 1 Bulan (Kronik)' };
+    profileNotes.push(`<div class="match-profile-item"><span class="match-icon-profile">⏱️</span> <span>Durasi <strong>${durLabels[state.duration] || state.duration}</strong></span></div>`);
+  }
+
+  const renderItem = (item, cls, icon) => 
+    `<div class="match-item ${cls}"><span class="match-icon">${icon}</span><div class="match-text"><span class="match-name">${item.name}</span><span class="match-prob">P(G|D) = ${(item.prob * 100).toFixed(0)}%</span></div></div>`;
+
+  let html = `
+    <div class="symptom-match-card section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm my-8 animate-fade">
+      <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        🔬 Kenapa Sistem Memilih Ini?
+      </h3>
+      <p class="text-xs text-slate-500 mb-4">Analisis kecocokan antara gejala yang Anda pilih dan gejala khas penyakit ini berdasarkan tabel probabilitas P(Gejala | Penyakit).</p>
+      <div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Gejala Anda (${userSymptomIds.length}):</div>
+      <div class="match-list">`;
+
+  if (strong.length) {
+    html += strong.map(s => renderItem(s, 'match-strong', '✅')).join('');
+  }
+  if (partial.length) {
+    html += partial.map(s => renderItem(s, 'match-partial', '🟡')).join('');
+  }
+  if (none.length) {
+    html += none.map(s => renderItem(s, 'match-none', '⚪')).join('');
+  }
+
+  html += `</div>`;
+
+  if (profileNotes.length) {
+    html += `<div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2 mt-4">Latar Belakang Anda:</div>
+      <div class="match-profile-list">${profileNotes.join('')}</div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// ── Triage Badge (Fase 3) ─────────────────────────────────
+function getTriageBadge(diseaseId) {
+  const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[diseaseId]) || {};
+  const level = db.triage_level || 'gp_visit';
+  const note = db.triage_note || '';
+
+  const config = {
+    home_care:   { label: '🟢 Perawatan Mandiri', cls: 'triage-home',       desc: 'Cukup dirawat di rumah dengan saran berikut' },
+    gp_visit:    { label: '🟡 Dokter Umum',       cls: 'triage-gp',         desc: 'Jadwalkan kunjungan dalam 2–3 hari' },
+    specialist:  { label: '🟠 Dokter Spesialis',   cls: 'triage-specialist', desc: 'Temui dokter spesialis kulit dalam 24 jam' },
+    emergency:   { label: '🔴 Gawat Darurat',      cls: 'triage-emergency',  desc: 'Segera ke rumah sakit / UGD' },
+  };
+
+  const c = config[level] || config.gp_visit;
+  return `<div class="triage-badge ${c.cls}">
+    <span class="triage-label">${c.label}</span>
+    <span class="triage-desc">${note || c.desc}</span>
+  </div>`;
+}
+
+// ── Red Flags Checklist (Fase 4) ──────────────────────────
+function buildRedFlagsSection(diseaseId) {
+  const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[diseaseId]) || {};
+  const flags = db.red_flags;
+  if (!flags || !flags.length) return '';
+
+  const items = flags.map(f => `<li><span class="red-flag-icon">🚩</span> ${f}</li>`).join('');
+
+  return `
+    <div class="red-flags-card section-card p-6 rounded-2xl shadow-sm my-8 animate-fade">
+      <h3 class="font-bold border-b pb-3 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Monitor Kondisi Anda!
+      </h3>
+      <p class="text-xs mb-4 opacity-80">Segera batalkan perawatan mandiri dan cari bantuan medis darurat jika mengalami:</p>
+      <ul class="red-flags-list">${items}</ul>
+    </div>`;
+}
+
+// ── Personalized Treatment Notes (Fase 5) ─────────────────
+function getPersonalizedNotes(diseaseId) {
+  const notes = [];
+  const skin = state.skinType;
+  const dur = state.duration;
+  const age = parseInt(state.age) || 0;
+
+  // Skin-type based notes
+  if (skin === 'dry') {
+    notes.push('Karena kulit Anda <strong>kering</strong>, gunakan pelembap hypoallergenic secara rutin dan hindari sabun yang mengandung antiseptik keras.');
+    if (['D018','D002','D015'].includes(diseaseId)) {
+      notes.push('Gunakan pelembap tebal (ointment-based) segera setelah kompres dingin untuk mengunci kelembapan.');
+    }
+  } else if (skin === 'oily') {
+    notes.push('Karena kulit Anda <strong>berminyak</strong>, gunakan pembersih dengan basis air dan hindari produk yang terlalu berat/oklusif.');
+    if (['D003','D011'].includes(diseaseId)) {
+      notes.push('Cuci area yang terkena dengan sabun antiseptik ringan (chlorhexidine) 2× sehari.');
+    }
+  } else if (skin === 'sensitive') {
+    notes.push('Kulit <strong>sensitif</strong> Anda mungkin bereaksi terhadap banyak produk. Lakukan patch test sebelum menggunakan obat topikal baru.');
+  }
+
+  // Duration-based notes
+  if (dur === 'lt3days') {
+    notes.push('Kondisi Anda masih <strong>fase akut (< 3 hari)</strong>. Respons terhadap OTC umumnya baik jika ditangani segera.');
+  } else if (dur === 'gt1month') {
+    notes.push('Durasi > 1 bulan menunjukkan kondisi mungkin sudah <strong>kronik</strong>. Pertimbangkan konsultasi dokter spesialis kulit untuk evaluasi lebih lanjut.');
+  }
+
+  // Age-based notes
+  if (age < 12) {
+    notes.push('Untuk anak-anak, konsultasikan dosis dan jenis obat dengan dokter anak terlebih dahulu.');
+  } else if (age > 60) {
+    notes.push('Untuk usia lanjut, perhatikan interaksi obat dan pertimbangkan konsultasi dokter untuk penyesuaian dosis.');
+  }
+
+  if (!notes.length) return '';
+
+  return `
+    <div class="personalized-note-card p-4 rounded-xl mt-4">
+      <div class="text-[10px] font-black uppercase tracking-widest text-purple-700 mb-2 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        Saran Khusus untuk Profil Anda
+      </div>
+      <ul class="text-sm text-slate-700 space-y-2">${notes.map(n => `<li class="flex gap-2"><span class="text-purple-500 mt-0.5">💡</span><span>${n}</span></li>`).join('')}</ul>
+    </div>`;
+}
+
+// ── Build Results UI (Redesigned — All 5 Phases) ──────────
 function buildResultsUI(results){
   const el = document.getElementById('results-content');
   if(!el) return;
@@ -861,6 +1050,10 @@ function buildResultsUI(results){
     const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[p.disease_id]) || {};
     const t = db.treatments || {otc:[],prescription:[],lifestyle:[],see_doctor:'Consult a medical professional.'};
 
+    // Collect all user symptom IDs
+    const allUserSymptomIds = [];
+    Object.values(state.symptoms).forEach(s => s.forEach(id => allUserSymptomIds.push(id)));
+
     // Helper for localized extraction
     const _getV = (v) => {
       if (!v) return '';
@@ -876,6 +1069,7 @@ function buildResultsUI(results){
     };
 
     el.innerHTML = `
+      <!-- Context Bar -->
       <div class="result-context-bar animate-fade mb-6">
         <div class="flex items-center gap-2">
           <span class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-wider">${state.sex==='male' ? dict.contextMale : dict.contextFemale}, ${state.age}</span>
@@ -883,7 +1077,7 @@ function buildResultsUI(results){
         </div>
       </div>
 
-      <!-- Primary Diagnosis Card -->
+      <!-- Box 1: Primary Diagnosis Card + Triage -->
       <div class="primary-card animate-fade shadow-xl border border-slate-100">
         <div class="primary-card-header p-6 bg-primary text-white flex justify-between items-center rounded-t-2xl">
           <div class="flex flex-col">
@@ -894,31 +1088,33 @@ function buildResultsUI(results){
         </div>
         
         <div class="p-8 bg-white">
-          <div class="disease-meta mb-6 flex flex-wrap gap-2">
+          <div class="disease-meta mb-4 flex flex-wrap gap-2">
             <span class="meta-chip px-3 py-1 border border-slate-200 rounded-lg text-xs font-bold">${dict.icdLabel}: ${p.icd10}</span>
             <span class="meta-chip px-3 py-1 border border-slate-200 rounded-lg text-xs font-bold">${_getV(db.prevalence) || 'Common'}</span>
             <span class="meta-chip px-3 py-1 border rounded-lg text-xs font-bold ${p.contagious ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200'}">${p.contagious ? 'CONTAGIOUS' : 'NON-CONTAGIOUS'}</span>
           </div>
-          <p class="disease-desc text-slate-700 text-lg leading-relaxed">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
+          ${getTriageBadge(p.disease_id)}
+          <p class="disease-desc text-slate-700 text-lg leading-relaxed mt-4">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
         </div>
       </div>
 
-      <!-- Blueprint Visualization (PDF ONLY - High Contrast for Blueprint feel) -->
-      <div class="section-card bg-white border border-slate-200 p-6 rounded-2xl shadow-sm my-8 print-only">
+      <!-- Box 1b: Blueprint Body Map (ON-SCREEN + Print) -->
+      <div class="section-card bg-white border border-slate-200 p-6 rounded-2xl shadow-sm my-8">
         <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
           <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M9 20l-5.447-2.724A2 2 0 013 15.488V5.488a2 2 0 011.553-1.956l10-2A2 2 0 0117 3.488v10.024a2 2 0 01-1.553 1.956L9 20zm0 0V9"/></svg>
-          ${dict.blueprintTitle}
+          🗺️ ${dict.blueprintTitle}
         </h3>
-        <p class="text-xs text-slate-500 mb-6">Highlighted regions indicate areas where symptoms were reported by the patient.</p>
+        <p class="text-xs text-slate-500 mb-6">Area biru menunjukkan lokasi tubuh di mana Anda melaporkan gejala.</p>
         ${getReportVisualization()}
       </div>
 
-      <!-- Hint for users to see full blueprint in PDF -->
-      <div class="flex items-center justify-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-10 print:hidden">
-        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <span>Lihat Blueprint Lengkap di Laporan PDF</span>
-      </div>
+      <!-- Box 2: Symptom Match Analysis -->
+      ${buildSymptomMatchSection(p.disease_id, allUserSymptomIds)}
 
+      <!-- Box 3: Red Flags Checklist -->
+      ${buildRedFlagsSection(p.disease_id)}
+
+      <!-- Box 4: Clinical Features + Causes + Treatment -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
         <div class="flex flex-col gap-6">
           <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
@@ -955,12 +1151,46 @@ function buildResultsUI(results){
               </div>
             </div>
             
+            <!-- Personalized Notes (Fase 5) -->
+            ${getPersonalizedNotes(p.disease_id)}
+
             <div class="see-doctor-box mt-6 p-4 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-900 text-sm flex gap-3">
               <svg class="w-5 h-5 flex-shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
               <div><strong class="block mb-1 font-bold">${dict.whenToSee}</strong> ${_getV(t.see_doctor)}</div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Box 5: Alternative Diagnoses -->
+      ${alts.length ? `
+      <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm my-8 animate-fade">
+        <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+          <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+          ${dict.otherConditions}
+        </h3>
+        <div class="space-y-3">
+          ${alts.map(a => {
+            const altDb = DISEASE_DB[a.disease_id] || {};
+            return `
+            <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all">
+              <div>
+                <div class="font-bold text-sm text-slate-800">${state.language === 'en' ? (a.disease_name_en || a.disease_name) : (a.disease_name_id || a.disease_name)}</div>
+                <div class="text-[10px] text-slate-500 mt-0.5">${a.icd10} • ${_getV(altDb.prevalence) || ''}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-lg font-extrabold text-slate-700">${Math.round(a.percentage)}%</div>
+                <div class="text-[10px] text-slate-400">kecocokan</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : ''}
+
+      <!-- Box 6: Medical Disclaimer -->
+      <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 leading-relaxed my-8 flex gap-3 items-start animate-fade">
+        <svg class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div><strong class="text-slate-700">⚕️ ${dict.medicalDisclaimer.split(':')[0]}:</strong> ${dict.medicalDisclaimer.split(':').slice(1).join(':')}</div>
       </div>
     `;
   } catch (err) {

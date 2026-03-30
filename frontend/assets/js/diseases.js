@@ -18,6 +18,9 @@ const DISEASE_DB = {
     lifestyle:['Keramas lebih sering','Kelola stres','Paparan sinar matahari moderat pada kulit kepala'],
     see_doctor:'Konsultasikan ke dokter jika lesi meluas ke wajah atau resisten terhadap sampo antijamur.',
   },
+  triage_level:'home_care',
+  triage_note:'Gangguan ringan, bisa dikelola dengan sampo antijamur OTC',
+  red_flags:['Lesi meluas cepat ke seluruh wajah dan dada','Kemerahan sangat intens disertai nyeri','Tidak respons OTC setelah 4 minggu'],
   references:['DermNet NZ: dermnetnz.org/topics/seborrhoeic-dermatitis'],
 },
 
@@ -32,6 +35,9 @@ const DISEASE_DB = {
     lifestyle:['Mandi singkat dan segera lembabkan (soak & seal)','Hindari pemicu pribadi','Pakaian katun longgar'],
     see_doctor:'Konsultasikan ke dokter jika gatal mengganggu tidur, kulit terinfeksi, atau tidak membaik dengan OTC.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Gatal intens dapat mengganggu tidur, butuh penanganan dokter',
+  red_flags:['Gatal sangat parah mengganggu tidur berhari-hari','Kulit terinfeksi (keluarnya nanah kuning/hijau)','Demam disertai ruam yang memburuk','Lesi meluas ke lebih dari 20% tubuh'],
   references:['DermNet NZ: dermnetnz.org/topics/atopic-dermatitis'],
 },
 
@@ -46,6 +52,9 @@ const DISEASE_DB = {
     lifestyle:['Jaga kulit tetap bersih dan kering','Hindari mencukur area terinfeksi'],
     see_doctor:'Konsultasikan ke dokter jika bisul membesar, demam, atau tidak membaik dalam 1 minggu.',
   },
+  triage_level:'home_care',
+  triage_note:'Umumnya ringan, bisa dikelola dengan antiseptik topikal',
+  red_flags:['Bisul membesar menjadi abses (furunkel) nyeri berdenyut','Demam atau menggigil','Infeksi menyebar ke area sekitar (selulitis)'],
   references:['DermNet NZ: dermnetnz.org/topics/folliculitis'],
 },
 
@@ -60,6 +69,9 @@ const DISEASE_DB = {
     lifestyle:['Cuci semua pakaian/seprei air panas & keringkan','Obati seluruh anggota keluarga bersamaan','Hindari kontak kulit hingga sembuh'],
     see_doctor:'Segera ke dokter — seluruh kontak rumah tangga harus diobati bersamaan.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Sangat menular, seluruh keluarga harus diobati bersamaan',
+  red_flags:['Gatal sangat parah tidak tertahankan','Lesi menjadi bernanah (superinfeksi bakteri)','Muncul krusta tebal luas (Norwegian/crusted scabies)','Menyebar ke seluruh anggota keluarga'],
   references:['DermNet NZ: dermnetnz.org/topics/scabies'],
 },
 
@@ -74,6 +86,9 @@ const DISEASE_DB = {
     lifestyle:['Pakai pakaian katun longgar','AC atau lingkungan sejuk','Mandi lebih sering'],
     see_doctor:'Konsultasikan ke dokter jika lesi menyebar luas atau disertai demam.',
   },
+  triage_level:'home_care',
+  triage_note:'Sembuh sendiri jika lingkungan didinginkan',
+  red_flags:['Lesi menyebar sangat luas disertai demam','Bintik berubah menjadi pustul bernanah','Tidak membaik meski sudah di lingkungan sejuk'],
   references:['DermNet NZ: dermnetnz.org/topics/miliaria'],
 },
 
@@ -88,6 +103,9 @@ const DISEASE_DB = {
     lifestyle:['Pelembab harian','Hindari pemicu: stres, trauma kulit, merokok, alkohol'],
     see_doctor:'Rujuk ke dokter kulit untuk konfirmasi diagnosis dan terapi sistemik.',
   },
+  triage_level:'specialist',
+  triage_note:'Penyakit autoimun kronik, butuh evaluasi dokter spesialis kulit',
+  red_flags:['Lesi meluas cepat ke lebih dari 10% permukaan tubuh','Nyeri sendi (artritis psoriatik)','Pustul steril merata (psoriasis pustular)','Eritroderma: seluruh tubuh merah dan mengelupas'],
   references:['DermNet NZ: dermnetnz.org/topics/psoriasis'],
 },
 
@@ -102,6 +120,9 @@ const DISEASE_DB = {
     lifestyle:['Jangan berbagi sisir, topi, bantal','Obati juga anggota keluarga/kontak dekat'],
     see_doctor:'Wajib ke dokter — tinea capitis memerlukan antijamur oral sistemik.',
   },
+  triage_level:'specialist',
+  triage_note:'Wajib antijamur oral — OTC topikal TIDAK cukup',
+  red_flags:['Abses/bengkak besar di kulit kepala (kerion)','Kebotakan meluas cepat','Demam tinggi','Pembengkakan kelenjar getah bening leher'],
   references:['DermNet NZ: dermnetnz.org/topics/tinea-capitis'],
 },
 
@@ -116,6 +137,9 @@ const DISEASE_DB = {
     lifestyle:['Cuci pakaian/sprei air panas','Periksa dan obati semua anggota keluarga','Jangan berbagi sisir/topi'],
     see_doctor:'Konsultasikan ke dokter jika OTC gagal setelah 2 siklus pengobatan.',
   },
+  triage_level:'home_care',
+  triage_note:'Dapat diatasi dengan obat OTC dan sisir serit',
+  red_flags:['Infeksi sekunder di kulit kepala (luka bernanah)','OTC gagal setelah 2 siklus pengobatan penuh','Gatal sangat parah mengganggu tidur anak-anak'],
   references:['DermNet NZ: dermnetnz.org/topics/head-lice'],
 },
 
@@ -130,6 +154,9 @@ const DISEASE_DB = {
     lifestyle:['Tutup lesi dengan perban','Cuci tangan sering','Jangan berbagi handuk'],
     see_doctor:'Ke dokter jika lesi meluas, ada demam, atau tidak membaik dalam 3 hari.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Sangat menular, antibiotik diperlukan jika lesi meluas',
+  red_flags:['Demam tinggi atau menggigil','Lesi menyebar sangat cepat','Urin berwarna gelap/cokelat (tanda glomerulonefritis pasca-streptokokus)','Nyeri sendi atau pembengkakan'],
   references:['DermNet NZ: dermnetnz.org/topics/impetigo'],
 },
 
@@ -144,6 +171,9 @@ const DISEASE_DB = {
     lifestyle:['Kelola stres','Dukungan psikososial','Pemakaian wig sementara'],
     see_doctor:'Wajib ke dokter kulit — memerlukan evaluasi dan penanganan spesialis.',
   },
+  triage_level:'specialist',
+  triage_note:'Butuh evaluasi dan terapi spesialis dermatologi',
+  red_flags:['Kebotakan meluas ke seluruh kepala (alopecia totalis)','Bulu mata dan alis ikut rontok','Perubahan kuku yang signifikan','Depresi atau gangguan psikososial berat'],
   references:['DermNet NZ: dermnetnz.org/topics/alopecia-areata'],
 },
 
@@ -158,6 +188,9 @@ const DISEASE_DB = {
     lifestyle:['Cuci wajah 2× sehari','Jangan memencet jerawat','Produk non-komedogenik','Diet rendah glikemik'],
     see_doctor:'Ke dokter jika tidak membaik dalam 8 minggu OTC, muncul nodul/kista, atau ada bekas luka.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Ke dokter jika muncul nodul/kista atau tidak membaik 8 minggu',
+  red_flags:['Muncul kista/nodul besar nyeri (cystic acne)','Bekas luka cekungan (ice-pick scars) mulai terbentuk','Tidak respons OTC selama 8 minggu','Depresi atau gangguan percaya diri yang signifikan'],
   references:['DermNet NZ: dermnetnz.org/topics/acne-vulgaris'],
 },
 
@@ -172,6 +205,9 @@ const DISEASE_DB = {
     lifestyle:['Tabir surya WAJIB setiap hari','Topi lebar saat keluar','Hindari sinar matahari pukul 10–14'],
     see_doctor:'Konsultasikan ke dokter kulit untuk penanganan tepat dan hindari produk sembarangan.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh diagnosis tepat, hindari produk pemutih sembarangan',
+  red_flags:['Bercak berubah warna atau tekstur secara mendadak','Bercak baru muncul dengan cepat','Nyeri atau gatal di area hiperpigmentasi'],
   references:['DermNet NZ: dermnetnz.org/topics/melasma'],
 },
 
@@ -186,6 +222,9 @@ const DISEASE_DB = {
     lifestyle:['Catat pemicu flushing pribadi','Hindari makanan pedas, alkohol, paparan ekstrem','Gunakan sunscreen setiap hari'],
     see_doctor:'Ke dokter untuk diagnosis dini dan cegah progresivitas (rhinophyma).',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh penanganan dini untuk cegah progresivitas (rhinophyma)',
+  red_flags:['Mata merah, nyeri, dan penglihatan kabur (rosacea okular)','Hidung membengkak dan menebal (rhinophyma)','Kemerahan sangat intens disertai edema wajah'],
   references:['DermNet NZ: dermnetnz.org/topics/rosacea'],
 },
 
@@ -200,6 +239,9 @@ const DISEASE_DB = {
     lifestyle:['Perubahan pigmen mungkin bertahan bulan setelah sembuh (normalkan pasien)','Sampo ketokonazol 1×/bulan sebagai maintenance'],
     see_doctor:'Ke dokter jika tidak respons OTC setelah 4 minggu.',
   },
+  triage_level:'home_care',
+  triage_note:'Dapat diatasi dengan sampo antijamur OTC',
+  red_flags:['Bercak meluas sangat cepat disertai gatal hebat','Tidak respons OTC setelah 4 minggu','Lesi sangat inflamasi (bukan khas panu — perlu diagnosis ulang)'],
   references:['DermNet NZ: dermnetnz.org/topics/pityriasis-versicolor'],
 },
 
@@ -214,6 +256,9 @@ const DISEASE_DB = {
     lifestyle:['Hindari ketat agen penyebab','Sarung tangan nitril untuk pekerjaan basah','Pelembab rutin'],
     see_doctor:'Ke dokter untuk patch test formal atau jika ruam berat/meluas.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh identifikasi penyebab dan patch test formal',
+  red_flags:['Ruam meluas ke seluruh tubuh (eritroderma)','Sesak napas atau bengkak wajah/tenggorokan (anafilaksis kontak)','Vesikel/bulla besar pecah dan terinfeksi','Tidak membaik meski sudah menghindari penyebab yang dicurigai'],
   references:['DermNet NZ: dermnetnz.org/topics/contact-dermatitis'],
 },
 
@@ -228,6 +273,9 @@ const DISEASE_DB = {
     lifestyle:['Hindari produk berminyak/komedogenik','Eksfoliasi 1–2×/minggu','Lindungi dari paparan matahari'],
     see_doctor:'Konsultasikan ke dokter untuk ekstraksi yang aman, jangan dipencet sendiri.',
   },
+  triage_level:'home_care',
+  triage_note:'Kosmetik, tidak berbahaya. Dokter hanya untuk ekstraksi',
+  red_flags:['Benjolan membesar atau berubah warna (bukan milia — diagnosis ulang)','Nyeri atau kemerahan hebat di area benjolan'],
   references:['DermNet NZ: dermnetnz.org/topics/milium'],
 },
 
@@ -242,6 +290,9 @@ const DISEASE_DB = {
     lifestyle:['Hindari kontak saat lesi aktif','Cuci tangan setelah menyentuh lesi','Tabir surya di bibir (SPF lip balm)'],
     see_doctor:'Ke dokter untuk terapi antiviral resep, terutama jika kambuhan sering atau sistem imun lemah.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh antiviral resep, terutama jika kambuhan sering',
+  red_flags:['Lesi menyebar luas di seluruh wajah (eczema herpeticum)','Demam tinggi disertai ruam meluas','Nyeri mata atau gangguan penglihatan (herpes okular)','Sistem imun lemah (HIV, kemoterapi)'],
   references:['DermNet NZ: dermnetnz.org/topics/herpes-simplex'],
 },
 
@@ -277,6 +328,9 @@ const DISEASE_DB = {
       en: 'Seek ER immediately for throat swelling/shortness of breath (anaphylaxis). See doctor if lasts >6 weeks.'
     }
   },
+  triage_level:'gp_visit',
+  triage_note:'Ke UGD segera jika ada tanda anafilaksis',
+  red_flags:['Sesak napas atau bengkak di tenggorokan/lidah (ANAFILAKSIS — panggil 119!)','Pusing, pingsan, atau tekanan darah rendah','Mual/muntah hebat bersamaan dengan bentol','Bentol tidak hilang setelah 24 jam di lokasi yang sama'],
   references: ['DermNet NZ: dermnetnz.org/topics/urticaria-an-overview'],
 },
 
@@ -291,6 +345,9 @@ const DISEASE_DB = {
     lifestyle:['Hindari berbagi handuk/pakaian','Jangan mencubit atau memencet lesi','Tutup lesi dengan plester'],
     see_doctor:'Konsultasikan ke dokter untuk terapi definitif — bisa sembuh sendiri dalam 1–2 tahun.',
   },
+  triage_level:'home_care',
+  triage_note:'Umumnya sembuh sendiri, terapi hanya mempercepat',
+  red_flags:['Lesi menyebar sangat banyak (lebih dari 20)','Lesi inflamasi merah dan nyeri (superinfeksi)','Immunosupresi: konsultasikan dokter segera'],
   references:['DermNet NZ: dermnetnz.org/topics/molluscum-contagiosum'],
 },
 
@@ -305,6 +362,9 @@ const DISEASE_DB = {
     lifestyle:['Keringkan kulit setelah mandi','Hindari berbagi barang pribadi','Obati hewan peliharaan yang terinfeksi'],
     see_doctor:'Ke dokter jika tidak sembuh setelah 4 minggu OTC atau lesi meluas.',
   },
+  triage_level:'home_care',
+  triage_note:'Respons baik terhadap krim antijamur OTC',
+  red_flags:['Lesi meluas lebih dari 3 area tubuh','Tidak respons OTC setelah 4 minggu','Muncul pada pasien imunosupresi','Infeksi menyebar ke kulit kepala (butuh oral)'],
   references:['DermNet NZ: dermnetnz.org/topics/tinea-corporis'],
 },
 
@@ -319,6 +379,9 @@ const DISEASE_DB = {
     lifestyle:['Jaga area lipatan tetap kering','Ganti popok/celana dalam sering','Hindari pakaian ketat sintetis'],
     see_doctor:'Ke dokter jika infeksi berulang — periksa kemungkinan diabetes atau imunodefisiensi.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Periksa kemungkinan diabetes jika berulang',
+  red_flags:['Infeksi kandida berulang (lebih dari 3x per tahun)','Lesi meluas ke area non-lipatan','Demam atau tanda infeksi sistemik','Pasien diabetes yang tidak terkontrol'],
   references:['DermNet NZ: dermnetnz.org/topics/candida-infection'],
 },
 
@@ -333,6 +396,9 @@ const DISEASE_DB = {
     lifestyle:['Pakai kaus kaki sebelum celana dalam (cegah autoinokulasi)','Celana dalam katun longgar','Mandi segera setelah olahraga'],
     see_doctor:'Ke dokter jika lesi mengenai skrotum, gagal OTC 4 minggu, atau berulang.',
   },
+  triage_level:'home_care',
+  triage_note:'Respons baik OTC, obati tinea pedis bersamaan',
+  red_flags:['Lesi meluas hingga skrotum (bukan tinea — periksa ulang diagnosis)','Tidak respons OTC 4 minggu','Muncul bersamaan gejala sistemik'],
   references:['DermNet NZ: dermnetnz.org/topics/tinea-cruris'],
 },
 
@@ -347,6 +413,9 @@ const DISEASE_DB = {
     lifestyle:['Jaga lipatan tetap kering','Bedak tabur antiseptik'],
     see_doctor:'Ke dokter untuk diagnosis pasti — lampu Wood dibutuhkan.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh diagnosis lampu Wood, antibiotik oral',
+  red_flags:['Lesi meluas cepat','Gatal intens (bukan khas erythrasma — diagnosis ulang)','Tidak respons terapi topikal 2 minggu'],
   references:['DermNet NZ: dermnetnz.org/topics/erythrasma'],
 },
 
@@ -361,6 +430,9 @@ const DISEASE_DB = {
     lifestyle:['Jaga kebersihan luka','Hindari menggaruk','Nutrisi cukup untuk penyembuhan'],
     see_doctor:'Wajib ke dokter — ecthyma memerlukan antibiotik sistemik dan perawatan luka.',
   },
+  triage_level:'specialist',
+  triage_note:'Infeksi dalam — wajib antibiotik sistemik dan perawatan luka',
+  red_flags:['Demam tinggi atau menggigil','Luka membesar cepat dan dalam','Tanda selulitis (merah meluas sekitar ulkus)','Nyeri hebat berdenyut'],
   references:['DermNet NZ: dermnetnz.org/topics/ecthyma'],
 },
 
@@ -375,6 +447,9 @@ const DISEASE_DB = {
     lifestyle:['Berhenti merokok','Turunkan berat badan','Pakaian longgar katun','Hindari cukur di area terdampak'],
     see_doctor:'Wajib ke dokter spesialis kulit — kondisi kronik yang memerlukan manajemen jangka panjang.',
   },
+  triage_level:'specialist',
+  triage_note:'Penyakit kronik, butuh manajemen spesialis jangka panjang',
+  red_flags:['Abses sangat besar dan nyeri (butuh drainase bedah)','Sinus/fistula yang mengeluarkan nanah terus-menerus','Demam dan gejala sistemik','Depresi berat akibat dampak penyakit'],
   references:['DermNet NZ: dermnetnz.org/topics/hidradenitis-suppurativa'],
 },
 
@@ -389,6 +464,9 @@ const DISEASE_DB = {
     lifestyle:['Jaga lipatan tetap kering (kipas angin, kain penyerap)','Turunkan berat badan','Ganti pakaian basah segera'],
     see_doctor:'Ke dokter jika tidak membaik atau ada tanda infeksi sekunder (satelit lesi, bau).',
   },
+  triage_level:'home_care',
+  triage_note:'Jaga lipatan kulit tetap kering, berat badan ideal',
+  red_flags:['Muncul tanda infeksi sekunder (nanah, bau busuk)','Kemerahan meluas keluar area lipatan','Demam disertai nyeri lipatan yang memburuk'],
   references:['DermNet NZ: dermnetnz.org/topics/intertrigo'],
 },
 
@@ -403,6 +481,9 @@ const DISEASE_DB = {
     lifestyle:['Penggunaan kondom','Hindari hubungan seksual saat pengobatan'],
     see_doctor:'WAJIB ke dokter — penyakit menular seksual yang memerlukan antibiotik spesifik.',
   },
+  triage_level:'emergency',
+  triage_note:'PMS serius — wajib antibiotik spesifik dan skrining PMS lain',
+  red_flags:['Luka yang terus membesar tanpa nyeri','Perdarahan mudah dari lesi','Tidak membaik dengan antibiotik biasa','Risiko penularan ke pasangan seksual'],
   references:['DermNet NZ: dermnetnz.org/topics/granuloma-inguinale'],
 },
 
@@ -417,6 +498,9 @@ const DISEASE_DB = {
     lifestyle:['Hindari pemicu yang diketahui','Kenakan sarung tangan saat kerja basah','Kelola stres'],
     see_doctor:'Ke dokter jika vesikel tidak membaik, pecah dan berinfeksi, atau sangat mengganggu.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Kambuhan — butuh steroid kuat resep dan identifikasi pemicu',
+  red_flags:['Vesikel pecah dan terinfeksi (nanah kuning/hijau)','Nyeri dan bengkak di tangan (superinfeksi)','Eksim meluas ke punggung tangan','Tidak respons hidrokortison OTC 2 minggu'],
   references:['DermNet NZ: dermnetnz.org/topics/dyshidrotic-eczema'],
 },
 
@@ -431,6 +515,9 @@ const DISEASE_DB = {
     lifestyle:['Obati tinea pedis bersamaan','Jaga tangan tetap kering','Hindari berbagi handuk'],
     see_doctor:'Ke dokter untuk dikonfirmasi (mirip eksim tangan — butuh KOH prep).',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh konfirmasi diagnosis (mirip eksim) dan antijamur oral',
+  red_flags:['Tangan pecah-pecah dan berdarah','Tidak membaik dengan OTC antijamur 4 minggu','Infeksi menyebar ke kuku'],
   references:['DermNet NZ: dermnetnz.org/topics/tinea-manuum'],
 },
 
@@ -445,6 +532,9 @@ const DISEASE_DB = {
     lifestyle:['Lindungi area mati rasa dari cedera dan panas','Patuhi seluruh pengobatan (tidak boleh berhenti di tengah)'],
     see_doctor:'SEGERA ke dokter / puskesmas — kusta dapat disembuhkan dan program MDT GRATIS dari pemerintah.',
   },
+  triage_level:'emergency',
+  triage_note:'SEGERA ke puskesmas — kusta bisa disembuhkan, MDT GRATIS!',
+  red_flags:['Bercak kulit mati rasa makin luas','Kelemahan otot tangan/kaki progresif','Jari-jari bengkok (claw hand)','Luka di area mati rasa yang tidak sembuh'],
   references:['DermNet NZ: dermnetnz.org/topics/leprosy'],
 },
 
@@ -459,6 +549,9 @@ const DISEASE_DB = {
     lifestyle:['Istirahatkan dan tinggikan tungkai','Obati tinea pedis untuk cegah kambuh','Jaga luka tetap bersih'],
     see_doctor:'SEGERA ke dokter — selulitis adalah infeksi serius yang memerlukan antibiotik resep.',
   },
+  triage_level:'emergency',
+  triage_note:'Infeksi serius — SEGERA ke dokter untuk antibiotik!',
+  red_flags:['Demam tinggi menggigil (>38.5°C)','Kemerahan meluas cepat dalam hitungan jam','Garis merah naik ke atas (limfangitis)','Nyeri sangat hebat berdenyut','Area mati rasa di tengah kemerahan (nekrotik fasciitis)'],
   references:['DermNet NZ: dermnetnz.org/topics/cellulitis'],
 },
 
@@ -473,6 +566,9 @@ const DISEASE_DB = {
     lifestyle:['Hindari mandi air panas (memperparah gatal)','Pakaian katun longgar','Paparan sinar matahari moderat membantu'],
     see_doctor:'Ke dokter untuk konfirmasi dan singkirkan sifilis sekunder (tampilan mirip).',
   },
+  triage_level:'home_care',
+  triage_note:'Sembuh sendiri 6-12 minggu, terapi simptomatik saja',
+  red_flags:['Ruam tidak hilang setelah 12 minggu','Gatal sangat parah mengganggu aktivitas','Muncul lesi di telapak tangan/kaki (singkirkan sifilis)'],
   references:['DermNet NZ: dermnetnz.org/topics/pityriasis-rosea'],
 },
 
@@ -487,6 +583,9 @@ const DISEASE_DB = {
     lifestyle:['Jangan dipotong sendiri','Tutup dengan plester saat di kolam renang','Jangan garuk atau gigit'],
     see_doctor:'Ke dokter untuk krioterapi jika OTC gagal setelah 12 minggu.',
   },
+  triage_level:'home_care',
+  triage_note:'Bisa diobati OTC, ke dokter jika gagal 12 minggu',
+  red_flags:['Kutil berubah warna menjadi sangat gelap','Pertumbuhan sangat cepat atau berdarah','Nyeri hebat saat berjalan (plantar wart)','Kutil di area genital (butuh evaluasi HPV)'],
   references:['DermNet NZ: dermnetnz.org/topics/viral-wart'],
 },
 
@@ -501,6 +600,9 @@ const DISEASE_DB = {
     lifestyle:['Jaga kuku pendek dan bersih','Hindari pekerjaan basah tanpa sarung tangan','Hindari menggigit kuku'],
     see_doctor:'Ke dokter jika ada abses untuk drainase, atau jika kronik dan tidak membaik.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Abses butuh drainase oleh dokter',
+  red_flags:['Abses besar berisi nanah di sekitar kuku','Infeksi menyebar ke seluruh jari (felon)','Demam atau garis merah naik dari jari','Paronikia kronik tidak respons terapi 6 minggu'],
   references:['DermNet NZ: dermnetnz.org/topics/paronychia'],
 },
 
@@ -515,6 +617,9 @@ const DISEASE_DB = {
     lifestyle:['Keringkan sela jari setelah mandi','Kaus kaki moisture-wicking, ganti harian','Sandal di fasilitas umum','Semprot antijamur di sepatu'],
     see_doctor:'Ke dokter jika infeksi menyebar ke kuku, selulitis berkembang, atau berulang. Diabetes: segera ke dokter.',
   },
+  triage_level:'home_care',
+  triage_note:'Respons baik krim antijamur OTC',
+  red_flags:['Kulit pecah dalam dan berdarah (port of entry selulitis)','Kemerahan dan bengkak naik ke tungkai (selulitis)','Demam disertai kaki bengkak','Pasien diabetes: segera ke dokter'],
   references:['DermNet NZ: dermnetnz.org/topics/tinea-pedis'],
 },
 
@@ -529,6 +634,9 @@ const DISEASE_DB = {
     lifestyle:['Pakai alas kaki di pantai / tanah','Hindari duduk langsung di pasir tanpa alas'],
     see_doctor:'Ke dokter — butuh antihelmintik oral resep untuk penyembuhan.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh antihelmintik oral resep',
+  red_flags:['Jalur merah menyebar sangat cepat dan luas','Demam atau gejala sistemik','Bengkak berlebih di sekitar jalur larva'],
   references:['DermNet NZ: dermnetnz.org/topics/cutaneous-larva-migrans'],
 },
 
@@ -543,6 +651,9 @@ const DISEASE_DB = {
     lifestyle:['Pelembab agresif segera setelah mandi','Hindari mandi air panas','Pakaian katun longgar'],
     see_doctor:'Ke dokter jika tidak membaik, lesi bernanah, atau sangat luas.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Butuh steroid kuat resep untuk kontrol',
+  red_flags:['Lesi bernanah atau terinfeksi','Gatal sangat intens mengganggu tidur','Lesi meluas ke lebih dari 5 area','Tidak respons hidrokortison OTC 2 minggu'],
   references:['DermNet NZ: dermnetnz.org/topics/discoid-eczema'],
 },
 
@@ -557,6 +668,9 @@ const DISEASE_DB = {
     lifestyle:['Gunakan repelen nyamuk (DEET)','Pasang kelambu','Basmi sumber serangga','Obati hewan peliharaan dari kutu'],
     see_doctor:'Ke dokter jika reaksi anafilaksis, tanda infeksi (cellulitis), atau gigitan laba-laba beracun.',
   },
+  triage_level:'home_care',
+  triage_note:'Umumnya ringan, antihistamin + antiseptik cukup',
+  red_flags:['Sesak napas atau bengkak wajah/tenggorokan (anafilaksis — panggil 119!)','Gigitan laba-laba: area nekrotik kehitaman','Demam dan menggigil setelah gigitan','Kemerahan meluas cepat (tanda selulitis/infeksi)'],
   references:['DermNet NZ: dermnetnz.org/topics/arthropod-bites-and-stings'],
 },
 
@@ -571,6 +685,9 @@ const DISEASE_DB = {
     lifestyle:['Pakai kaus kaki moisture-wicking','Ganti alas kaki bergantian','Jangan berbagi gunting kuku'],
     see_doctor:'Ke dokter untuk terapi oral yang efektif — terapi topikal saja umumnya tidak cukup.',
   },
+  triage_level:'gp_visit',
+  triage_note:'Terapi topikal saja tidak cukup, butuh oral antijamur',
+  red_flags:['Kuku sangat nyeri atau bengkak (superinfeksi bakteri)','Kuku lepas seluruhnya','Pasien diabetes: segera konsultasi','Perubahan warna hitam-kehijauan (singkirkan melanoma subungual)'],
   references:['DermNet NZ: dermnetnz.org/topics/fungal-nail-infections'],
 },
 
@@ -585,6 +702,9 @@ const DISEASE_DB = {
     lifestyle:['Ganti kaus kaki minimal 2× sehari','Keringkan kaki setiap saat','Pakai sandal terbuka bila memungkinkan','Rotasi alas kaki agar mengering sempurna'],
     see_doctor:'Ke dokter jika tidak membaik dalam 2 minggu terapi topikal.',
   },
+  triage_level:'home_care',
+  triage_note:'Respons baik terhadap antiseptik topikal',
+  red_flags:['Tidak membaik dalam 2 minggu terapi','Kulit pecah dan terinfeksi sekunder','Bau terus memburuk meski terapi OTC'],
   references:['DermNet NZ: dermnetnz.org/topics/pitted-keratolysis'],
 },
 
@@ -599,6 +719,9 @@ const DISEASE_DB = {
     lifestyle:['Pakai alas kaki pas dan nyaman','Gunting kuku kaki lurus','Kaus kaki katun tebal bantalan'],
     see_doctor:'Ke dokter jika nyeri berat, corn lunak berulang, atau ada diabetes (risiko ulkus diabetik).',
   },
+  triage_level:'home_care',
+  triage_note:'OTC + alas kaki yang tepat biasanya cukup',
+  red_flags:['Nyeri saat berjalan sangat parah','Corn berubah warna kehitaman (nekrosis)','Pasien diabetes: SEGERA ke dokter (risiko ulkus)','Perdarahan dari area corn'],
   references:['DermNet NZ: dermnetnz.org/topics/corn-callus'],
 },
 
@@ -613,6 +736,9 @@ const DISEASE_DB = {
     lifestyle:['Jangan memecahkan vesikel','Tutup lesi jika kontak dengan yang belum pernah cacar air','Istirahat cukup'],
     see_doctor:'SEGERA ke dokter dalam 72 jam onset untuk terapi antiviral maksimal efektif.',
   },
+  triage_level:'emergency',
+  triage_note:'SEGERA ke dokter dalam 72 jam onset untuk antiviral!',
+  red_flags:['Ruam di sekitar mata (herpes zoster ophthalmicus — darurat!)','Nyeri sangat hebat tidak tertahankan','Demam tinggi dengan ruam meluas','Lesi menyebar ke lebih dari 1 dermatom (imunosupresi)','Gangguan pendengaran atau paralisis wajah (Ramsay-Hunt)'],
   references:['DermNet NZ: dermnetnz.org/topics/herpes-zoster'],
 },
 
