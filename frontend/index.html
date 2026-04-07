@@ -20,17 +20,26 @@
 
   <!-- ═══════════ STICKY HEADER: Controls ═══════════ -->
   <header class="fixed top-0 left-0 right-0 h-[var(--header-height)] z-[100] border-b border-slate-200 bg-white/80 backdrop-blur-xl flex items-center px-4 md:px-8 transition-all print:hidden">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary/20">
+    <a href="landing.html" class="flex items-center gap-3 group">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
         <span class="font-black text-sm">DN</span>
       </div>
       <div>
-        <h1 class="font-black text-lg tracking-tight text-slate-900 leading-tight">DermaNetra</h1>
+        <h1 class="font-black text-lg tracking-tight text-slate-900 leading-tight group-hover:text-primary transition-colors">DermaNetra</h1>
         <div class="flex items-center gap-2">
           <p id="header-context" class="text-[9px] font-bold text-primary tracking-widest uppercase opacity-80" data-i18n="appTagline">Skin Disease Expert System</p>
           <span id="header-mode-badge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20 uppercase tracking-tighter"></span>
         </div>
       </div>
+    </a>
+
+    <div class="ml-8 hidden lg:flex items-center">
+      <a href="landing.html" class="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-primary transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span data-i18n="backToDashboard">Kembali ke Dashboard</span>
+      </a>
     </div>
 
     <div class="ml-auto flex items-center gap-4">
@@ -79,19 +88,25 @@
       <div class="space-y-6">
         <div>
           <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3" data-i18n="sexLabel">Biological Sex</label>
-          <div class="flex gap-4">
-            <button id="sex-male" class="sex-btn" onclick="selectSex('male')">
-              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span class="text-slate-700 dark:text-slate-200" data-i18n="male">Male</span>
-            </button>
-            <button id="sex-female" class="sex-btn" onclick="selectSex('female')">
-              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span class="text-slate-700 dark:text-slate-200" data-i18n="female">Female</span>
-            </button>
+          <div class="grid grid-cols-2 gap-4">
+            <button type="button" id="sex-male" onclick="selectSex('male')"
+                class="sex-btn group flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-slate-100 dark:border-slate-700 hover:border-teal-500 hover:bg-teal-50/50 dark:hover:bg-teal-900/20 transition-all duration-300">
+                <div class="w-12 h-12 mb-3 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 group-[.active]:bg-white group-[.active]:text-teal-600 transition-colors">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 3H21V8M21 3L13.5 10.5M10.5 19C10.5 21.2091 8.70914 23 6.5 23C4.29086 23 2.5 21.2091 2.5 19C2.5 16.7909 4.29086 15 6.5 15C8.70914 15 10.5 16.7909 10.5 19Z" />
+                  </svg>
+                </div>
+                <span class="text-sm font-bold text-slate-600 dark:text-slate-300 group-[.active]:text-white" data-i18n="male">Laki-laki</span>
+              </button>
+              <button type="button" id="sex-female" onclick="selectSex('female')"
+                class="sex-btn group flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-slate-100 dark:border-slate-700 hover:border-teal-500 hover:bg-teal-50/50 dark:hover:bg-teal-900/20 transition-all duration-300">
+                <div class="w-12 h-12 mb-3 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 group-[.active]:bg-white group-[.active]:text-teal-600 transition-colors">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18C14.7614 18 17 15.7614 17 13C17 10.2386 14.7614 8 12 8C9.23858 8 7 10.2386 7 13C7 15.7614 9.23858 18 12 18ZM12 18V22M9 20H15" />
+                  </svg>
+                </div>
+                <span class="text-sm font-bold text-slate-600 dark:text-slate-300 group-[.active]:text-white" data-i18n="female">Perempuan</span>
+              </button>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-6 mt-6">
@@ -142,7 +157,7 @@
         <span data-i18n="startBtn">Start Skin Analysis</span>
       </button>
     </div>
-    <p class="mt-6 text-xs text-slate-400 text-center relative z-10"><span data-i18n="versionText">DermaNetra v6.0</span> · <span data-i18n="legalText">Educational &amp; screening purposes only</span></p>
+    <p class="mt-6 text-xs text-slate-400 text-center relative z-10"><span class="text-sm font-medium" data-i18n="versionText">DermaNetra</span> · <span data-i18n="legalText">Educational &amp; screening purposes only</span></p>
   </div>
 
   <!-- ═══════════ PAGE 2: DIAGNOSIS ═══════════ -->
@@ -230,7 +245,7 @@
 
   <!-- ═══════════ PAGE 3: RESULTS ═══════════ -->
   <div id="page-results" class="page hidden min-h-screen flex flex-col" style="background:#f0f4f8">
-    <main class="flex-1 overflow-y-auto p-6 max-w-4xl w-full mx-auto" style="padding-bottom:40px">
+    <main class="flex-1 overflow-y-auto w-full" style="padding-bottom:40px">
       <div id="results-loading" class="flex flex-col items-center justify-center h-64">
         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
           style="background:linear-gradient(135deg,#ecfeff,#cffafe);border:2px solid #a5f3fc">
@@ -241,7 +256,7 @@
           </svg>
         </div>
         <h3 class="text-base font-bold text-slate-700 mb-2">Analyzing Symptoms…</h3>
-        <p class="text-xs text-slate-400 mb-5 text-center">Inference engine: <strong>Naive Bayes Probability Classifier</strong><br />processing dermatological knowledge base</p>
+        <p class="text-xs text-slate-400 mb-5 text-center">Memproses basis pengetahuan dermatologi...</p>
         <div class="loading-dots"><span></span><span></span><span></span></div>
       </div>
       <div id="results-content" class="hidden"></div>
@@ -288,10 +303,10 @@
     </div>
   </div>
 
-  <script src="assets/js/likelihood_table.js?v=4"></script>
-  <script src="assets/js/data.js?v=4"></script>
-  <script src="assets/js/diseases.js?v=4"></script>
-  <script src="assets/js/app.js?v=4"></script>
+  <script src="assets/js/likelihood_table.js?v=5"></script>
+  <script src="assets/js/data.js?v=5"></script>
+  <script src="assets/js/diseases.js?v=5"></script>
+  <script src="assets/js/app.js?v=5"></script>
 </body>
 
 </html>

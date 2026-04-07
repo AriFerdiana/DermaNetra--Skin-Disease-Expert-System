@@ -1449,12 +1449,27 @@ input[type="checkbox"]:checked + .disc-box .disc-check-icon {
 .report-visualization {
   display: flex;
   justify-content: center;
-  gap: 32px;
+  gap: 24px;
   flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.blueprint-body-map-container {
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blueprint-body-map-container .report-visualization {
+  width: 100%;
+  gap: 12px;
 }
 
 .report-body-mini {
-  max-width: 180px;
+  max-width: 45%;
+  flex: 1;
+  min-width: 110px;
 }
 
 @media (max-width: 640px) {
@@ -1466,12 +1481,14 @@ input[type="checkbox"]:checked + .disc-box .disc-check-icon {
    Phase 3: Triage Badge
    ═══════════════════════════════════════════════════════════ */
 .triage-badge {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 2px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 8px;
   padding: 10px 16px;
   border-radius: 12px;
   border: 2px solid;
+  width: 100%;
   animation: triage-pulse 2.5s ease-in-out infinite;
 }
 

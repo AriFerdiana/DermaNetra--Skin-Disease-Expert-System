@@ -39,10 +39,10 @@ const I18N = {
     durLong: '> 1 Bulan',
     disclaimerText: 'Saya mengerti bahwa ini adalah untuk tujuan edukasi dan bukan diagnosis medis formal.',
     startBtn: 'Mulai Analisis Kulit',
-    versionText: 'DermaNetra v6.0',
+    versionText: 'DermaNetra',
     legalText: 'Hanya untuk tujuan edukasi & skrining',
     mapTitle: 'Peta Tubuh Interaktif',
-    mapDesc: 'Ketuk titik kuning untuk menambah gejala',
+    mapDesc: 'Ketuk titik yang berdenyut untuk menambah gejala',
     front: 'DEPAN',
     back: 'BELAKANG',
     noSymptoms: 'Belum Ada Gejala',
@@ -63,7 +63,7 @@ const I18N = {
     otherConditions: 'Kemungkinan Kondisi Lain',
     notSpecified: 'Tidak ditentukan.',
     blueprintTitle: 'Blueprint Analisis',
-    medicalDisclaimer: 'Penafian Medis: Sistem ini menggunakan algoritma Naive Bayes untuk skrining awal dan BUKAN diagnosis medis. Selalu konsultasikan dengan dokter spesialis kulit berlisensi.',
+    medicalDisclaimer: 'Penafian Medis: Sistem ini menggunakan basis data pakar untuk skrining awal dan BUKAN diagnosis medis. Selalu konsultasikan dengan dokter spesialis kulit berlisensi.',
     whenToSee: 'Kapan harus ke dokter:',
     otc: 'Obat Bebas',
     rx: 'Resep Dokter',
@@ -104,7 +104,7 @@ const I18N = {
     durLong: '> 1 Month',
     disclaimerText: 'I understand that this is for educational purposes and not a formal medical diagnosis.',
     startBtn: 'Start Skin Analysis',
-    versionText: 'DermaNetra v6.0',
+    versionText: 'DermaNetra',
     legalText: 'Educational & screening purposes only',
     mapTitle: 'Interactive Body Map',
     mapDesc: 'Tap the pulsing dots to add symptoms',
@@ -128,7 +128,7 @@ const I18N = {
     otherConditions: 'Other Possible Conditions',
     notSpecified: 'Not specified.',
     blueprintTitle: 'Analysis Blueprint',
-    medicalDisclaimer: 'Medical Disclaimer: This system uses a Naive Bayes algorithm for preliminary screening and is NOT a medical diagnosis. Always consult a board-certified dermatologist.',
+    medicalDisclaimer: 'Medical Disclaimer: This system uses an expert system approach for preliminary screening and is NOT a medical diagnosis. Always consult a board-certified dermatologist.',
     whenToSee: 'When to see a doctor:',
     otc: 'OTC',
     rx: 'RX',
@@ -295,6 +295,15 @@ function applyTheme() {
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme();
   setLanguage(state.language);
+  
+  // Pre-fill from quiz if exists
+  const savedSkin = localStorage.getItem('dermanetra_skin_type');
+  const skinEl = document.getElementById('input-skin');
+  if (savedSkin && skinEl) {
+    skinEl.value = savedSkin;
+    state.skinType = savedSkin;
+  }
+
   checkForm();
 });
 
@@ -665,6 +674,7 @@ function updateSelectedSymptomsPanel() {
 //  SYMPTOM SIDE DRAWER (v6)
 // ═══════════════════════════════════════════════════════════
 let _currentModalSyms = [];
+let _tempSelected = new Set();
 
 function openModal(regionKey){
   if(regionKey==='groin') regionKey='pelvis';
@@ -674,7 +684,10 @@ function openModal(regionKey){
 
   const syms = (db[state.currentView]&&db[state.currentView].length) ? db[state.currentView] : (db.front||[]);
   _currentModalSyms = syms;
+  
+  // Clone existing symptoms to temp set for persistence during modal session
   const existing = state.symptoms[regionKey] || new Set();
+  _tempSelected = new Set(existing);
 
   document.getElementById('modal-region').textContent = db.label;
   document.getElementById('modal-view-badge').textContent = state.currentView==='front' ? I18N[state.language].viewFront : I18N[state.language].viewBack;
@@ -682,7 +695,7 @@ function openModal(regionKey){
   const searchEl = document.getElementById('modal-search');
   if(searchEl) searchEl.value = '';
 
-  renderModalSymptoms(syms, existing, '');
+  renderModalSymptoms(syms, _tempSelected, '');
 
   document.getElementById('symptom-modal').classList.add('open');
   document.getElementById('modal-overlay').classList.add('open');
@@ -717,8 +730,7 @@ function renderModalSymptoms(syms, existing, query){
     const elemId = `msym-${rKey}-${i}`;
     const div = document.createElement('div');
     div.className = 'sym-check-item';
-    const currentSet = state.symptoms[rKey] || new Set();
-    const isChecked = currentSet.has(sym.id);
+    const isChecked = _tempSelected.has(sym.id);
     
     div.innerHTML = `
       <input type="checkbox" id="${elemId}" value="${sym.id}" ${isChecked?'checked':''}/>
@@ -730,7 +742,14 @@ function renderModalSymptoms(syms, existing, query){
         </span>
         <span>${sym.name}</span>
       </label>`;
-    div.querySelector('input').addEventListener('change', updateModalSelectedCount);
+    
+    const input = div.querySelector('input');
+    input.addEventListener('change', (e) => {
+      const val = parseInt(e.target.value) || e.target.value;
+      if(e.target.checked) _tempSelected.add(val);
+      else _tempSelected.delete(val);
+      updateModalSelectedCount();
+    });
     list.appendChild(div);
   });
 
@@ -738,25 +757,23 @@ function renderModalSymptoms(syms, existing, query){
 }
 
 function filterSymptoms(query){
-  const existing = state.symptoms[state.activeRegion] || new Set();
-  renderModalSymptoms(_currentModalSyms, existing, query);
+  renderModalSymptoms(_currentModalSyms, _tempSelected, query);
 }
 
 function updateModalSelectedCount(){
-  const checked = document.querySelectorAll('#modal-symptom-list input:checked').length;
   const countEl = document.getElementById('modal-selected-count');
   const btn = document.getElementById('modal-add-btn');
   const dict = I18N[state.language];
 
   if(countEl){
-    if(checked > 0){
-      countEl.textContent = dict.symptomsCount(checked);
+    if(_tempSelected.size > 0){
+      countEl.textContent = dict.symptomsCount(_tempSelected.size);
       countEl.classList.remove('hidden');
     } else {
       countEl.classList.add('hidden');
     }
   }
-  if(btn) btn.textContent = checked > 0 ? `${dict.addBtn} (${checked})` : dict.addBtn;
+  if(btn) btn.textContent = _tempSelected.size > 0 ? `${dict.addBtn} (${_tempSelected.size})` : dict.addBtn;
 }
 
 function closeModal(){
@@ -768,11 +785,12 @@ function closeModal(){
 
 function confirmModal(){
   if(!state.activeRegion) return;
-  const checked = document.querySelectorAll('#modal-symptom-list input:checked');
-  const set = new Set();
-  checked.forEach(c => set.add(parseInt(c.value) || c.value)); // handles numeric ids too
-  if(set.size > 0) state.symptoms[state.activeRegion] = set;
-  else delete state.symptoms[state.activeRegion];
+  
+  if(_tempSelected.size > 0) {
+    state.symptoms[state.activeRegion] = new Set(_tempSelected);
+  } else {
+    delete state.symptoms[state.activeRegion];
+  }
   
   closeModal();
   renderBodyMap();
@@ -830,7 +848,7 @@ function getCircularGauge(percentage) {
         <path class="gauge-fill risk-${risk}" stroke-dasharray="${dash}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
       </svg>
       <div class="gauge-label">
-        <span class="gauge-percent">${percentage}%</span>
+        <span class="gauge-percent">${percentage.toFixed(2)}%</span>
         <span class="gauge-sub">${riskLabel}</span>
       </div>
     </div>`;
@@ -868,7 +886,7 @@ function getReportVisualization() {
   };
 
   return `
-    <div class="report-visualization">
+    <div class="report-visualization flex flex-row gap-3 justify-center items-center py-2">
       ${generateMiniBody(true)}
       ${generateMiniBody(false)}
     </div>`;
@@ -952,10 +970,17 @@ function getTriageBadge(diseaseId) {
   };
 
   const c = config[level] || config.gp_visit;
-  return `<div class="triage-badge ${c.cls}">
-    <span class="triage-label">${c.label}</span>
-    <span class="triage-desc">${note || c.desc}</span>
-  </div>`;
+  return `
+    <div class="triage-badge ${c.cls}">
+      <div class="flex flex-col gap-1">
+        <span class="triage-label">${c.label}</span>
+        <span class="triage-desc">${note || c.desc}</span>
+      </div>
+      <button onclick="window.open('https://www.google.com/maps/search/klinik+kulit+terdekat','_blank')" class="ml-auto bg-white/20 hover:bg-white/30 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Cari Dokter Terdekat
+      </button>
+    </div>`;
 }
 
 // ── Red Flags Checklist (Fase 4) ──────────────────────────
@@ -1012,7 +1037,6 @@ function getPersonalizedNotes(diseaseId) {
   } else if (age > 60) {
     notes.push('Untuk usia lanjut, perhatikan interaksi obat dan pertimbangkan konsultasi dokter untuk penyesuaian dosis.');
   }
-
   if (!notes.length) return '';
 
   return `
@@ -1025,7 +1049,110 @@ function getPersonalizedNotes(diseaseId) {
     </div>`;
 }
 
-// ── Build Results UI (Redesigned — All 5 Phases) ──────────
+// ── Medical Constants ─────────────────────────────────────
+const DISEASE_SLUGS = {
+  'D001': 'seborrhoeic-dermatitis', 'D002': 'atopic-dermatitis', 'D003': 'folliculitis',
+  'D004': 'scabies', 'D005': 'miliaria', 'D006': 'psoriasis-vulgaris', 'D007': 'tinea-capitis',
+  'D008': 'head-lice', 'D009': 'impetigo', 'D010': 'alopecia-areata', 'D011': 'acne-vulgaris',
+  'D012': 'melasma', 'D013': 'rosacea', 'D014': 'pityriasis-versicolor', 'D015': 'contact-dermatitis',
+  'D016': 'milia', 'D017': 'herpes-simplex', 'D018': 'urticaria', 'D019': 'molluscum-contagiosum',
+  'D020': 'tinea-corporis', 'D021': 'candida', 'D022': 'tinea-cruris', 'D023': 'erythrasma',
+  'D024': 'ecthyma', 'D025': 'hidradenitis-suppurativa', 'D026': 'intertrigo',
+  'D027': 'granuloma-inguinale', 'D028': 'dyshidrotic-eczema', 'D029': 'tinea-manuum',
+  'D030': 'leprosy', 'D031': 'cellulitis', 'D032': 'pityriasis-rosea', 'D033': 'viral-wart',
+  'D034': 'paronychia', 'D035': 'tinea-pedis', 'D036': 'cutaneous-larva-migrans',
+  'D037': 'discoid-eczema', 'D038': 'arthropod-bites-and-stings', 'D039': 'onychomycosis',
+  'D040': 'pitted-keratolysis', 'D041': 'corn-and-callus', 'D042': 'herpes-zoster'
+};
+
+const MEDICAL_SVG_FALLBACK = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMjUwIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI1MCIgZmlsbD0iI2Y4ZmFmYyIvPjxwYXRoIGQ9Ik0xODAgMTAwbDIwIDIwIDUwLTUwIiBzdHJva2U9IiM5NGEzYjgiIHN0cm9rZS13aWR0aD0iMTAiIGZpbGw9Im5vbmUiLz48dGV4dCB4PSI1MCUiIHk9Ijc1JSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NDc0OGIiPkFzc2V0cyBUZXJwcm90ZWtzaSBMaW5rIFRlcmxhbXBpcjwvdGV4dD48L3N2Zz4=";
+
+function getClinicalGallery(diseaseId, diseaseName) {
+  const slug = DISEASE_SLUGS[diseaseId] || diseaseName.toLowerCase().replace(/ /g, '-');
+  const topicUrl = `https://dermnetnz.org/topics/${slug}`;
+  
+  // Disease-category color mapping for the SVG placeholder
+  const fungal  = ['D001','D007','D014','D020','D021','D022','D029','D035','D039'];
+  const viral   = ['D008','D017','D019','D033','D036','D042'];
+  const bacterial = ['D003','D009','D023','D024','D031','D040'];
+  const inflammatory = ['D002','D006','D013','D015','D028','D037'];
+  
+  let svgColor = '#0891b2'; let svgBg = '#ecfeff'; let catLabel = 'Dermatologi';
+  if (fungal.includes(diseaseId))      { svgColor = '#10b981'; svgBg = '#ecfdf5'; catLabel = 'Mikologi'; }
+  else if (viral.includes(diseaseId))  { svgColor = '#8b5cf6'; svgBg = '#f5f3ff'; catLabel = 'Virologi'; }
+  else if (bacterial.includes(diseaseId)) { svgColor = '#ef4444'; svgBg = '#fef2f2'; catLabel = 'Bakteriologi'; }
+  else if (inflammatory.includes(diseaseId)) { svgColor = '#f59e0b'; svgBg = '#fffbeb'; catLabel = 'Imunologi'; }
+  
+  // Beautiful SVG medical illustration placeholder
+  const placeholderSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 220' width='400' height='220'>
+    <rect width='400' height='220' fill='${svgBg}'/>
+    <circle cx='200' cy='90' r='52' fill='none' stroke='${svgColor}' stroke-width='2.5' stroke-dasharray='8 4' opacity='0.4'/>
+    <circle cx='200' cy='90' r='35' fill='${svgColor}' opacity='0.08'/>
+    <path d='M178 90 l14 14 l28-28' stroke='${svgColor}' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/>
+    <rect x='145' y='155' width='110' height='26' rx='13' fill='${svgColor}' opacity='0.1'/>
+    <text x='200' y='173' text-anchor='middle' font-family='system-ui,sans-serif' font-size='10' font-weight='700' fill='${svgColor}' letter-spacing='2' text-transform='uppercase'>${catLabel.toUpperCase()}</text>
+    <circle cx='80' cy='60' r='18' fill='${svgColor}' opacity='0.05'/>
+    <circle cx='320' cy='130' r='24' fill='${svgColor}' opacity='0.05'/>
+    <circle cx='340' cy='50' r='10' fill='${svgColor}' opacity='0.07'/>
+    <circle cx='60' cy='160' r='14' fill='${svgColor}' opacity='0.07'/>
+  </svg>`;
+  
+  const placeholderDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(placeholderSvg);
+  const imgUrl = `https://dermnetnz.org/assets/Uploads/${slug}-1__FocusFillWzYwMCw0MDAsIm9wZW4iLDBd.jpg`;
+  
+  return `
+    <div class="clinical-gallery-card section-card bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm mb-0">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <h3 class="font-black text-slate-900 flex items-center gap-2 text-xs uppercase tracking-[0.2em]">
+          <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Galeri Referensi
+        </h3>
+        <a href="${topicUrl}" target="_blank" class="text-[9px] font-black text-primary hover:scale-105 transition-all flex items-center gap-1 bg-primary/5 px-3 py-1 rounded-full border border-primary/15 uppercase tracking-tighter">
+          DermNet →
+        </a>
+      </div>
+
+      <div class="medical-gallery-frame rounded-2xl overflow-hidden border border-slate-100 relative" style="background:${svgBg}; min-height:160px;">
+        <img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy" 
+          onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');"
+          class="w-full object-cover" style="max-height:180px;" />
+        <div class="hidden flex flex-col items-center justify-center p-6 text-center" style="min-height:160px;">
+          <img src="${placeholderDataUrl}" class="w-full rounded-xl" alt="Ilustrasi medis ${diseaseName}" />
+          <p class="text-[9px] font-bold uppercase tracking-widest mt-3" style="color:${svgColor}; opacity:0.7">${diseaseName}</p>
+        </div>
+      </div>
+      
+      <a href="${topicUrl}" target="_blank" class="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80" style="background:${svgBg}; color:${svgColor}; border:1px solid ${svgColor}30">
+        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        Lihat di DermNet NZ
+      </a>
+    </div>`;
+}
+
+function buildFeedbackSection() {
+  return `
+    <div class="feedback-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl text-center max-w-lg w-full animate-fade">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 mb-4 font-serif italic text-xl font-black shadow-inner">DN</div>
+      <h3 class="text-xl font-black text-slate-900 mb-3 tracking-tight">${state.language === 'id' ? 'Apakah diagnosis ini membantu?' : 'Was this diagnosis helpful?'}</h3>
+      <p class="text-slate-500 mb-6 leading-relaxed text-xs font-medium">
+        ${state.language === 'id' 
+          ? 'Masukan Anda membantu kami meningkatkan akurasi sistem pakar ini.' 
+          : 'Your feedback helps us improve the accuracy of this clinical engine.'}
+      </p>
+      <div class="flex gap-3 justify-center">
+        <button onclick="this.parentElement.innerHTML='<div class=\'text-green-600 font-black py-2 animate-bounce text-[10px] tracking-widest uppercase\'>✨ TERIMA KASIH!</div>'" 
+                class="flex-1 max-w-[140px] py-3 bg-primary text-white rounded-xl font-black text-[9px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg active:scale-95">
+          ${state.language === 'id' ? 'Ya, Akurat' : 'Yes'}
+        </button>
+        <button onclick="this.parentElement.innerHTML='<div class=\'text-slate-500 font-black py-2 animate-bounce text-[10px] tracking-widest uppercase\'>🙏 TERIMA KASIH.</div>'" 
+                class="flex-1 max-w-[140px] py-3 bg-white border-2 border-slate-100 text-slate-500 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-slate-50 hover:scale-105 transition-all active:scale-95">
+          ${state.language === 'id' ? 'Kurang Tepat' : 'No'}
+        </button>
+      </div>
+    </div>`;
+}
+
+// ── Build Results UI (PROFESSIONAL 3-COLUMN DASHBOARD) ─────────
 function buildResultsUI(results){
   const el = document.getElementById('results-content');
   if(!el) return;
@@ -1034,13 +1161,12 @@ function buildResultsUI(results){
   try {
     if(!results || !results.length){
       el.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-20 animate-fade">
-          <div class="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6">
-            <svg class="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="flex flex-col items-center justify-center py-20 animate-fade text-center">
+          <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-6">
+             <svg class="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
           </div>
-          <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">${dict.noMatchesFound}</h3>
-          <p class="text-slate-500 max-w-xs text-center mb-8">The expert system couldn't confidently identify a condition based on these symptoms.</p>
-          <button onclick="resetAll()" class="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:scale-105 transition-all">Start Over</button>
+          <h3 class="text-xl font-bold text-slate-800">${dict.noMatchesFound}</h3>
+          <button onclick="resetAll()" class="mt-4 px-8 py-3 bg-primary text-white rounded-xl font-black tracking-widest uppercase text-xs hover:scale-105 transition-all shadow-xl">Ulangi Analisis</button>
         </div>`;
       return;
     }
@@ -1050,149 +1176,151 @@ function buildResultsUI(results){
     const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[p.disease_id]) || {};
     const t = db.treatments || {otc:[],prescription:[],lifestyle:[],see_doctor:'Consult a medical professional.'};
 
-    // Collect all user symptom IDs
     const allUserSymptomIds = [];
     Object.values(state.symptoms).forEach(s => s.forEach(id => allUserSymptomIds.push(id)));
 
-    // Helper for localized extraction
-    const _getV = (v) => {
-      if (!v) return '';
-      if (typeof v === 'string') return v;
-      if (Array.isArray(v)) return v; 
-      return v[state.language] || v['id'] || v;
-    };
-
+    const _getV = (v) => v ? (typeof v === 'string' ? v : (Array.isArray(v) ? v : (v[state.language] || v['id'] || v))) : '';
     const _lst = (arrOrObj) => {
       const data = _getV(arrOrObj);
-      if (!data || !Array.isArray(data)) return `<li>${dict.notSpecified || 'Not specified.'}</li>`;
-      return data.length ? data.map(x=>`<li>${x}</li>`).join('') : `<li>${dict.notSpecified || 'None.'}</li>`;
+      if (!data || !Array.isArray(data)) return `<li>${dict.notSpecified || 'Tidak spesifik.'}</li>`;
+      return data.length ? data.map(x=>`<li>${x}</li>`).join('') : `<li>None.</li>`;
     };
 
-    el.innerHTML = `
-      <!-- Context Bar -->
-      <div class="result-context-bar animate-fade mb-6">
-        <div class="flex items-center gap-2">
-          <span class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-wider">${state.sex==='male' ? dict.contextMale : dict.contextFemale}, ${state.age}</span>
-          <span class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-bold text-slate-600 uppercase tracking-wider">${SKIN_LABELS[state.language][state.skinType] || state.skinType}</span>
-        </div>
-      </div>
-
-      <!-- Box 1: Primary Diagnosis Card + Triage -->
-      <div class="primary-card animate-fade shadow-xl border border-slate-100">
-        <div class="primary-card-header p-6 bg-primary text-white flex justify-between items-center rounded-t-2xl">
-          <div class="flex flex-col">
-            <span class="text-[10px] uppercase font-bold tracking-widest opacity-80 mb-1">${dict.topMatch}</span>
-            <h1 class="text-3xl font-extrabold tracking-tight">${state.language === 'en' ? (p.disease_name_en || p.disease_name) : (p.disease_name_id || p.disease_name)}</h1>
-          </div>
-          ${getCircularGauge(Math.round(p.percentage))}
-        </div>
+    let out = `
+      <div class="w-full max-w-[1920px] mx-auto px-6 py-6 animate-fade">
         
-        <div class="p-8 bg-white">
-          <div class="disease-meta mb-4 flex flex-wrap gap-2">
-            <span class="meta-chip px-3 py-1 border border-slate-200 rounded-lg text-xs font-bold">${dict.icdLabel}: ${p.icd10}</span>
-            <span class="meta-chip px-3 py-1 border border-slate-200 rounded-lg text-xs font-bold">${_getV(db.prevalence) || 'Common'}</span>
-            <span class="meta-chip px-3 py-1 border rounded-lg text-xs font-bold ${p.contagious ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200'}">${p.contagious ? 'CONTAGIOUS' : 'NON-CONTAGIOUS'}</span>
-          </div>
-          ${getTriageBadge(p.disease_id)}
-          <p class="disease-desc text-slate-700 text-lg leading-relaxed mt-4">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
+        <!-- Compact Context Header -->
+        <div class="flex justify-center mb-8">
+           <span class="bg-white px-6 py-2.5 rounded-full text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] shadow-sm border border-slate-100 ring-1 ring-slate-50 italic">
+              ${state.sex==='male' ? dict.contextMale : dict.contextFemale} • ${state.age} THN • ${SKIN_LABELS[state.language][state.skinType]}
+           </span>
         </div>
-      </div>
 
-      <!-- Box 1b: Blueprint Body Map (ON-SCREEN + Print) -->
-      <div class="section-card bg-white border border-slate-200 p-6 rounded-2xl shadow-sm my-8">
-        <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-          <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M9 20l-5.447-2.724A2 2 0 013 15.488V5.488a2 2 0 011.553-1.956l10-2A2 2 0 0117 3.488v10.024a2 2 0 01-1.553 1.956L9 20zm0 0V9"/></svg>
-          🗺️ ${dict.blueprintTitle}
-        </h3>
-        <p class="text-xs text-slate-500 mb-6">Area biru menunjukkan lokasi tubuh di mana Anda melaporkan gejala.</p>
-        ${getReportVisualization()}
-      </div>
-
-      <!-- Box 2: Symptom Match Analysis -->
-      ${buildSymptomMatchSection(p.disease_id, allUserSymptomIds)}
-
-      <!-- Box 3: Red Flags Checklist -->
-      ${buildRedFlagsSection(p.disease_id)}
-
-      <!-- Box 4: Clinical Features + Causes + Treatment -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8">
-        <div class="flex flex-col gap-6">
-          <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
-            <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-              <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-              ${dict.clinicalFeatures}
-            </h3>
-            <ul class="space-y-2 text-sm text-slate-700 list-disc pl-4">${_lst(db.clinical_features)}</ul>
-          </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
-          <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
-            <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-              <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-              ${dict.causesLabel}
-            </h3>
-            <ul class="space-y-2 text-sm text-slate-700 list-disc pl-4">${_lst(db.causes)}</ul>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-6">
-          <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex-1">
-            <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-              <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-              ${dict.treatmentPlan}
-            </h3>
-            <div class="space-y-4">
-              <div class="p-4 rounded-xl bg-slate-50 border-l-4 border-green-500">
-                <div class="text-[10px] font-black uppercase tracking-widest text-green-700 mb-2">${dict.otc}</div>
-                <ul class="text-sm text-slate-700 space-y-1">${_lst(t.otc)}</ul>
-              </div>
-              <div class="p-4 rounded-xl bg-slate-50 border-l-4 border-blue-500">
-                <div class="text-[10px] font-black uppercase tracking-widest text-blue-700 mb-2">${dict.rx}</div>
-                <ul class="text-sm text-slate-700 space-y-1">${_lst(t.prescription)}</ul>
-              </div>
+          <!-- [1/3] LEFT COLUMN: THE VISUAL (3 Units) -->
+          <div class="lg:col-span-3 space-y-4 lg:sticky lg:top-24">
+            <div class="section-card bg-white border border-slate-100 p-5 rounded-[2rem] shadow-sm overflow-hidden">
+                <h3 class="font-black text-[9px] text-primary tracking-[0.4em] uppercase mb-4 flex items-center gap-3">
+                  <span class="w-6 h-[1.5px] bg-primary/30"></span>
+                  Blueprint Lokasi Gejala
+                </h3>
+                <div class="blueprint-body-map-container">
+                  ${getReportVisualization()}
+                </div>
+                <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest text-center mt-3">Zona Tubuh Teridentifikasi</p>
             </div>
+          </div>
+
+          <!-- [2/3] MIDDLE COLUMN: MAIN FOCUS (6 Units) -->
+          <div class="lg:col-span-6 space-y-4">
             
-            <!-- Personalized Notes (Fase 5) -->
-            ${getPersonalizedNotes(p.disease_id)}
-
-            <div class="see-doctor-box mt-6 p-4 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-900 text-sm flex gap-3">
-              <svg class="w-5 h-5 flex-shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-              <div><strong class="block mb-1 font-bold">${dict.whenToSee}</strong> ${_getV(t.see_doctor)}</div>
+            <!-- Main Diagnosis -->
+            <div class="primary-card shadow-xl border border-slate-100 rounded-[2rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
+               <div class="p-6 bg-primary text-white flex justify-between items-center bg-gradient-to-br from-primary to-blue-800">
+                  <div>
+                    <div class="flex items-center gap-2 mb-2">
+                       <span class="text-[8px] uppercase font-black tracking-widest bg-white/20 px-2 py-0.5 rounded-full">${dict.topMatch}</span>
+                       <button onclick="saveToHistory()" class="bg-white text-primary text-[8px] font-black px-3 py-0.5 rounded-full shadow-lg hover:scale-105 transition-all">
+                          SIMPAN
+                       </button>
+                    </div>
+                    <h1 class="text-xl lg:text-2xl font-black tracking-tighter leading-tight">${state.language === 'en' ? (p.disease_name_en || p.disease_name) : (p.disease_name_id || p.disease_name)}</h1>
+                  </div>
+                  ${getCircularGauge(p.percentage)}
+               </div>
+               <div class="p-6">
+                  <div class="flex flex-wrap gap-2 mb-4">
+                     <span class="px-2 py-1 bg-slate-50 border border-slate-100 rounded-md text-[8px] font-black tracking-widest text-slate-400 font-mono uppercase">${p.icd10} • DATABASE</span>
+                     <span class="px-2 py-1 border rounded-md text-[8px] font-black tracking-[0.2em] ${p.contagious ? 'bg-red-50 text-red-700 border-red-100' : 'bg-green-50 text-green-700 border-green-100'} uppercase">${p.contagious ? '⚠️ Menular' : '✅ Tidak Menular'}</span>
+                  </div>
+                  <div class="mb-4">${getTriageBadge(p.disease_id)}</div>
+                  <p class="text-slate-600 text-sm font-medium leading-relaxed opacity-90">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
+               </div>
             </div>
+
+            ${buildRedFlagsSection(p.disease_id).replace('my-8', 'mb-0')}
+
+            <!-- Treatment Dashboard -->
+            <div class="section-card bg-white border border-blue-50 p-6 rounded-[2rem] shadow-sm ring-1 ring-blue-50">
+               <h3 class="font-black text-[10px] text-blue-700 tracking-[0.4em] uppercase mb-6 flex items-center gap-2">💊 ${dict.treatmentPlan}</h3>
+               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div class="p-5 rounded-2xl bg-green-50/40 border-l-[6px] border-l-green-500 shadow-sm">
+                     <span class="text-[8px] font-black uppercase text-green-700 tracking-widest block mb-2">${dict.otc}</span>
+                     <ul class="text-[11px] text-slate-700 space-y-1 font-medium opacity-90">${_lst(t.otc)}</ul>
+                  </div>
+                  <div class="p-5 rounded-2xl bg-blue-50/40 border-l-[6px] border-l-blue-500 shadow-sm">
+                     <span class="text-[8px] font-black uppercase text-blue-700 tracking-widest block mb-2">${dict.rx}</span>
+                     <ul class="text-[11px] text-slate-700 space-y-1 font-medium opacity-90">${_lst(t.prescription)}</ul>
+                  </div>
+               </div>
+               <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-4 text-[10px] text-slate-600 italic font-medium">${getPersonalizedNotes(p.disease_id)}</div>
+               <div class="p-5 border-2 border-amber-50 bg-amber-50/50 rounded-[1.5rem] text-[10px] text-amber-950 flex gap-3 transition-all hover:bg-amber-100 items-start">
+                 <span class="text-xl animate-pulse">🚨</span>
+                 <div><strong class="block mb-0.5 text-xs font-black uppercase tracking-tight text-amber-900">KAPAN HARUS KE DOKTER</strong> <p class="opacity-80">${_getV(t.see_doctor)}</p></div>
+               </div>
+            </div>
+
+            ${alts.length ? `
+            <!-- Alternative Diagnoses -->
+            <div class="section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm mb-0">
+               <h3 class="font-black text-[10px] text-slate-500 tracking-[0.3em] uppercase mb-6 flex items-center gap-2">🔍 Kemungkinan Lainnya</h3>
+               <div class="space-y-4">
+                  ${alts.map(a => `
+                  <div class="flex items-center justify-between p-5 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-primary/20 transition-all">
+                    <div>
+                      <div class="font-black text-slate-800 text-lg tracking-tight">${state.language === 'en' ? a.disease_name_en : a.disease_name_id}</div>
+                      <div class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">${a.icd10} • COMMON</div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-2xl font-black text-slate-900 leading-none">${a.percentage.toFixed(2)}%</div>
+                      <div class="text-[10px] uppercase font-bold text-slate-400">Match</div>
+                    </div>
+                  </div>`).join('')}
+               </div>
+            </div>` : ''}
           </div>
-        </div>
-      </div>
 
-      <!-- Box 5: Alternative Diagnoses -->
-      ${alts.length ? `
-      <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm my-8 animate-fade">
-        <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-          <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-          ${dict.otherConditions}
-        </h3>
-        <div class="space-y-3">
-          ${alts.map(a => {
-            const altDb = DISEASE_DB[a.disease_id] || {};
-            return `
-            <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all">
-              <div>
-                <div class="font-bold text-sm text-slate-800">${state.language === 'en' ? (a.disease_name_en || a.disease_name) : (a.disease_name_id || a.disease_name)}</div>
-                <div class="text-[10px] text-slate-500 mt-0.5">${a.icd10} • ${_getV(altDb.prevalence) || ''}</div>
-              </div>
-              <div class="text-right">
-                <div class="text-lg font-extrabold text-slate-700">${Math.round(a.percentage)}%</div>
-                <div class="text-[10px] text-slate-400">kecocokan</div>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>` : ''}
+          <!-- [3/3] RIGHT COLUMN: AI ANALYTICS (3 Units) -->
+          <div class="lg:col-span-3 space-y-4 lg:sticky lg:top-24">
+            
+            ${buildSymptomMatchSection(p.disease_id, allUserSymptomIds).replace('my-8', 'my-0')}
 
-      <!-- Box 6: Medical Disclaimer -->
-      <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-500 leading-relaxed my-8 flex gap-3 items-start animate-fade">
-        <svg class="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        <div><strong class="text-slate-700">⚕️ ${dict.medicalDisclaimer.split(':')[0]}:</strong> ${dict.medicalDisclaimer.split(':').slice(1).join(':')}</div>
+            <div class="section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm">
+               <h3 class="font-black text-[10px] text-indigo-700 tracking-[0.3em] uppercase mb-6 flex items-center gap-2">🔬 Bukti Klinis</h3>
+               <div class="space-y-6">
+                  <div>
+                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">FITUR KLINIS</span>
+                    <ul class="text-[11px] text-slate-600 space-y-1.5 list-disc pl-3">${_lst(db.clinical_features)}</ul>
+                  </div>
+                  <div>
+                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">PENYEBAB</span>
+                    <ul class="text-[11px] text-slate-600 space-y-1.5 list-disc pl-3">${_lst(db.causes)}</ul>
+                  </div>
+               </div>
+            </div>
+
+            ${getClinicalGallery(p.disease_id, p.disease_name_en || p.disease_name)}
+
+            
+          </div> <!-- COL-8 CLOSED STRICTLY -->
+        </div> <!-- GRID CLOSED STRICTLY -->
+
+        <!-- FINAL FEEDBACK -->
+        <div class="w-full max-w-4xl mx-auto mt-16 py-8 border-t border-slate-200/50 flex flex-col items-center">
+           ${buildFeedbackSection()}
+        </div>
+
+        <div class="mt-32 p-12 bg-slate-900 text-white rounded-[4rem] text-center max-w-5xl mx-auto shadow-2xl relative overflow-hidden animate-fade">
+           <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/10 pointer-events-none"></div>
+           <div class="w-16 h-1.5 bg-primary/50 mx-auto mb-8 rounded-full"></div>
+           <p class="text-slate-400 text-[10px] md:text-[11px] font-medium leading-[2] max-w-3xl mx-auto px-4 italic opacity-80">${dict.medicalDisclaimer}</p>
+           <div class="mt-10 text-[9px] font-black tracking-[0.5em] text-slate-600 uppercase">DermaNetra Clinical Engine v7.0</div>
+        </div>
+
       </div>
     `;
+    el.innerHTML = out;
   } catch (err) {
     console.error('[DermaNetra] Render Error:', err);
     el.innerHTML = `<div class="p-10 text-center text-red-500">Render Error: ${err.message}</div>`;

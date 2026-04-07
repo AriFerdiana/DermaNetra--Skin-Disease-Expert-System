@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   DermaNetra Landing Page — Interactive Engine v1.0
+   DermaNetra Landing Page — Interactive Engine
    Search · Toast · Nav · Conditions · News · i18n (ID/EN)
    ═══════════════════════════════════════════════════════════ */
 
@@ -16,16 +16,16 @@ const I18N = {
     hero_badge: 'Konten Dermatologi Ditinjau Pakar',
     hero_title_1: 'Informasi Kulit Lebih Baik.',
     hero_title_2: 'Kesehatan Kulit Lebih Baik.',
-    hero_subtitle: 'Memberdayakan Anda dengan wawasan dermatologi yang ditinjau pakar dan sistem diagnostik AI canggih.',
+    hero_subtitle: 'Memberdayakan Anda dengan wawasan dermatologi yang ditinjau pakar dan sistem diagnostik canggih.',
     search_placeholder: 'Cari kondisi kulit, gejala, atau perawatan…',
     search_btn: 'Cari',
-    or_use_ai: 'atau gunakan alat AI kami',
-    cta_btn: 'Mulai AI Symptom Checker — Peta Tubuh Interaktif',
+    or_use_ai: 'atau gunakan alat kami',
+    cta_btn: 'Mulai Symptom Checker — Peta Tubuh Interaktif',
     cta_note: 'Gratis · Tanpa registrasi · Bukan pengganti saran medis',
     tools_badge: 'Perangkat Kesehatan Digital',
     tools_title: 'Alat Kesehatan & Pelacak',
     tools_subtitle: 'Perawatan diri dimulai dari alat yang tepat. Jelajahi rangkaian utilitas dermatologi kami yang dirancang dengan presisi klinis.',
-    tool1_title: 'AI Symptom Checker',
+    tool1_title: 'Symptom Checker',
     tool1_desc: 'Identifikasi kondisi kulit Anda menggunakan peta tubuh interaktif dan sistem pakar kami.',
     tool1_action: 'Mulai Alat',
     tool2_title: 'Kalkulator UV & SPF',
@@ -54,7 +54,7 @@ const I18N = {
     trust_users_sub: 'mempercayai DermaNetra',
     trust_hipaa: 'Prinsip HIPAA',
     trust_hipaa_sub: 'desain privasi-utama',
-    footer_brand: 'Pengetahuan dermatologi ditinjau pakar, alat diagnostik AI canggih, dan panduan perawatan kulit harian — dalam satu platform.',
+    footer_brand: 'Pengetahuan dermatologi ditinjau pakar, alat diagnostik canggih, dan panduan perawatan kulit harian — dalam satu platform.',
     footer_about: 'Tentang Kami',
     footer_mission: 'Misi Kami',
     footer_board: 'Dewan Penasihat Medis',
@@ -92,16 +92,16 @@ const I18N = {
     hero_badge: 'Expert-Reviewed Dermatology Content',
     hero_title_1: 'Better Skin Information.',
     hero_title_2: 'Better Skin Health.',
-    hero_subtitle: 'Empowering you with expert-reviewed dermatology insights and an advanced AI diagnostic system.',
+    hero_subtitle: 'Empowering you with expert-reviewed dermatology insights and an advanced diagnostic system.',
     search_placeholder: 'Search skin conditions, symptoms, or treatments…',
     search_btn: 'Search',
-    or_use_ai: 'or use our AI tool',
-    cta_btn: 'Launch AI Symptom Checker — Interactive Body Map',
+    or_use_ai: 'or use our tool',
+    cta_btn: 'Launch Symptom Checker — Interactive Body Map',
     cta_note: 'Free · No registration required · Not a substitute for medical advice',
     tools_badge: 'Digital Health Toolkit',
     tools_title: 'Health Tools & Trackers',
     tools_subtitle: 'Self-care starts with the right tools. Explore our suite of dermatology utilities designed with clinical precision.',
-    tool1_title: 'AI Symptom Checker',
+    tool1_title: 'Symptom Checker',
     tool1_desc: 'Pinpoint your skin condition using our interactive body map and expert system.',
     tool1_action: 'Launch Tool',
     tool2_title: 'UV Index & SPF Calculator',
@@ -130,7 +130,7 @@ const I18N = {
     trust_users_sub: 'trust DermaNetra',
     trust_hipaa: 'HIPAA Principles',
     trust_hipaa_sub: 'privacy-first design',
-    footer_brand: 'Expert-reviewed dermatology knowledge, powerful AI diagnostic tools, and daily skincare guidance — all in one platform.',
+    footer_brand: 'Expert-reviewed dermatology knowledge, powerful diagnostic tools, and daily skincare guidance — all in one platform.',
     footer_about: 'About Us',
     footer_mission: 'Our Mission',
     footer_board: 'Medical Advisory Board',
@@ -343,6 +343,12 @@ function initSearch() {
   }
 }
 
+function highlightMatches(text, query) {
+  if (!query) return text;
+  const regex = new RegExp(`(${query})`, 'gi');
+  return text.replace(regex, '<span class="bg-yellow-100 text-teal-800 font-bold">$1</span>');
+}
+
 function renderSearchResults(query, dropdown) {
   if (typeof DISEASE_DB === 'undefined') return;
   const results = [];
@@ -362,12 +368,16 @@ function renderSearchResults(query, dropdown) {
     return;
   }
 
-  dropdown.innerHTML = results.slice(0, 8).map(r => `
-    <a href="condition.html?id=${r.id}" class="search-result-item">
-      <div class="search-result-name">${currentLang === 'id' ? r.name_id : r.name}</div>
-      <div class="search-result-meta">${r.icd10} · ${r.prevalence || ''}</div>
-    </a>
-  `).join('');
+  dropdown.innerHTML = results.slice(0, 8).map(r => {
+    const name = currentLang === 'id' ? r.name_id : r.name;
+    const highlightedName = highlightMatches(name, query);
+    return `
+      <a href="condition.html?id=${r.id}" class="search-result-item">
+        <div class="search-result-name">${highlightedName}</div>
+        <div class="search-result-meta">${r.icd10} · ${r.prevalence || ''}</div>
+      </a>
+    `;
+  }).join('');
   dropdown.style.display = 'block';
 }
 
