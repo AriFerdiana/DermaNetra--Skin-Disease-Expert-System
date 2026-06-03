@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DermaNetra | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#0ea5e9' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-800">
+    
+    <nav class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center font-bold text-xl">D</div>
+            <div>
+                <h1 class="font-black text-xl tracking-tight text-slate-800">DermaNetra Admin</h1>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Knowledge Base Manager</p>
+            </div>
+        </div>
+        <a href="/" class="text-sm font-bold text-primary hover:underline">← Ke Aplikasi Utama</a>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        
+        <!-- Tabs -->
+        <div class="flex gap-4 mb-8 border-b border-slate-200 pb-px">
+            <button onclick="switchTab('diseases')" id="tab-diseases" class="px-6 py-3 font-bold text-sm border-b-2 border-primary text-primary transition-all">Manajemen Penyakit</button>
+            <button onclick="switchTab('symptoms')" id="tab-symptoms" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all">Manajemen Gejala</button>
+            <button onclick="switchTab('likelihood')" id="tab-likelihood" class="px-6 py-3 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition-all">Matriks Probabilitas</button>
+        </div>
+
+        <!-- Content Areas -->
+        <div id="content-diseases" class="tab-content block">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black">Daftar Penyakit</h2>
+                <button onclick="saveDiseases()" class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow hover:bg-sky-600 transition-all">Simpan Perubahan</button>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <textarea id="json-diseases" class="w-full h-[60vh] p-6 font-mono text-xs bg-slate-900 text-green-400 focus:outline-none" spellcheck="false"></textarea>
+            </div>
+        </div>
+
+        <div id="content-symptoms" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black">Daftar Gejala & Red Flags</h2>
+                <button onclick="saveSymptoms()" class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow hover:bg-sky-600 transition-all">Simpan Perubahan</button>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <textarea id="json-symptoms" class="w-full h-[60vh] p-6 font-mono text-xs bg-slate-900 text-green-400 focus:outline-none" spellcheck="false"></textarea>
+            </div>
+        </div>
+
+        <div id="content-likelihood" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black">Matriks Likelihood (Naive Bayes)</h2>
+                <button onclick="saveLikelihood()" class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow hover:bg-sky-600 transition-all">Simpan Perubahan</button>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <textarea id="json-likelihood" class="w-full h-[60vh] p-6 font-mono text-xs bg-slate-900 text-green-400 focus:outline-none" spellcheck="false"></textarea>
+            </div>
+        </div>
+
+        <div id="toast" class="fixed bottom-6 right-6 bg-slate-800 text-white px-6 py-3 rounded-lg font-bold text-sm shadow-xl translate-y-20 opacity-0 transition-all duration-300">
+            ✅ Data berhasil disimpan!
+        </div>
+
+    </main>
+
+    <script>
+        const API_BASE = '/api/admin';
+        const API_KEY = 'dermanetra_admin_2024';
+
+        async function fetchData() {
+            try {
+                const resD = await fetch(`${API_BASE}/diseases?api_key=${API_KEY}`);
+                const resS = await fetch(`${API_BASE}/symptoms?api_key=${API_KEY}`);
+                const resL = await fetch(`${API_BASE}/likelihood?api_key=${API_KEY}`);
+                
+                document.getElementById('json-diseases').value = JSON.stringify(await resD.json(), null, 2);
+                document.getElementById('json-symptoms').value = JSON.stringify(await resS.json(), null, 2);
+                document.getElementById('json-likelihood').value = JSON.stringify(await resL.json(), null, 2);
+            } catch (err) {
+                alert("Gagal mengambil data dari server. Pastikan backend berjalan.");
+            }
+        }
+
+        async function saveDiseases() { await saveData('diseases'); }
+        async function saveSymptoms() { await saveData('symptoms'); }
+        async function saveLikelihood() { await saveData('likelihood'); }
+
+        async function saveData(type) {
+            try {
+                const raw = document.getElementById(`json-${type}`).value;
+                const parsed = JSON.parse(raw); // Validate JSON
+
+                const res = await fetch(`${API_BASE}/${type}?api_key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(parsed)
+                });
+
+                if (res.ok) {
+                    showToast();
+                } else {
+                    alert("Gagal menyimpan data.");
+                }
+            } catch (err) {
+                alert("Format JSON tidak valid! Silakan periksa kembali sintaksnya.");
+                console.error(err);
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('border-primary', 'text-primary');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            activeBtn.classList.remove('border-transparent', 'text-slate-500');
+            activeBtn.classList.add('border-primary', 'text-primary');
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        window.onload = fetchData;
+    </script>
+</body>
+</html>

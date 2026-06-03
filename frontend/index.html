@@ -8,8 +8,7 @@
   <meta name="description" content="DermaNetra Skin Disease expert system." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="assets/js/tailwind-config-index.js"></script>
   <link rel="stylesheet" href="assets/css/index.css?v=4" />
@@ -21,7 +20,7 @@
   <!-- ═══════════ STICKY HEADER: Controls ═══════════ -->
   <header class="fixed top-0 left-0 right-0 h-[var(--header-height)] z-[100] border-b border-slate-200 bg-white/80 backdrop-blur-xl flex items-center px-4 md:px-8 transition-all print:hidden">
     <a href="landing.html" class="flex items-center gap-3 group">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+      <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
         <span class="font-black text-sm">DN</span>
       </div>
       <div>
@@ -109,7 +108,7 @@
               </button>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-6 mt-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
           <div>
             <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3" data-i18n="ageLabel">Age (Years)</label>
             <input type="number" id="input-age" placeholder="e.g. 24" oninput="checkForm()"
@@ -166,13 +165,30 @@
     <!-- Full-width centered body map -->
     <main class="flex-1 flex flex-col overflow-hidden bg-transparent" style="height:calc(100vh - 49px);">
 
-      <!-- Title row + Toggle (Tight spacing) -->
+      <!-- ── Mode Tab Switch (Manual / NLP) ── -->
       <div class="flex items-center justify-between px-8 pt-2 pb-0 max-w-4xl mx-auto w-full relative">
-        <div>
-          <h2 class="text-lg font-bold text-slate-700 dark:text-slate-100" data-i18n="mapTitle">Interactive Body Map</h2>
-          <p class="text-sm text-slate-500 mt-0.5 font-medium dark:text-slate-400">
-            <span data-i18n="mapDesc">Tap the pulsing dots to add symptoms</span>
-          </p>
+        <div class="flex items-center gap-4">
+          <!-- Mode Tabs -->
+          <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200 gap-1" id="diagnosis-mode-tabs">
+            <button id="tab-manual" onclick="switchDiagnosisMode('manual')"
+              class="mode-tab active px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18" />
+              </svg>
+              <span data-i18n="tabManual">Body Map</span>
+            </button>
+            <button id="tab-nlp" onclick="switchDiagnosisMode('nlp')"
+              class="mode-tab px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span data-i18n="tabNLP">✍️ Cerita Gejala</span>
+            </button>
+          </div>
+          <div id="manual-map-title" class="">
+            <h2 class="text-base font-bold text-slate-700" data-i18n="mapTitle">Interactive Body Map</h2>
+            <p class="text-xs text-slate-500 font-medium"><span data-i18n="mapDesc">Tap the pulsing dots to add symptoms</span></p>
+          </div>
         </div>
 
         <!-- Selected Symptoms Panel (Floating Left) -->
@@ -190,32 +206,135 @@
           </div>
         </div>
 
-        <div class="toggle-track" onclick="toggleView()">
+        <div id="body-view-toggle" class="toggle-track" onclick="toggleView()">
           <div class="toggle-slider" id="toggle-slider"></div>
           <span class="toggle-option active" id="lbl-front" data-i18n="front">FRONT</span>
           <span class="toggle-option" id="lbl-back" data-i18n="back">BACK</span>
         </div>
       </div>
 
-      <!-- Body map — Centered, scaled to fit exactly in one screen without scrolling -->
-      <div id="body-map-container" class="flex-1 flex items-start justify-center overflow-hidden mt-1 pb-4 w-full h-full max-w-3xl mx-auto relative bg-transparent"></div>
+      <!-- ── MANUAL MODE: Body map ── -->
+      <div id="manual-body-area" class="flex-1 flex flex-col overflow-hidden">
+        <!-- Body map —  -->
+        <div id="body-map-container" class="flex-1 flex items-start justify-center overflow-hidden mt-1 pb-4 w-full h-full max-w-3xl mx-auto relative bg-transparent"></div>
 
-      <!-- Mini-legend -->
-      <div class="flex gap-6 justify-center pb-3 flex-wrap">
-        <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-          <div style="width:8px;height:8px;border-radius:50%;background:rgba(0,191,255,0.5);border:1.5px solid cyan">
-          </div>Hover to highlight
-        </div>
-        <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-          <div style="width:8px;height:8px;border-radius:50%;background:rgba(8,145,178,0.3);border:1.5px solid #0891b2">
-          </div>Symptoms added
-        </div>
-        <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" />
-          </svg>Click to add symptoms
+        <!-- Mini-legend -->
+        <div class="flex gap-6 justify-center pb-3 flex-wrap">
+          <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(0,191,255,0.5);border:1.5px solid cyan"></div>Hover to highlight
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+            <div style="width:8px;height:8px;border-radius:50%;background:rgba(8,145,178,0.3);border:1.5px solid #0891b2"></div>Symptoms added
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" />
+            </svg>Click to add symptoms
+          </div>
         </div>
       </div>
+
+      <!-- ── NLP MODE: Text Input Panel ── -->
+      <div id="nlp-mode-area" class="hidden flex-1 flex flex-col overflow-y-auto px-6 pb-6 max-w-3xl mx-auto w-full">
+
+        <!-- NLP Input Card -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mt-4 mb-4">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-500 to-primary flex items-center justify-center shadow">
+              <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-800" data-i18n="nlpInputTitle">Deskripsikan Keluhan Anda</h3>
+              <p class="text-xs text-slate-500" data-i18n="nlpInputDesc">Ceritakan gejala dalam Bahasa Indonesia</p>
+            </div>
+          </div>
+
+          <textarea id="nlp-complaint-text"
+            class="w-full min-h-[110px] px-4 py-3 rounded-xl border-2 border-slate-100 focus:border-violet-400 focus:ring-4 focus:ring-violet-50 outline-none text-sm text-slate-700 font-medium resize-none transition-all leading-relaxed"
+            placeholder="Contoh: Kulit saya gatal sekali di malam hari dan tidak bisa tidur. Gatalnya paling parah di sela-sela jari dan pergelangan tangan. Ada bekas garukan di kulit."
+            oninput="onNLPTextInput(this.value)"></textarea>
+
+          <!-- Example prompts -->
+          <div class="mt-3">
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2" data-i18n="nlpExampleLabel">Contoh Keluhan:</p>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="setNLPExample(this)" class="nlp-example-chip text-xs px-3 py-1.5 rounded-full border border-violet-100 bg-violet-50 text-violet-700 font-semibold hover:bg-violet-100 transition-all">Kudis / Scabies</button>
+              <button onclick="setNLPExample(this)" class="nlp-example-chip text-xs px-3 py-1.5 rounded-full border border-violet-100 bg-violet-50 text-violet-700 font-semibold hover:bg-violet-100 transition-all">Psoriasis</button>
+              <button onclick="setNLPExample(this)" class="nlp-example-chip text-xs px-3 py-1.5 rounded-full border border-violet-100 bg-violet-50 text-violet-700 font-semibold hover:bg-violet-100 transition-all">Panu</button>
+              <button onclick="setNLPExample(this)" class="nlp-example-chip text-xs px-3 py-1.5 rounded-full border border-violet-100 bg-violet-50 text-violet-700 font-semibold hover:bg-violet-100 transition-all">Tinea Pedis</button>
+            </div>
+          </div>
+
+          <!-- Action row -->
+          <div class="flex items-center gap-3 mt-4">
+            <button id="btn-nlp-analyze" onclick="analyzeNLP()"
+              class="flex-1 py-3 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style="background:linear-gradient(135deg,#7c3aed,#0e7490);box-shadow:0 4px 20px rgba(124,58,237,0.3)" disabled>
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
+              </svg>
+              <span data-i18n="nlpAnalyzeBtn">Analisis Keluhan</span>
+            </button>
+            <button id="btn-add-manual" onclick="openHybridMode()"
+              class="px-4 py-3 rounded-xl font-bold text-xs border-2 border-slate-200 text-slate-600 hover:border-primary hover:text-primary transition-all flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span data-i18n="nlpAddManual">+ Tambah Manual</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hybrid mode badge (shown when manual symptoms added) -->
+        <div id="hybrid-badge" class="hidden mb-3 px-4 py-2.5 bg-gradient-to-r from-violet-50 to-teal-50 border border-violet-100 rounded-xl flex items-center gap-3">
+          <svg class="w-4 h-4 text-violet-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <p class="text-xs font-bold text-slate-600">
+            <span class="text-violet-700" data-i18n="hybridModeActive">Hybrid Mode:</span>
+            <span id="hybrid-count-label" class="text-slate-500"></span>
+          </p>
+          <button onclick="clearHybridSymptoms()" class="ml-auto text-xs text-slate-400 hover:text-red-500 font-bold transition-all">✕</button>
+        </div>
+
+        <!-- ── NLP PREVIEW PANEL (User-friendly, no tech jargon) ── -->
+        <div id="nlp-preview-panel" class="hidden">
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+            <!-- Header: friendly status -->
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div id="nlp-status-dot" class="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse flex-shrink-0"></div>
+                <h4 class="text-sm font-black text-slate-700" data-i18n="nlpPreviewTitle">Sistem memahami keluhan Anda</h4>
+              </div>
+              <span id="nlp-matched-count" class="text-xs font-bold px-3 py-1 bg-primary/10 text-primary rounded-full"></span>
+            </div>
+
+            <!-- Loading state (while waiting for response) -->
+            <div id="nlp-loading-state" class="hidden px-5 py-6 flex items-center gap-3">
+              <div class="flex gap-1">
+                <div class="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style="animation-delay:0ms"></div>
+                <div class="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style="animation-delay:150ms"></div>
+                <div class="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style="animation-delay:300ms"></div>
+              </div>
+              <p class="text-sm text-slate-500 font-medium">Sistem sedang memahami cerita Anda…</p>
+            </div>
+
+            <!-- Matched symptoms (user-friendly tags only) -->
+            <div class="px-5 py-4" id="nlp-results-body">
+              <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3" data-i18n="nlpMatchedLabel">Gejala yang terdeteksi:</p>
+              <div id="nlp-matched-symptoms" class="flex flex-wrap gap-2"></div>
+              <div id="nlp-no-match" class="hidden py-2">
+                <p class="text-sm text-slate-500 font-medium" data-i18n="nlpNoMatch">Belum ada gejala yang dipahami. Coba ceritakan lebih detail.</p>
+                <p class="text-xs text-slate-400 mt-1.5">💡 Tips: gunakan kata seperti <em>"gatal"</em>, <em>"bersisik"</em>, <em>"merah"</em>, <em>"malam hari"</em>, dll.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -245,7 +364,7 @@
 
   <!-- ═══════════ PAGE 3: RESULTS ═══════════ -->
   <div id="page-results" class="page hidden min-h-screen flex flex-col" style="background:#f0f4f8">
-    <main class="flex-1 overflow-y-auto w-full" style="padding-bottom:40px">
+    <main class="flex-1 w-full" style="padding-bottom:40px">
       <div id="results-loading" class="flex flex-col items-center justify-center h-64">
         <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
           style="background:linear-gradient(135deg,#ecfeff,#cffafe);border:2px solid #a5f3fc">
@@ -303,10 +422,10 @@
     </div>
   </div>
 
-  <script src="assets/js/likelihood_table.js?v=5"></script>
-  <script src="assets/js/data.js?v=5"></script>
-  <script src="assets/js/diseases.js?v=5"></script>
-  <script src="assets/js/app.js?v=5"></script>
+  <script src="assets/js/likelihood_table.js?v=8"></script>
+  <script src="assets/js/data.js?v=8"></script>
+  <script src="assets/js/diseases.js?v=8"></script>
+  <script src="assets/js/app.js?v=8"></script>
 </body>
 
 </html>

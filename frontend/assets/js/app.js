@@ -12,7 +12,13 @@ let state = {
   currentView: 'front', // 'front' or 'back'
   viewMode: 'adult',
   results: null,
-  language: localStorage.getItem('dn-lang') || 'id'
+  language: localStorage.getItem('dn-lang') || 'id',
+  // NLP Mode state
+  diagnosisMode: 'manual',   // 'manual' | 'nlp'
+  nlpText: '',
+  nlpMatchedSymptoms: [],    // [{symptom_id, symptom_name, score, match_type}]
+  nlpHybridSymptoms: {},     // Same format as state.symptoms for manual hybrid additions
+  nlpFullResponse: null,
 };
 
 // ── Translation Map ──────────────────────────────────────
@@ -80,7 +86,21 @@ const I18N = {
     diagnosisMode: 'Mode Diagnosis',
     printPdf: 'Cetak PDF',
     startOver: 'Mulai Ulang',
-    symptomsCount: (n) => `${n} Gejala Terpilih`
+    symptomsCount: (n) => `${n} Gejala Terpilih`,
+    // NLP Mode strings
+    tabManual: 'Body Map',
+    tabNLP: '✍️ Cerita Gejala',
+    nlpInputTitle: 'Ceritakan Keluhan Anda',
+    nlpInputDesc: 'Tulis gejala Anda dengan kata-kata sendiri — sistem akan memahaminya',
+    nlpExampleLabel: 'Contoh keluhan:',
+    nlpAnalyzeBtn: 'Analisis Keluhan Saya',
+    nlpAddManual: '+ Tambah dari Peta',
+    nlpPreviewTitle: 'Sistem Memahami Keluhan Anda',
+    nlpMatchedLabel: 'Gejala yang terdeteksi:',
+    nlpNoMatch: 'Belum ada gejala yang dipahami. Coba ceritakan lebih detail, contoh: "gatal di malam hari", "kulit bersisik", dll.',
+    hybridModeActive: 'Mode Gabungan:',
+    nlpResultBanner: (n, m) => `✨ Sistem memahami <strong>${n} gejala</strong> dari cerita Anda${m > 0 ? ` + <strong>${m} gejala tambahan</strong> dari Body Map` : ''}.`,
+    backToDashboard: 'Kembali ke Dashboard',
   },
   en: {
     appTitle: 'DermaNetra',
@@ -145,24 +165,38 @@ const I18N = {
     diagnosisMode: 'Diagnosis Mode',
     printPdf: 'Print PDF',
     startOver: 'Start Over',
-    symptomsCount: (n) => `${n} Symptom(s) Selected`
+    symptomsCount: (n) => `${n} Symptom(s) Selected`,
+    // NLP Mode strings (EN)
+    tabManual: 'Body Map',
+    tabNLP: '✍️ Describe Symptoms',
+    nlpInputTitle: 'Describe Your Symptoms',
+    nlpInputDesc: 'Write your symptoms in your own words — the system will understand',
+    nlpExampleLabel: 'Example complaints:',
+    nlpAnalyzeBtn: 'Analyze My Symptoms',
+    nlpAddManual: '+ Add from Body Map',
+    nlpPreviewTitle: 'System Understands Your Complaint',
+    nlpMatchedLabel: 'Detected symptoms:',
+    nlpNoMatch: 'No symptoms understood yet. Try describing in more detail, e.g. "itchy at night", "scaly skin", etc.',
+    hybridModeActive: 'Combined Mode:',
+    nlpResultBanner: (n, m) => `✨ System understood <strong>${n} symptoms</strong> from your description${m > 0 ? ` + <strong>${m} extra symptoms</strong> from Body Map` : ''}.`,
+    backToDashboard: 'Back to Dashboard',
   }
 };
 
 const SKIN_LABELS = {
   id: {
-    normal: 'Normal',
-    dry: 'Kering',
-    oily: 'Berminyak',
-    combination: 'Kombinasi',
-    sensitive: 'Sensitif'
+    normal: 'Kulit Normal',
+    dry: 'Kulit Kering',
+    oily: 'Kulit Berminyak',
+    combination: 'Kulit Kombinasi',
+    sensitive: 'Kulit Sensitif'
   },
   en: {
-    normal: 'Normal',
-    dry: 'Dry',
-    oily: 'Oily',
-    combination: 'Combination',
-    sensitive: 'Sensitive'
+    normal: 'Normal Skin',
+    dry: 'Dry Skin',
+    oily: 'Oily Skin',
+    combination: 'Combination Skin',
+    sensitive: 'Sensitive Skin'
   }
 };
 
@@ -271,11 +305,11 @@ function setLanguage(lang) {
   const btnEn = document.getElementById('lang-en');
   if(btnId && btnEn) {
     btnId.className = lang === 'id' 
-      ? 'px-3 py-1 text-[10px] font-bold rounded-full transition-all bg-white dark:bg-slate-700 shadow-sm text-teal-700' 
-      : 'px-3 py-1 text-[10px] font-bold rounded-full transition-all text-slate-500';
+      ? 'px-3 py-1 text-xs font-bold rounded-full transition-all bg-white dark:bg-slate-700 shadow-sm text-teal-700' 
+      : 'px-3 py-1 text-xs font-bold rounded-full transition-all text-slate-500';
     btnEn.className = lang === 'en' 
-      ? 'px-3 py-1 text-[10px] font-bold rounded-full transition-all bg-white dark:bg-slate-700 shadow-sm text-teal-700' 
-      : 'px-3 py-1 text-[10px] font-bold rounded-full transition-all text-slate-500';
+      ? 'px-3 py-1 text-xs font-bold rounded-full transition-all bg-white dark:bg-slate-700 shadow-sm text-teal-700' 
+      : 'px-3 py-1 text-xs font-bold rounded-full transition-all text-slate-500';
   }
 
   updateUIText();
@@ -363,13 +397,24 @@ function startAnalysis(){
   setTimeout(()=>renderBodyMap(), 380);
 }
 function resetAll(){
-  Object.assign(state,{age:'',sex:'',skinType:'',duration:'',disclaimer:false,currentView:'front',activeRegion:null,symptoms:{},results:null});
+  Object.assign(state,{age:'',sex:'',skinType:'',duration:'',disclaimer:false,currentView:'front',activeRegion:null,symptoms:{},results:null,
+    // Reset NLP state too
+    diagnosisMode:'manual', nlpText:'', nlpMatchedSymptoms:[], nlpHybridSymptoms:{}, nlpFullResponse:null
+  });
   
   // Clear inputs
   document.getElementById('input-age').value = '';
   document.getElementById('input-skin').value = '';
   const chk = document.getElementById('chk-disclaimer');
   if(chk) chk.checked = false;
+  
+  // Clear NLP textarea
+  const nlpTa = document.getElementById('nlp-complaint-text');
+  if(nlpTa) nlpTa.value = '';
+  
+  // Reset NLP preview
+  const nlpPanel = document.getElementById('nlp-preview-panel');
+  if(nlpPanel) nlpPanel.classList.add('hidden');
   
   document.querySelectorAll('.sex-btn,.dur-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('btn-start').disabled = true;
@@ -391,6 +436,7 @@ function resetAll(){
   const pill = document.querySelector('.floating-pill-wrap');
   if(pill) pill.classList.remove('visible');
 }
+
 function goBackToDiagnosis(){
   showPage('results','diagnosis');
   setTimeout(()=>renderBodyMap(), 380);
@@ -807,17 +853,23 @@ async function analyzeCondition(){
   
   showPage('diagnosis','results');
 
-  let apiResults = null;
+  let fullResponse = null;
   try {
     const resp = await fetchDiagnosis(allIds);
-    if(resp && resp.results) apiResults = resp.results;
-  } catch(e) { console.error('[DermaNetra] API Error:', e); }
+    if(resp && resp.results) fullResponse = resp;
+  } catch(e) { 
+    console.error('[DermaNetra] API Error:', e);
+    alert('Gagal menghubungi server. Pastikan koneksi internet aktif dan backend sedang berjalan.');
+    showPage('diagnosis');
+    return;
+  }
   
-  state.results = apiResults;
-  setTimeout(()=>renderResults(apiResults), 380);
+  state.results = fullResponse ? fullResponse.results : null;
+  state.fullResponse = fullResponse;
+  setTimeout(()=>renderResults(fullResponse), 380);
 }
 
-function renderResults(results){
+function renderResults(fullResponse){
   const loadEl    = document.getElementById('results-loading');
   const contentEl = document.getElementById('results-content');
   loadEl.classList.remove('hidden');
@@ -826,7 +878,7 @@ function renderResults(results){
   setTimeout(()=>{
     loadEl.classList.add('hidden');
     contentEl.classList.remove('hidden');
-    buildResultsUI(results);
+    buildResultsUI(fullResponse);
     contentEl.style.opacity = '0';
     requestAnimationFrame(()=>{ contentEl.style.transition='opacity .6s ease-out'; contentEl.style.opacity='1'; });
   }, 2200);
@@ -839,7 +891,6 @@ function getCircularGauge(percentage) {
   const dict = I18N[lang];
   
   const risk = percentage >= 80 ? 'high' : (percentage >= 40 ? 'med' : 'low');
-  const riskLabel = percentage >= 80 ? dict.confidenceHigh : (percentage >= 40 ? dict.confidenceMed : dict.confidenceLow);
 
   return `
     <div class="confidence-gauge">
@@ -848,8 +899,8 @@ function getCircularGauge(percentage) {
         <path class="gauge-fill risk-${risk}" stroke-dasharray="${dash}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
       </svg>
       <div class="gauge-label">
-        <span class="gauge-percent">${percentage.toFixed(2)}%</span>
-        <span class="gauge-sub">${riskLabel}</span>
+        <span class="gauge-percent">${percentage.toFixed(0)}%</span>
+        <span class="gauge-sub" style="font-size: 7px; opacity: 0.9; text-transform: uppercase; margin-top: -2px; letter-spacing: 0.05em;">Kecocokan</span>
       </div>
     </div>`;
 }
@@ -893,21 +944,21 @@ function getReportVisualization() {
 }
 
 // ── Symptom Match Analysis (Fase 1) ────────────────────────
-function buildSymptomMatchSection(diseaseId, userSymptomIds) {
+function buildSymptomMatchSection(diseaseId, userSymptomIds, nlpSymptomNames = {}) {
   const lt = (typeof LIKELIHOOD_TABLE !== 'undefined') ? LIKELIHOOD_TABLE[diseaseId] : null;
   if (!lt) return '';
 
   const strong = [], partial = [], none = [];
   
   userSymptomIds.forEach(sid => {
-    const name = SYMPTOM_MAP[sid] || `Gejala ${sid}`;
+    const name = nlpSymptomNames[sid] || SYMPTOM_MAP[sid] || `Gejala ${sid}`;
     const prob = lt[sid];
     if (prob === undefined || prob < 0.2) {
-      none.push({ sid, name, prob: prob || 0 });
+      none.push({ sid, name, label: state.language === 'en' ? 'Unlikely Related' : 'Mungkin dari Kondisi Lain' });
     } else if (prob >= 0.7) {
-      strong.push({ sid, name, prob });
+      strong.push({ sid, name, label: state.language === 'en' ? 'Highly Typical' : 'Sangat Khas' });
     } else {
-      partial.push({ sid, name, prob });
+      partial.push({ sid, name, label: state.language === 'en' ? 'Supporting' : 'Pendukung' });
     }
   });
 
@@ -923,17 +974,33 @@ function buildSymptomMatchSection(diseaseId, userSymptomIds) {
   }
 
   const renderItem = (item, cls, icon) => 
-    `<div class="match-item ${cls}"><span class="match-icon">${icon}</span><div class="match-text"><span class="match-name">${item.name}</span><span class="match-prob">P(G|D) = ${(item.prob * 100).toFixed(0)}%</span></div></div>`;
+    `<div class="match-item ${cls}"><span class="match-icon">${icon}</span><div class="match-text"><span class="match-name">${item.name}</span><span class="match-prob">${item.label}</span></div></div>`;
+
+  const totalSymptoms = strong.length + partial.length + none.length;
+  const matchRatio = totalSymptoms > 0 ? (strong.length + partial.length) / totalSymptoms : 0;
+  
+  let warningHtml = '';
+  if (totalSymptoms >= 3 && matchRatio <= 0.35) {
+      warningHtml = `
+      <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex gap-3 text-amber-800 animate-fade">
+         <svg class="w-6 h-6 flex-shrink-0 text-amber-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+         <div>
+            <h4 class="font-bold text-sm mb-1">${state.language === 'en' ? 'Low Diagnostic Confidence' : 'Akurasi Diagnosis Rendah (Low Confidence)'}</h4>
+            <p class="text-xs opacity-90 leading-relaxed">${state.language === 'en' ? 'Your reported symptoms vary widely and most do not fit the typical profile of this condition. You may be experiencing a different condition or a combination of skin issues.' : 'Gejala yang Anda laporkan sangat bervariasi dan sebagian besar tidak cocok dengan profil khas penyakit ini. Ada kemungkinan Anda mengalami kondisi lain atau kombinasi beberapa masalah kulit.'}</p>
+         </div>
+      </div>`;
+  }
 
   let html = `
+    ${warningHtml}
     <div class="symptom-match-card section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm my-8 animate-fade">
-      <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+      <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2 text-base">
         <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-        🔬 Kenapa Sistem Memilih Ini?
+        📋 Kenapa Sistem Memilih Ini?
       </h3>
-      <p class="text-xs text-slate-500 mb-4">Analisis kecocokan antara gejala yang Anda pilih dan gejala khas penyakit ini berdasarkan tabel probabilitas P(Gejala | Penyakit).</p>
-      <div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Gejala Anda (${userSymptomIds.length}):</div>
-      <div class="match-list">`;
+      <p class="text-sm text-slate-500 mb-4 leading-relaxed">${state.language === 'en' ? 'Analysis of how your selected symptoms match the typical profile of this condition.' : 'Analisis kecocokan antara gejala yang Anda pilih dengan profil khas penyakit ini.'}</p>
+      <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Gejala Anda (${userSymptomIds.length}):</div>
+      <div class="match-list text-sm max-h-[40vh] overflow-y-auto custom-scrollbar pr-2">`;
 
   if (strong.length) {
     html += strong.map(s => renderItem(s, 'match-strong', '✅')).join('');
@@ -943,13 +1010,18 @@ function buildSymptomMatchSection(diseaseId, userSymptomIds) {
   }
   if (none.length) {
     html += none.map(s => renderItem(s, 'match-none', '⚪')).join('');
+    html += `
+    <div class="mt-4 p-3 bg-slate-50 border border-slate-100 rounded-lg text-xs text-slate-500 flex gap-2">
+      <svg class="w-4 h-4 flex-shrink-0 text-slate-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span>${state.language === 'en' ? 'Some of your symptoms (⚪) might not be part of this condition and could indicate a different secondary issue.' : 'Beberapa gejala Anda (⚪) mungkin bukan bagian dari penyakit ini dan bisa saja menandakan kondisi sekunder.'}</span>
+    </div>`;
   }
 
   html += `</div>`;
 
   if (profileNotes.length) {
-    html += `<div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2 mt-4">Latar Belakang Anda:</div>
-      <div class="match-profile-list">${profileNotes.join('')}</div>`;
+    html += `<div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 mt-6">Latar Belakang Anda:</div>
+      <div class="match-profile-list text-sm space-y-2">${profileNotes.join('')}</div>`;
   }
 
   html += `</div>`;
@@ -957,13 +1029,22 @@ function buildSymptomMatchSection(diseaseId, userSymptomIds) {
 }
 
 // ── Triage Badge (Fase 3) ─────────────────────────────────
-function getTriageBadge(diseaseId) {
+function getTriageBadge(diseaseId, percentage, hasRedFlag = false) {
   const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[diseaseId]) || {};
-  const level = db.triage_level || 'gp_visit';
-  const note = db.triage_note || '';
+  let level = db.triage_level || 'gp_visit';
+  let note = db.triage_note || '';
+
+  // Red Flag Override (Absolute Priority)
+  if (hasRedFlag) {
+    level = 'emergency';
+    note = 'Gejala Red Flag terdeteksi! Segera cari bantuan medis darurat.';
+  } else if (percentage < 70) {
+    if (level === 'emergency') level = 'specialist';
+    if (percentage < 50 && (level === 'emergency' || level === 'specialist')) level = 'gp_visit';
+  }
 
   const config = {
-    home_care:   { label: '🟢 Perawatan Mandiri', cls: 'triage-home',       desc: 'Cukup dirawat di rumah dengan saran berikut' },
+    home_care:   { label: '🏠 Perawatan Mandiri', cls: 'triage-home',       desc: 'Cukup dirawat di rumah dengan saran berikut' },
     gp_visit:    { label: '🟡 Dokter Umum',       cls: 'triage-gp',         desc: 'Jadwalkan kunjungan dalam 2–3 hari' },
     specialist:  { label: '🟠 Dokter Spesialis',   cls: 'triage-specialist', desc: 'Temui dokter spesialis kulit dalam 24 jam' },
     emergency:   { label: '🔴 Gawat Darurat',      cls: 'triage-emergency',  desc: 'Segera ke rumah sakit / UGD' },
@@ -973,32 +1054,41 @@ function getTriageBadge(diseaseId) {
   return `
     <div class="triage-badge ${c.cls}">
       <div class="flex flex-col gap-1">
-        <span class="triage-label">${c.label}</span>
-        <span class="triage-desc">${note || c.desc}</span>
+        <span class="triage-label text-base font-bold">${c.label}</span>
+        <span class="triage-desc text-sm">${note || c.desc} ${!hasRedFlag && percentage < 70 && level === 'emergency' ? '(Peringatan ini muncul dari kecocokan sebagian, disarankan periksa dokter untuk kepastian)' : ''}</span>
       </div>
-      <button onclick="window.open('https://www.google.com/maps/search/klinik+kulit+terdekat','_blank')" class="ml-auto bg-white/20 hover:bg-white/30 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      <button onclick="window.open('https://www.google.com/maps/search/klinik+kulit+terdekat','_blank')" class="ml-auto bg-white/20 hover:bg-white/30 text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 transition-all">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         Cari Dokter Terdekat
       </button>
     </div>`;
 }
 
 // ── Red Flags Checklist (Fase 4) ──────────────────────────
-function buildRedFlagsSection(diseaseId) {
-  const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[diseaseId]) || {};
-  const flags = db.red_flags;
-  if (!flags || !flags.length) return '';
+function buildRedFlagsSection(diseaseId, percentage, hasRedFlag = false, redFlagSymptoms = []) {
+  if (!hasRedFlag && percentage < 70) return '';
 
-  const items = flags.map(f => `<li><span class="red-flag-icon">🚩</span> ${f}</li>`).join('');
+  const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[diseaseId]) || {};
+  let flags = db.red_flags || [];
+  
+  // Combine db red_flags with triggered red_flag_symptoms if any
+  let allFlags = new Set([...flags]);
+  if (hasRedFlag && redFlagSymptoms.length) {
+    redFlagSymptoms.forEach(rfs => allFlags.add(`Gejala Bahaya Terdeteksi: ${rfs}`));
+  }
+  
+  if (allFlags.size === 0) return '';
+
+  const items = Array.from(allFlags).map(f => `<li><span class="red-flag-icon">🚩</span> ${f}</li>`).join('');
 
   return `
-    <div class="red-flags-card section-card p-6 rounded-2xl shadow-sm my-8 animate-fade">
-      <h3 class="font-bold border-b pb-3 mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-        Monitor Kondisi Anda!
+    <div class="red-flags-card section-card p-6 rounded-2xl shadow-sm my-8 animate-fade bg-red-50/50 border-red-100">
+      <h3 class="font-bold text-red-700 border-b border-red-200 pb-3 mb-4 flex items-center gap-2 text-base">
+        <svg class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        ${hasRedFlag ? 'PERHATIAN MEDIS SEGERA DIBUTUHKAN!' : 'Monitor Kondisi Anda!'}
       </h3>
-      <p class="text-xs mb-4 opacity-80">Segera batalkan perawatan mandiri dan cari bantuan medis darurat jika mengalami:</p>
-      <ul class="red-flags-list">${items}</ul>
+      <p class="text-sm mb-4 text-red-900 opacity-90">${hasRedFlag ? 'Anda memilih gejala yang bersifat sangat darurat. Segera batalkan perawatan mandiri dan kunjungi UGD terdekat.' : 'Segera batalkan perawatan mandiri dan cari bantuan medis darurat jika mengalami:'}</p>
+      <ul class="red-flags-list text-sm text-red-900">${items}</ul>
     </div>`;
 }
 
@@ -1040,12 +1130,12 @@ function getPersonalizedNotes(diseaseId) {
   if (!notes.length) return '';
 
   return `
-    <div class="personalized-note-card p-4 rounded-xl mt-4">
-      <div class="text-[10px] font-black uppercase tracking-widest text-purple-700 mb-2 flex items-center gap-1.5">
-        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+    <div class="personalized-note-card p-5 rounded-xl mt-4">
+      <div class="text-xs font-black uppercase tracking-widest text-purple-700 mb-3 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
         Saran Khusus untuk Profil Anda
       </div>
-      <ul class="text-sm text-slate-700 space-y-2">${notes.map(n => `<li class="flex gap-2"><span class="text-purple-500 mt-0.5">💡</span><span>${n}</span></li>`).join('')}</ul>
+      <ul class="text-sm text-slate-700 space-y-2.5 leading-relaxed">${notes.map(n => `<li class="flex gap-2"><span class="text-purple-500 mt-0.5">💡</span><span>${n}</span></li>`).join('')}</ul>
     </div>`;
 }
 
@@ -1101,13 +1191,13 @@ function getClinicalGallery(diseaseId, diseaseName) {
   const imgUrl = `https://dermnetnz.org/assets/Uploads/${slug}-1__FocusFillWzYwMCw0MDAsIm9wZW4iLDBd.jpg`;
   
   return `
-    <div class="clinical-gallery-card section-card bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm mb-0">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+    <div class="clinical-gallery-card section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm mb-0">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
         <h3 class="font-black text-slate-900 flex items-center gap-2 text-xs uppercase tracking-[0.2em]">
-          <svg class="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <svg class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
           Galeri Referensi
         </h3>
-        <a href="${topicUrl}" target="_blank" class="text-[9px] font-black text-primary hover:scale-105 transition-all flex items-center gap-1 bg-primary/5 px-3 py-1 rounded-full border border-primary/15 uppercase tracking-tighter">
+        <a href="${topicUrl}" target="_blank" class="text-xs font-black text-primary hover:scale-105 transition-all flex items-center gap-1 bg-primary/5 px-4 py-1.5 rounded-full border border-primary/15 uppercase tracking-tighter">
           DermNet →
         </a>
       </div>
@@ -1115,15 +1205,15 @@ function getClinicalGallery(diseaseId, diseaseName) {
       <div class="medical-gallery-frame rounded-2xl overflow-hidden border border-slate-100 relative" style="background:${svgBg}; min-height:160px;">
         <img src="${imgUrl}" referrerpolicy="no-referrer" loading="lazy" 
           onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');"
-          class="w-full object-cover" style="max-height:180px;" />
+          class="w-full object-cover" style="max-height:220px;" />
         <div class="hidden flex flex-col items-center justify-center p-6 text-center" style="min-height:160px;">
-          <img src="${placeholderDataUrl}" class="w-full rounded-xl" alt="Ilustrasi medis ${diseaseName}" />
-          <p class="text-[9px] font-bold uppercase tracking-widest mt-3" style="color:${svgColor}; opacity:0.7">${diseaseName}</p>
+          <img src="${placeholderDataUrl}" class="h-40 w-auto mx-auto rounded-xl drop-shadow-sm opacity-90" alt="Ilustrasi medis ${diseaseName}" />
+          <p class="text-xs font-bold uppercase tracking-widest mt-3" style="color:${svgColor}; opacity:0.7">${diseaseName}</p>
         </div>
       </div>
       
-      <a href="${topicUrl}" target="_blank" class="mt-3 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:opacity-80" style="background:${svgBg}; color:${svgColor}; border:1px solid ${svgColor}30">
-        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+      <a href="${topicUrl}" target="_blank" class="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:opacity-80" style="background:${svgBg}; color:${svgColor}; border:1px solid ${svgColor}30">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         Lihat di DermNet NZ
       </a>
     </div>`;
@@ -1131,191 +1221,260 @@ function getClinicalGallery(diseaseId, diseaseName) {
 
 function buildFeedbackSection() {
   return `
-    <div class="feedback-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl text-center max-w-lg w-full animate-fade">
-      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 mb-4 font-serif italic text-xl font-black shadow-inner">DN</div>
-      <h3 class="text-xl font-black text-slate-900 mb-3 tracking-tight">${state.language === 'id' ? 'Apakah diagnosis ini membantu?' : 'Was this diagnosis helpful?'}</h3>
-      <p class="text-slate-500 mb-6 leading-relaxed text-xs font-medium">
+    <div class="feedback-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm text-center max-w-md w-full animate-fade">
+      <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 mb-3 font-serif italic text-lg font-black shadow-inner">DN</div>
+      <h3 class="text-base font-black text-slate-900 mb-2 tracking-tight">${state.language === 'id' ? 'Apakah diagnosis ini membantu?' : 'Was this diagnosis helpful?'}</h3>
+      <p class="text-slate-500 mb-5 leading-relaxed text-xs font-medium">
         ${state.language === 'id' 
           ? 'Masukan Anda membantu kami meningkatkan akurasi sistem pakar ini.' 
           : 'Your feedback helps us improve the accuracy of this clinical engine.'}
       </p>
       <div class="flex gap-3 justify-center">
-        <button onclick="this.parentElement.innerHTML='<div class=\'text-green-600 font-black py-2 animate-bounce text-[10px] tracking-widest uppercase\'>✨ TERIMA KASIH!</div>'" 
-                class="flex-1 max-w-[140px] py-3 bg-primary text-white rounded-xl font-black text-[9px] uppercase tracking-widest hover:scale-105 transition-all shadow-lg active:scale-95">
+        <button onclick="this.parentElement.innerHTML='<div class=\'text-green-600 font-black py-1.5 animate-bounce text-xs tracking-widest uppercase\'>✨ TERIMA KASIH!</div>'" 
+                class="flex-1 max-w-[120px] py-2.5 bg-primary text-white rounded-lg font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-sm active:scale-95">
           ${state.language === 'id' ? 'Ya, Akurat' : 'Yes'}
         </button>
-        <button onclick="this.parentElement.innerHTML='<div class=\'text-slate-500 font-black py-2 animate-bounce text-[10px] tracking-widest uppercase\'>🙏 TERIMA KASIH.</div>'" 
-                class="flex-1 max-w-[140px] py-3 bg-white border-2 border-slate-100 text-slate-500 rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-slate-50 hover:scale-105 transition-all active:scale-95">
-          ${state.language === 'id' ? 'Kurang Tepat' : 'No'}
+        <button onclick="this.parentElement.innerHTML='<div class=\'text-slate-500 font-black py-1.5 animate-pulse text-xs tracking-widest uppercase\'>TERIMA KASIH ATAS MASUKANNYA!</div>'" 
+                class="flex-1 max-w-[120px] py-2.5 bg-slate-100 text-slate-600 rounded-lg font-black text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-sm active:scale-95">
+          ${state.language === 'id' ? 'Kurang Pas' : 'No'}
         </button>
       </div>
     </div>`;
 }
 
-// ── Build Results UI (PROFESSIONAL 3-COLUMN DASHBOARD) ─────────
-function buildResultsUI(results){
+function buildResultsUI(fullResponse) {
   const el = document.getElementById('results-content');
-  if(!el) return;
+  if (!fullResponse || !fullResponse.results || !fullResponse.results.length) {
+    el.innerHTML = `<div class="p-10 text-center text-slate-500 font-bold bg-white rounded-2xl shadow-sm border border-slate-100">Silakan pilih gejala terlebih dahulu.</div>`;
+    return;
+  }
+
+  const results = fullResponse.results;
+  const hasRedFlag = fullResponse.has_red_flag;
+  const redFlagSymptoms = fullResponse.red_flag_symptoms || [];
+
   const dict = I18N[state.language];
+  const p = results[0];
+  const alts = results.slice(1, 4);
+
+  const t = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[p.disease_id] && DISEASE_DB[p.disease_id].treatments) 
+            || { otc:[], prescription:[], lifestyle:[], see_doctor:'' };
+  const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[p.disease_id]) || { clinical_features:[], causes:[] };
+  
+  // Collect symptom IDs: NLP mode uses all_symptom_ids from response, manual uses state.symptoms
+  const allUserSymptomIds = [];
+  const nlpSymptomNames = {};
+
+  if (fullResponse && fullResponse.all_symptom_ids && fullResponse.method && fullResponse.method.startsWith('nlp')) {
+    allUserSymptomIds.push(...fullResponse.all_symptom_ids);
+    if (fullResponse.matched_symptoms) {
+      fullResponse.matched_symptoms.forEach(m => nlpSymptomNames[m.symptom_id] = m.symptom_name);
+    }
+  } else {
+    Object.values(state.symptoms).forEach(s => s.forEach(id => allUserSymptomIds.push(id)));
+  }
+
+  // NLP banner (only shown when NLP mode)
+  const nlpBanner = buildNLPResultsBanner(fullResponse);
 
   try {
-    if(!results || !results.length){
-      el.innerHTML = `
-        <div class="flex flex-col items-center justify-center py-20 animate-fade text-center">
-          <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-6">
-             <svg class="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-          </div>
-          <h3 class="text-xl font-bold text-slate-800">${dict.noMatchesFound}</h3>
-          <button onclick="resetAll()" class="mt-4 px-8 py-3 bg-primary text-white rounded-xl font-black tracking-widest uppercase text-xs hover:scale-105 transition-all shadow-xl">Ulangi Analisis</button>
-        </div>`;
-      return;
-    }
-
-    const p = results[0];
-    const alts = results.slice(1, 4);
-    const db = (typeof DISEASE_DB !== 'undefined' && DISEASE_DB[p.disease_id]) || {};
-    const t = db.treatments || {otc:[],prescription:[],lifestyle:[],see_doctor:'Consult a medical professional.'};
-
-    const allUserSymptomIds = [];
-    Object.values(state.symptoms).forEach(s => s.forEach(id => allUserSymptomIds.push(id)));
-
-    const _getV = (v) => v ? (typeof v === 'string' ? v : (Array.isArray(v) ? v : (v[state.language] || v['id'] || v))) : '';
-    const _lst = (arrOrObj) => {
-      const data = _getV(arrOrObj);
-      if (!data || !Array.isArray(data)) return `<li>${dict.notSpecified || 'Tidak spesifik.'}</li>`;
-      return data.length ? data.map(x=>`<li>${x}</li>`).join('') : `<li>None.</li>`;
+    const _getV = v => {
+      if (!v) return 'Hubungi dokter untuk info lebih lanjut.';
+      if (typeof v === 'object' && !Array.isArray(v)) return v[state.language] || v.id || v.en;
+      return v;
+    };
+    const _lst = arr => {
+      const val = _getV(arr);
+      if (!val || !val.length) return '<li class="italic opacity-50">Data belum tersedia</li>';
+      return val.map(i => `<li>${i}</li>`).join('');
     };
 
     let out = `
       <div class="w-full max-w-[1920px] mx-auto px-6 py-6 animate-fade">
         
+        <!-- Header Banner & Warning -->
+        ${nlpBanner}
+
         <!-- Compact Context Header -->
         <div class="flex justify-center mb-8">
-           <span class="bg-white px-6 py-2.5 rounded-full text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] shadow-sm border border-slate-100 ring-1 ring-slate-50 italic">
+           <span class="bg-white px-6 py-2.5 rounded-full text-xs font-black text-slate-400 uppercase tracking-[0.3em] shadow-sm border border-slate-100 ring-1 ring-slate-50 italic">
               ${state.sex==='male' ? dict.contextMale : dict.contextFemale} • ${state.age} THN • ${SKIN_LABELS[state.language][state.skinType]}
            </span>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          <!-- [1/3] LEFT COLUMN: THE VISUAL (3 Units) -->
-          <div class="lg:col-span-3 space-y-4 lg:sticky lg:top-24">
-            <div class="section-card bg-white border border-slate-100 p-5 rounded-[2rem] shadow-sm overflow-hidden">
-                <h3 class="font-black text-[9px] text-primary tracking-[0.4em] uppercase mb-4 flex items-center gap-3">
-                  <span class="w-6 h-[1.5px] bg-primary/30"></span>
-                  Blueprint Lokasi Gejala
-                </h3>
-                <div class="blueprint-body-map-container">
-                  ${getReportVisualization()}
-                </div>
-                <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest text-center mt-3">Zona Tubuh Teridentifikasi</p>
-            </div>
-          </div>
+        <!-- Symptom Summary -->
+        ${allUserSymptomIds.length ? `
+        <div class="bg-white border border-slate-100 rounded-2xl shadow-sm px-6 py-4 mb-6 flex flex-wrap gap-2 items-center">
+          <span class="text-xs font-black uppercase tracking-widest text-slate-400 mr-2">Gejala Dilaporkan:</span>
+          ${allUserSymptomIds.map(sid => `<span class="px-2.5 py-1 bg-primary/8 text-primary border border-primary/15 rounded-full text-xs font-bold">${nlpSymptomNames[sid] || SYMPTOM_MAP[sid] || sid}</span>`).join('')}
+        </div>` : ''}
 
-          <!-- [2/3] MIDDLE COLUMN: MAIN FOCUS (6 Units) -->
-          <div class="lg:col-span-6 space-y-4">
+        <div class="flex flex-col gap-6">
             
+            <!-- TOP FULL WIDTH SECTIONS -->
+            <div class="space-y-6">
             <!-- Main Diagnosis -->
             <div class="primary-card shadow-xl border border-slate-100 rounded-[2rem] overflow-hidden bg-white ring-1 ring-slate-100/50">
-               <div class="p-6 bg-primary text-white flex justify-between items-center bg-gradient-to-br from-primary to-blue-800">
+               <div class="p-8 bg-primary text-white flex justify-between items-center bg-gradient-to-br from-primary to-blue-800">
                   <div>
-                    <div class="flex items-center gap-2 mb-2">
-                       <span class="text-[8px] uppercase font-black tracking-widest bg-white/20 px-2 py-0.5 rounded-full">${dict.topMatch}</span>
-                       <button onclick="saveToHistory()" class="bg-white text-primary text-[8px] font-black px-3 py-0.5 rounded-full shadow-lg hover:scale-105 transition-all">
+                    <div class="flex items-center gap-2 mb-3">
+                       <span class="text-xs uppercase font-black tracking-widest bg-white/20 px-3 py-1 rounded-full">${dict.topMatch}</span>
+                       <button onclick="saveToHistory()" class="bg-white text-primary text-xs font-black px-4 py-1 rounded-full shadow-lg hover:scale-105 transition-all">
                           SIMPAN
                        </button>
                     </div>
-                    <h1 class="text-xl lg:text-2xl font-black tracking-tighter leading-tight">${state.language === 'en' ? (p.disease_name_en || p.disease_name) : (p.disease_name_id || p.disease_name)}</h1>
+                    <h1 class="text-2xl lg:text-3xl font-black tracking-tight leading-snug">${state.language === 'en' ? (p.disease_name_en || p.disease_name) : (p.disease_name_id || p.disease_name)}</h1>
                   </div>
                   ${getCircularGauge(p.percentage)}
                </div>
-               <div class="p-6">
-                  <div class="flex flex-wrap gap-2 mb-4">
-                     <span class="px-2 py-1 bg-slate-50 border border-slate-100 rounded-md text-[8px] font-black tracking-widest text-slate-400 font-mono uppercase">${p.icd10} • DATABASE</span>
-                     <span class="px-2 py-1 border rounded-md text-[8px] font-black tracking-[0.2em] ${p.contagious ? 'bg-red-50 text-red-700 border-red-100' : 'bg-green-50 text-green-700 border-green-100'} uppercase">${p.contagious ? '⚠️ Menular' : '✅ Tidak Menular'}</span>
+               <div class="p-8">
+                  <div class="flex flex-wrap gap-2 mb-6">
+                     <span class="px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-md text-xs font-black tracking-widest text-slate-500 font-mono uppercase" title="Kode Medis Internasional (ICD-10)">ICD-10: ${p.icd10}</span>
+                     <span class="px-3 py-1.5 border border-slate-100 rounded-md text-xs font-black tracking-[0.2em] bg-slate-50 text-slate-500 uppercase">${_getV(db.prevalence) || 'UMUM'}</span>
+                     <span class="px-3 py-1.5 border rounded-md text-xs font-black tracking-[0.2em] ${p.contagious ? 'bg-red-50 text-red-700 border-red-100' : 'bg-green-50 text-green-700 border-green-100'} uppercase">${p.contagious ? '⚠️ Menular' : '✅ Tidak Menular'}</span>
                   </div>
-                  <div class="mb-4">${getTriageBadge(p.disease_id)}</div>
-                  <p class="text-slate-600 text-sm font-medium leading-relaxed opacity-90">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
+                  <div class="mb-6">${getTriageBadge(p.disease_id, p.percentage, hasRedFlag)}</div>
+                  <p class="text-slate-600 text-sm font-medium leading-relaxed">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
                </div>
             </div>
 
-            ${buildRedFlagsSection(p.disease_id).replace('my-8', 'mb-0')}
+            ${buildRedFlagsSection(p.disease_id, p.percentage, hasRedFlag, redFlagSymptoms).replace('my-8', 'mb-0')}
 
-            <!-- Treatment Dashboard -->
-            <div class="section-card bg-white border border-blue-50 p-6 rounded-[2rem] shadow-sm ring-1 ring-blue-50">
-               <h3 class="font-black text-[10px] text-blue-700 tracking-[0.4em] uppercase mb-6 flex items-center gap-2">💊 ${dict.treatmentPlan}</h3>
-               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div class="p-5 rounded-2xl bg-green-50/40 border-l-[6px] border-l-green-500 shadow-sm">
-                     <span class="text-[8px] font-black uppercase text-green-700 tracking-widest block mb-2">${dict.otc}</span>
-                     <ul class="text-[11px] text-slate-700 space-y-1 font-medium opacity-90">${_lst(t.otc)}</ul>
+            ${buildSymptomMatchSection(p.disease_id, allUserSymptomIds, nlpSymptomNames).replace('my-8', 'mb-0')}
+            </div> <!-- END FULL WIDTH -->
+
+            <!-- 50/50 GRID LAYOUT FOR REMAINDER -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+               
+               <!-- LEFT COLUMN -->
+               <div class="space-y-6">
+                  
+                  <!-- Treatment Dashboard -->
+                  <div class="section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm ring-1 ring-slate-100/50 h-full">
+                     <h3 class="font-black text-sm text-slate-800 tracking-[0.2em] uppercase mb-6 flex items-center gap-2">💊 ${dict.treatmentPlan}</h3>
+                     
+                     <div class="flex flex-col gap-6 mb-6">
+                  <!-- Green Zone: OTC & Safe Care -->
+                  <div class="p-6 rounded-2xl bg-emerald-50 border border-emerald-100 shadow-sm relative overflow-hidden flex flex-col gap-5">
+                     <div class="absolute top-0 right-0 p-3 opacity-20 text-4xl">🌿</div>
+                     <div>
+                        <span class="text-xs font-black uppercase text-emerald-700 tracking-[0.2em] block mb-3 flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Perawatan Mandiri (Aman)</span>
+                        <ul class="text-sm text-emerald-950 space-y-2 font-medium opacity-90 list-disc pl-4 relative z-10">${_lst(t.otc)}</ul>
+                     </div>
+                     ${t.lifestyle && _getV(t.lifestyle) ? `
+                     <div class="pt-4 border-t border-emerald-200/50">
+                        <span class="text-xs font-black uppercase text-emerald-700 tracking-[0.2em] block mb-3 flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> Gaya Hidup & Pantangan</span>
+                        <ul class="text-sm text-emerald-950 space-y-2 font-medium opacity-90 list-disc pl-4 relative z-10">${_lst(t.lifestyle)}</ul>
+                     </div>` : ''}
                   </div>
-                  <div class="p-5 rounded-2xl bg-blue-50/40 border-l-[6px] border-l-blue-500 shadow-sm">
-                     <span class="text-[8px] font-black uppercase text-blue-700 tracking-widest block mb-2">${dict.rx}</span>
-                     <ul class="text-[11px] text-slate-700 space-y-1 font-medium opacity-90">${_lst(t.prescription)}</ul>
+                  
+                  <!-- Blue/Red Zone: Prescription -->
+                  <div class="p-6 rounded-2xl bg-blue-50 border border-blue-200 shadow-sm relative overflow-hidden ring-1 ring-blue-500/10">
+                     <div class="absolute top-0 right-0 p-3 opacity-10 text-4xl">⚠️</div>
+                     <span class="text-xs font-black uppercase text-blue-800 tracking-[0.2em] block mb-3 flex items-center gap-1.5"><svg class="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg> Wajib Resep & Pengawasan Dokter</span>
+                     <ul class="text-sm text-blue-950 space-y-2 font-medium opacity-90 list-disc pl-4 relative z-10">${_lst(t.prescription)}</ul>
                   </div>
                </div>
-               <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl mb-4 text-[10px] text-slate-600 italic font-medium">${getPersonalizedNotes(p.disease_id)}</div>
-               <div class="p-5 border-2 border-amber-50 bg-amber-50/50 rounded-[1.5rem] text-[10px] text-amber-950 flex gap-3 transition-all hover:bg-amber-100 items-start">
-                 <span class="text-xl animate-pulse">🚨</span>
-                 <div><strong class="block mb-0.5 text-xs font-black uppercase tracking-tight text-amber-900">KAPAN HARUS KE DOKTER</strong> <p class="opacity-80">${_getV(t.see_doctor)}</p></div>
+
+               ${getPersonalizedNotes(p.disease_id) ? `<div class="p-6 bg-slate-50 border border-slate-100 rounded-xl mb-6 text-sm text-slate-600 italic font-medium">${getPersonalizedNotes(p.disease_id)}</div>` : ''}
+               
+               <!-- Consolidated Action Plan -->
+               <div class="p-6 bg-amber-50 rounded-[1.5rem] border border-amber-200 shadow-sm flex flex-col sm:flex-row gap-4 items-start sm:items-center mt-2">
+                 <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                 </div>
+                 <div>
+                    <h4 class="text-amber-900 font-black text-xs tracking-widest uppercase mb-1">Langkah Medis Selanjutnya</h4>
+                    <p class="text-amber-800 text-sm font-medium leading-relaxed">${_getV(t.see_doctor)}</p>
+                 </div>
                </div>
             </div>
 
             ${alts.length ? `
             <!-- Alternative Diagnoses -->
-            <div class="section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm mb-0">
-               <h3 class="font-black text-[10px] text-slate-500 tracking-[0.3em] uppercase mb-6 flex items-center gap-2">🔍 Kemungkinan Lainnya</h3>
+            <div class="section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm">
+               <h3 class="font-black text-xs text-slate-500 tracking-[0.2em] uppercase mb-6 flex items-center gap-2">🔍 Kemungkinan Lainnya</h3>
                <div class="space-y-4">
                   ${alts.map(a => `
-                  <div class="flex items-center justify-between p-5 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-primary/20 transition-all">
+                  <div class="flex items-center justify-between p-6 rounded-2xl bg-slate-50/80 border border-slate-100 hover:border-primary/20 transition-all">
                     <div>
-                      <div class="font-black text-slate-800 text-lg tracking-tight">${state.language === 'en' ? a.disease_name_en : a.disease_name_id}</div>
-                      <div class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">${a.icd10} • COMMON</div>
+                      <div class="font-black text-slate-800 text-base tracking-tight">${state.language === 'en' ? a.disease_name_en : a.disease_name_id}</div>
+                      <div class="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">${a.icd10} • ${typeof DISEASE_DB !== 'undefined' && DISEASE_DB[a.disease_id] ? (_getV(DISEASE_DB[a.disease_id].prevalence) || 'UNSPECIFIED') : 'UNSPECIFIED'}</div>
                     </div>
                     <div class="text-right">
-                      <div class="text-2xl font-black text-slate-900 leading-none">${a.percentage.toFixed(2)}%</div>
-                      <div class="text-[10px] uppercase font-bold text-slate-400">Match</div>
+                      <div class="text-lg font-black text-slate-800 leading-none">${a.percentage.toFixed(1)}%</div>
+                      <div class="text-xs uppercase font-bold text-slate-400 mt-1 tracking-widest">Match</div>
                     </div>
                   </div>`).join('')}
                </div>
             </div>` : ''}
-          </div>
+               </div> <!-- END LEFT COLUMN -->
 
-          <!-- [3/3] RIGHT COLUMN: AI ANALYTICS (3 Units) -->
-          <div class="lg:col-span-3 space-y-4 lg:sticky lg:top-24">
-            
-            ${buildSymptomMatchSection(p.disease_id, allUserSymptomIds).replace('my-8', 'my-0')}
+               <!-- RIGHT COLUMN -->
+               <div class="space-y-6 flex flex-col h-full">
+            <!-- Prognosis -->
+            ${db.prognosis ? `
+            <div class="section-card bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+               <h3 class="font-black text-xs text-teal-700 tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                 Prognosis & Perkiraan Pemulihan
+               </h3>
+               <p class="text-base text-slate-700 leading-relaxed font-medium">${db.prognosis}</p>
+            </div>` : ''}
 
-            <div class="section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm">
-               <h3 class="font-black text-[10px] text-indigo-700 tracking-[0.3em] uppercase mb-6 flex items-center gap-2">🔬 Bukti Klinis</h3>
+            <!-- Complications -->
+            ${db.complications && db.complications.length ? `
+            <div class="section-card bg-white border border-red-50 p-6 rounded-2xl shadow-sm">
+               <h3 class="font-black text-xs text-red-700 tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                 Risiko Komplikasi Jika Tidak Ditangani
+               </h3>
+               <ul class="space-y-3">
+                 ${db.complications.map(c => `<li class="flex gap-2 text-base text-slate-700"><span class="text-red-400 mt-1 flex-shrink-0">▶</span><span>${c}</span></li>`).join('')}
+               </ul>
+            </div>` : ''}
+
+
+            <!-- AI Analytics & Clinical Evidence -->
+             <div class="section-card bg-white border border-slate-100 p-8 rounded-[2rem] shadow-sm">
+               <h3 class="font-black text-xs text-indigo-700 tracking-[0.2em] uppercase mb-6 flex items-center gap-2">📋 Bukti Klinis</h3>
                <div class="space-y-6">
                   <div>
-                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">FITUR KLINIS</span>
-                    <ul class="text-[11px] text-slate-600 space-y-1.5 list-disc pl-3">${_lst(db.clinical_features)}</ul>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">FITUR KLINIS</span>
+                    <ul class="text-sm text-slate-700 space-y-2 list-disc pl-4 leading-relaxed">${_lst(db.clinical_features)}</ul>
                   </div>
                   <div>
-                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">PENYEBAB</span>
-                    <ul class="text-[11px] text-slate-600 space-y-1.5 list-disc pl-3">${_lst(db.causes)}</ul>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">PENYEBAB</span>
+                    <ul class="text-sm text-slate-700 space-y-2 list-disc pl-4 leading-relaxed">${_lst(db.causes)}</ul>
                   </div>
+                  ${db.risk_factors && _getV(db.risk_factors) ? `
+                  <div>
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2">FAKTOR RISIKO</span>
+                    <ul class="text-sm text-slate-700 space-y-2 list-disc pl-4 leading-relaxed">${_lst(db.risk_factors)}</ul>
+                  </div>` : ''}
+                  ${db.references && _getV(db.references) ? `
+                  <div class="pt-4 border-t border-slate-100">
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest block mb-2 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg> REFERENSI</span>
+                    <ul class="text-sm text-slate-500 space-y-1.5 list-none leading-relaxed">${_getV(db.references).map(r => `<li class="break-all">• ${r}</li>`).join('')}</ul>
+                  </div>` : ''}
                </div>
             </div>
 
             ${getClinicalGallery(p.disease_id, p.disease_name_en || p.disease_name)}
-
             
-          </div> <!-- COL-8 CLOSED STRICTLY -->
-        </div> <!-- GRID CLOSED STRICTLY -->
+               </div> <!-- END RIGHT COLUMN -->
+        </div> <!-- flex flex-col gap-8 -->
 
         <!-- FINAL FEEDBACK -->
-        <div class="w-full max-w-4xl mx-auto mt-16 py-8 border-t border-slate-200/50 flex flex-col items-center">
+        <div class="w-full max-w-4xl mx-auto mt-8 py-6 border-t border-slate-200/50 flex flex-col items-center">
            ${buildFeedbackSection()}
         </div>
 
-        <div class="mt-32 p-12 bg-slate-900 text-white rounded-[4rem] text-center max-w-5xl mx-auto shadow-2xl relative overflow-hidden animate-fade">
+        <div class="mt-4 p-8 bg-slate-900 text-white rounded-[2rem] text-center max-w-4xl mx-auto shadow-xl relative overflow-hidden animate-fade">
            <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/10 pointer-events-none"></div>
-           <div class="w-16 h-1.5 bg-primary/50 mx-auto mb-8 rounded-full"></div>
-           <p class="text-slate-400 text-[10px] md:text-[11px] font-medium leading-[2] max-w-3xl mx-auto px-4 italic opacity-80">${dict.medicalDisclaimer}</p>
-           <div class="mt-10 text-[9px] font-black tracking-[0.5em] text-slate-600 uppercase">DermaNetra Clinical Engine v7.0</div>
+           <div class="w-12 h-1 bg-primary/50 mx-auto mb-4 rounded-full"></div>
+           <p class="text-slate-400 text-xs font-medium leading-relaxed max-w-2xl mx-auto px-4 italic opacity-80">${dict.medicalDisclaimer}</p>
+           <div class="mt-6 text-xs font-black tracking-[0.5em] text-slate-600 uppercase">DermaNetra Clinical Engine v7.0</div>
         </div>
 
       </div>
@@ -1328,7 +1487,10 @@ function buildResultsUI(results){
 }
 
 // ── API Helpers ───────────────────────────────────────────
-const API_BASE = 'http://localhost:8000';
+// Automatically use current host but port 8000 for local dev
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? 'http://localhost:8000' 
+  : `${window.location.protocol}//${window.location.hostname}:8000`;
 async function fetchDiagnosis(symptomIds) {
   const payload = {
     symptom_ids: symptomIds,
@@ -1343,3 +1505,331 @@ async function fetchDiagnosis(symptomIds) {
   if (!resp.ok) throw new Error('API request failed');
   return await resp.json();
 }
+
+async function fetchNLPDiagnosis(text, extraSymptomIds = []) {
+  const payload = {
+    text: text,
+    patient: { age: parseInt(state.age), sex: state.sex, skinType: state.skinType, duration: state.duration },
+    extra_symptom_ids: extraSymptomIds,
+  };
+  const resp = await fetch(`${API_BASE}/api/nlp-diagnose`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(typeof err.detail === 'object' ? err.detail.error : err.detail);
+  }
+  return await resp.json();
+}
+
+async function fetchNLPPreview(text) {
+  const resp = await fetch(`${API_BASE}/api/nlp-preview`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+  if (!resp.ok) return null;
+  return await resp.json();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  NLP MODE — All Functions
+// ═══════════════════════════════════════════════════════════
+
+// Example complaint texts for the 4 test scenarios
+const NLP_EXAMPLES = {
+  'Kudis / Scabies': 'Kulit saya gatal sekali terutama di malam hari, tidak bisa tidur. Gatal paling parah di sela-sela jari tangan, pergelangan tangan, dan sekitar pusar. Ada garis-garis kecil seperti terowongan di kulit. Anggota keluarga lain juga mulai gatal.',
+  'Psoriasis': 'Kulit saya muncul bercak merah tebal dengan sisik berwarna keperakan. Kalau sisiknya dikelupas, ada bintik-bintik merah kecil berdarah. Plak ini muncul di siku, lutut, dan kulit kepala. Kondisi makin parah saat saya stres.',
+  'Panu': 'Ada bercak-bercak putih dan kecokelatan di dada dan punggung saya. Bercaknya tidak gatal tapi kalau digaruk keluar sisik halus. Makin banyak saat saya berkeringat. Bercaknya bergabung jadi satu area yang luas.',
+  'Tinea Pedis': 'Sela jari kaki saya mengelupas, putih dan basah, sangat gatal. Kulit di telapak kaki juga terasa kering, menebal, dan mulai pecah-pecah. Kaki saya berbau tidak sedap. Kadang ada bintik berair kecil yang sangat gatal di sela jari.',
+};
+
+// Diagnosis mode switch (Manual / NLP)
+function switchDiagnosisMode(mode) {
+  state.diagnosisMode = mode;
+
+  const tabManual = document.getElementById('tab-manual');
+  const tabNlp = document.getElementById('tab-nlp');
+  const manualArea = document.getElementById('manual-body-area');
+  const nlpArea = document.getElementById('nlp-mode-area');
+  const viewToggle = document.getElementById('body-view-toggle');
+  const manualTitle = document.getElementById('manual-map-title');
+  const pill = document.querySelector('.floating-pill-wrap');
+
+  if (mode === 'manual') {
+    tabManual.classList.add('active');
+    tabNlp.classList.remove('active');
+    manualArea.classList.remove('hidden');
+    manualArea.style.display = '';
+    nlpArea.classList.add('hidden');
+    if (viewToggle) viewToggle.style.display = '';
+    if (manualTitle) manualTitle.style.display = '';
+    updateFloatingPill();
+  } else {
+    tabManual.classList.remove('active');
+    tabNlp.classList.add('active');
+    manualArea.classList.add('hidden');
+    nlpArea.classList.remove('hidden');
+    if (viewToggle) viewToggle.style.display = 'none';
+    if (manualTitle) manualTitle.style.display = 'none';
+    // Hide manual pill in NLP mode
+    if (pill) pill.classList.remove('visible');
+    // Restore NLP text if any
+    const ta = document.getElementById('nlp-complaint-text');
+    if (ta && state.nlpText) ta.value = state.nlpText;
+    updateHybridBadge();
+  }
+}
+
+// Debounce timer for real-time preview
+let _nlpPreviewTimer = null;
+
+function onNLPTextInput(text) {
+  state.nlpText = text;
+  const btn = document.getElementById('btn-nlp-analyze');
+  if (btn) btn.disabled = !text || text.trim().length < 10;
+
+  // Clear previous timer
+  clearTimeout(_nlpPreviewTimer);
+
+  if (!text || text.trim().length < 5) {
+    document.getElementById('nlp-preview-panel').classList.add('hidden');
+    return;
+  }
+
+  // Show panel with loading state immediately
+  const panel = document.getElementById('nlp-preview-panel');
+  const loadingEl = document.getElementById('nlp-loading-state');
+  const resultsBody = document.getElementById('nlp-results-body');
+  if (panel) panel.classList.remove('hidden');
+  if (loadingEl) loadingEl.classList.remove('hidden');
+  if (resultsBody) resultsBody.classList.add('hidden');
+
+  // Debounce: 700ms after user stops typing
+  _nlpPreviewTimer = setTimeout(async () => {
+    const data = await fetchNLPPreview(text);
+    if (loadingEl) loadingEl.classList.add('hidden');
+    if (resultsBody) resultsBody.classList.remove('hidden');
+    if (data) {
+      state.nlpMatchedSymptoms = data.matched_symptoms || [];
+      renderNLPPreview(data);
+    }
+  }, 700);
+}
+
+function renderNLPPreview(data) {
+  const panel = document.getElementById('nlp-preview-panel');
+  if (!panel) return;
+
+  panel.classList.remove('hidden');
+
+  // Update count badge — user-friendly language
+  const countBadge = document.getElementById('nlp-matched-count');
+  const n = data.matched_count || 0;
+  if (countBadge) {
+    countBadge.textContent = n > 0 ? `${n} gejala dipahami` : 'Belum ada gejala';
+    countBadge.style.background = n > 0 ? 'rgba(8,145,178,0.12)' : 'rgba(100,116,139,0.1)';
+    countBadge.style.color = n > 0 ? '#0891b2' : '#94a3b8';
+  }
+
+  // Update status dot color
+  const dot = document.getElementById('nlp-status-dot');
+  if (dot) {
+    dot.style.background = n > 0 ? '#4ade80' : '#f59e0b';
+  }
+
+  // Render matched symptoms — ONLY show friendly symptom names, no pipeline jargon
+  const matchedEl = document.getElementById('nlp-matched-symptoms');
+  const noMatchEl = document.getElementById('nlp-no-match');
+  const matched = data.matched_symptoms || [];
+
+  if (matchedEl) {
+    if (matched.length > 0) {
+      matchedEl.classList.remove('hidden');
+      if (noMatchEl) noMatchEl.classList.add('hidden');
+      // Clean symptom name display — only name, no score/type exposed to user
+      matchedEl.innerHTML = matched.map(m => `
+        <span class="nlp-sym-tag ${m.match_type === 'phrase' ? 'phrase' : ''}" title="${m.symptom_name}">
+          ${m.symptom_name}
+        </span>`).join('');
+    } else {
+      matchedEl.innerHTML = '';
+      matchedEl.classList.add('hidden');
+      if (noMatchEl) noMatchEl.classList.remove('hidden');
+    }
+  }
+}
+
+
+function setNLPExample(btn) {
+  const label = btn.textContent.trim();
+  const example = NLP_EXAMPLES[label];
+  if (!example) return;
+
+  const ta = document.getElementById('nlp-complaint-text');
+  if (ta) {
+    ta.value = example;
+    ta.dispatchEvent(new Event('input'));
+    onNLPTextInput(example);
+    // Highlight the active chip
+    document.querySelectorAll('.nlp-example-chip').forEach(c => c.classList.remove('active', 'bg-violet-200'));
+    btn.classList.add('bg-violet-200');
+  }
+}
+
+// Analyze via NLP endpoint
+async function analyzeNLP() {
+  const text = state.nlpText;
+  if (!text || text.trim().length < 10) return;
+
+  // Collect extra (hybrid) manual symptom IDs
+  const extraIds = [];
+  Object.values(state.nlpHybridSymptoms).forEach(s => s.forEach(id => extraIds.push(id)));
+
+  const pill = document.querySelector('.floating-pill-wrap');
+  if (pill) pill.classList.remove('visible');
+
+  showPage('diagnosis', 'results');
+
+  let fullResponse = null;
+  try {
+    const resp = await fetchNLPDiagnosis(text, extraIds);
+    if (resp && resp.results) fullResponse = resp;
+  } catch (e) {
+    console.error('[DermaNetra NLP] Error:', e);
+    // Show error in results
+    setTimeout(() => {
+      const loadEl = document.getElementById('results-loading');
+      const contentEl = document.getElementById('results-content');
+      if (loadEl) loadEl.classList.add('hidden');
+      if (contentEl) {
+        contentEl.classList.remove('hidden');
+        contentEl.innerHTML = `
+          <div class="max-w-lg mx-auto mt-12 p-8 bg-red-50 border border-red-100 rounded-2xl text-center">
+            <div class="text-3xl mb-3">⚠️</div>
+            <h3 class="font-black text-red-700 mb-2">Gejala Tidak Terdeteksi</h3>
+            <p class="text-sm text-red-600 mb-4">${e.message}</p>
+            <p class="text-xs text-slate-500 mb-6">Coba gunakan kalimat yang lebih deskriptif seperti: "kulit gatal parah di malam hari", "muncul bercak merah bersisik", dll.</p>
+            <button onclick="goBackToDiagnosis()" class="px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:opacity-90 transition-all">
+              ← Kembali & Perbaiki Keluhan
+            </button>
+          </div>`;
+      }
+    }, 500);
+    return;
+  }
+
+  state.nlpFullResponse = fullResponse;
+  state.results = fullResponse ? fullResponse.results : null;
+  state.fullResponse = fullResponse;
+  setTimeout(() => renderResults(fullResponse), 380);
+}
+
+// Open side drawer for hybrid manual symptom selection
+function openHybridMode() {
+  // Open the body modal but use 'hybrid' flag
+  // Pick a global region or let user select — show full symptom list
+  // For simplicity, use 'head' region which will show global symptoms
+  // Actually we'll show ALL symptoms in a combined drawer
+  openHybridSymptomDrawer();
+}
+
+function openHybridSymptomDrawer() {
+  // Use the existing drawer but populate with a "hybrid" region containing all symptoms from the KB
+  const allSymptoms = [];
+  if (typeof SYMPTOM_DB !== 'undefined') {
+    Object.values(SYMPTOM_DB).forEach(db => {
+      const syms = db.front || db.back || [];
+      syms.forEach(s => {
+        if (!allSymptoms.find(x => x.id === s.id)) allSymptoms.push(s);
+      });
+    });
+  }
+
+  state.activeRegion = '__hybrid__';
+  const existing = new Set();
+  Object.values(state.nlpHybridSymptoms).forEach(s => s.forEach(id => existing.add(id)));
+  _tempSelected = new Set(existing);
+  _currentModalSyms = allSymptoms;
+
+  const regionEl = document.getElementById('modal-region');
+  if (regionEl) regionEl.textContent = '+ Tambah Gejala Manual (Hybrid)';
+
+  const badgeEl = document.getElementById('modal-view-badge');
+  if (badgeEl) badgeEl.textContent = 'HYBRID MODE';
+
+  const searchEl = document.getElementById('modal-search');
+  if (searchEl) searchEl.value = '';
+
+  renderModalSymptoms(allSymptoms, existing, '');
+  document.getElementById('symptom-modal').classList.add('open');
+  document.getElementById('modal-overlay').classList.add('open');
+  if (searchEl) setTimeout(() => searchEl.focus(), 300);
+}
+
+// Override confirmModal for hybrid mode
+const _origConfirmModal = window.confirmModal;
+function confirmModal() {
+  if (state.activeRegion === '__hybrid__') {
+    // Save to hybrid symptoms
+    state.nlpHybridSymptoms = { hybrid: new Set(_tempSelected) };
+    closeModal();
+    updateHybridBadge();
+    return;
+  }
+  // Normal manual mode
+  if (!state.activeRegion) return;
+  if (_tempSelected.size > 0) {
+    state.symptoms[state.activeRegion] = new Set(_tempSelected);
+  } else {
+    delete state.symptoms[state.activeRegion];
+  }
+  closeModal();
+  renderBodyMap();
+}
+
+function clearHybridSymptoms() {
+  state.nlpHybridSymptoms = {};
+  updateHybridBadge();
+}
+
+function updateHybridBadge() {
+  const badge = document.getElementById('hybrid-badge');
+  const countLabel = document.getElementById('hybrid-count-label');
+  if (!badge) return;
+
+  let total = 0;
+  Object.values(state.nlpHybridSymptoms).forEach(s => total += s.size);
+
+  if (total > 0) {
+    badge.classList.remove('hidden');
+    if (countLabel) countLabel.textContent = ` ${total} gejala manual ditambahkan`;
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+// Build NLP result banner (shown at top of results when NLP mode)
+function buildNLPResultsBanner(fullResponse) {
+  if (!fullResponse || !fullResponse.method || !fullResponse.method.startsWith('nlp')) return '';
+  const dict = I18N[state.language];
+  const n = fullResponse.matched_symptoms ? fullResponse.matched_symptoms.length : 0;
+  const m = fullResponse.extra_symptoms ? fullResponse.extra_symptoms.length : 0;
+  const isHybrid = fullResponse.method === 'nlp_hybrid_naive_bayes';
+
+  return `
+    <div class="nlp-result-banner animate-fade">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-violet-500 to-primary flex-shrink-0 flex items-center justify-center shadow">
+        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+      </div>
+      <div class="nlp-badge-text">${dict.nlpResultBanner(n, m)}</div>
+      ${isHybrid
+        ? '<span class="px-2 py-0.5 bg-violet-100 text-violet-700 text-xs font-black rounded-full border border-violet-200 uppercase tracking-widest ml-auto">Gabungan</span>'
+        : '<span class="px-2 py-0.5 bg-teal-100 text-teal-700 text-xs font-black rounded-full border border-teal-200 uppercase tracking-widest ml-auto">Cerita Gejala</span>'}
+    </div>`;
+}
+

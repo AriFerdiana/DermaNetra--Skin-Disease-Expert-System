@@ -3,7 +3,7 @@
    Side-drawer · Pulsing dots · Circular gauge · Clean cards
    ═══════════════════════════════════════════════════════════ */
 
-html, body { overflow-x: hidden; max-width: 100vw; }
+html, body { max-width: 100vw; }
 
 :root {
   --primary: #0891b2;
@@ -43,8 +43,8 @@ html, body { overflow-x: hidden; max-width: 100vw; }
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  --font-main: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-main: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-display: 'Poppins', sans-serif;
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
@@ -1599,3 +1599,155 @@ input[type="checkbox"]:checked + .disc-box .disc-check-icon {
   border: 1px solid #d8b4fe;
   border-left: 4px solid #a855f7;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   NLP MODE — Diagnosis Tab Switch
+   ═══════════════════════════════════════════════════════════ */
+
+/* Mode Tab buttons */
+.mode-tab {
+  background: transparent;
+  color: var(--slate-500);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 10px;
+  transition: var(--transition);
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+}
+
+.mode-tab.active {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 2px 8px rgba(8,145,178,0.15), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.mode-tab:hover:not(.active) {
+  background: rgba(255,255,255,0.6);
+  color: var(--slate-700);
+}
+
+/* NLP textarea styling */
+#nlp-complaint-text {
+  font-family: var(--font-main);
+  line-height: 1.65;
+}
+
+#nlp-complaint-text::placeholder {
+  color: var(--slate-400);
+  font-style: italic;
+}
+
+/* NLP example chips */
+.nlp-example-chip {
+  transition: var(--transition);
+  font-family: var(--font-main);
+}
+
+.nlp-example-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
+/* NLP Preview Panel */
+#nlp-preview-panel .nlp-pipeline-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--slate-50);
+  border-radius: 8px;
+  border: 1px solid var(--slate-100);
+}
+
+#nlp-preview-panel .step-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate-400);
+  min-width: 80px;
+  padding-top: 2px;
+}
+
+#nlp-preview-panel .step-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--slate-700);
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Matched symptom tags in preview panel */
+.nlp-sym-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+  transition: var(--transition);
+}
+
+.nlp-sym-tag.phrase {
+  background: linear-gradient(135deg, #ede9fe, #f5f3ff);
+  color: #4c1d95;
+  border-color: #c4b5fd;
+}
+
+.nlp-sym-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* NLP Results banner in results page */
+.nlp-result-banner {
+  background: linear-gradient(135deg, #ede9fe, #ecfeff);
+  border: 1px solid #c4b5fd;
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4c1d95;
+}
+
+.nlp-result-banner .nlp-badge-text {
+  flex: 1;
+  line-height: 1.5;
+}
+
+/* Hybrid mode badge */
+#hybrid-badge {
+  display: flex;
+  align-items: center;
+}
+
+/* NLP analyze button gradient */
+#btn-nlp-analyze:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.4) !important;
+}
+
+/* Sym check icon in drawer */
+.sym-check-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--slate-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+

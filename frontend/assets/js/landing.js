@@ -382,6 +382,29 @@ function renderSearchResults(query, dropdown) {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   SCROLL REVEAL ANIMATIONS
+   ═══════════════════════════════════════════════════════════ */
+function initScrollReveal() {
+  const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
+    });
+  }, {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.15
+  });
+
+  reveals.forEach(reveal => {
+    revealObserver.observe(reveal);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
    NAVIGATION (Smooth Scroll)
    ═══════════════════════════════════════════════════════════ */
 function initNav() {
@@ -412,7 +435,7 @@ function renderNews() {
   const side = NEWS_DATA.filter(n => !n.featured);
 
   const featuredHTML = featured ? `
-    <div class="lg:col-span-3 news-card" onclick="showToast('${currentLang === 'id' ? '📰 Artikel lengkap segera hadir!' : '📰 Full article coming soon!'}')">
+    <div class="lg:col-span-3 news-card reveal" onclick="showToast('${currentLang === 'id' ? '📰 Artikel lengkap segera hadir!' : '📰 Full article coming soon!'}')">
       <div class="h-56 relative overflow-hidden" style="background:${featured.gradient}">
         <div class="absolute inset-0 flex items-center justify-center opacity-10">
           <svg class="w-48 h-48 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -439,8 +462,8 @@ function renderNews() {
     </div>
   ` : '';
 
-  const sideHTML = side.map(n => `
-    <div class="news-card flex gap-4 p-4" onclick="showToast('${currentLang === 'id' ? '📰 Artikel lengkap segera hadir!' : '📰 Full article coming soon!'}')">
+  const sideHTML = side.map((n, i) => `
+    <div class="news-card flex gap-4 p-4 reveal reveal-d${(i % 4) + 1}" onclick="showToast('${currentLang === 'id' ? '📰 Artikel lengkap segera hadir!' : '📰 Full article coming soon!'}')">
       <div class="w-20 h-20 rounded-xl flex-shrink-0 flex items-center justify-center" style="background:${n.gradient}">
         <svg class="w-8 h-8" style="color:${n.icon_color}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
           <path stroke-linecap="round" stroke-linejoin="round" d="${n.icon}" />
@@ -458,6 +481,9 @@ function renderNews() {
     ${featuredHTML}
     <div class="lg:col-span-2 flex flex-col gap-4">${sideHTML}</div>
   `;
+  
+  // Re-observe new elements
+  if (window.initScrollReveal) setTimeout(initScrollReveal, 100);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -489,7 +515,7 @@ function renderConditions() {
     ? Object.entries(CONDITION_CATEGORIES)
     : Object.entries(CONDITION_CATEGORIES).filter(([key]) => key === activeFilter);
 
-  grid.innerHTML = cats.map(([key, cat]) => {
+  grid.innerHTML = cats.map(([key, cat], index) => {
     const diseases = cat.ids
       .filter(id => DISEASE_DB[id])
       .map(id => {
@@ -499,12 +525,15 @@ function renderConditions() {
       });
 
     return `
-      <div>
+      <div class="reveal reveal-d${(index % 4) + 1}">
         <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">${currentLang === 'id' ? cat.label_id : cat.label_en}</h4>
         <div class="space-y-2 text-sm">${diseases.join('')}</div>
       </div>
     `;
   }).join('');
+  
+  // Re-observe new elements
+  if (window.initScrollReveal) setTimeout(initScrollReveal, 100);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -555,14 +584,14 @@ function renderTools() {
     { href: 'skin-quiz.html', icon: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z', gradient: 'linear-gradient(135deg,#ede9fe,#ddd6fe)', iconColor: '#7c3aed', titleKey: 'tool4_title', descKey: 'tool4_desc', actionKey: 'tool4_action', actionColor: 'text-violet-600', active: true },
   ];
 
-  container.innerHTML = tools.map(tool => {
+  container.innerHTML = tools.map((tool, index) => {
     const tag = tool.active ? 'a' : 'div';
     const hrefAttr = tool.active ? `href="${tool.href}"` : '';
     const clickAttr = tool.active ? '' : `onclick="showToast(t('toast_coming_soon'))"`;
     const actionText = tool.active ? t(tool.actionKey) : t('coming_soon');
 
     return `
-      <${tag} ${hrefAttr} class="tool-card block" ${clickAttr}>
+      <${tag} ${hrefAttr} class="tool-card block reveal reveal-d${(index % 4) + 1}" ${clickAttr}>
         <div class="w-12 h-12 rounded-2xl mb-4 flex items-center justify-center" style="background:${tool.gradient}">
           <svg class="w-6 h-6" style="color:${tool.iconColor}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="${tool.icon}" />
@@ -576,6 +605,9 @@ function renderTools() {
       </${tag}>
     `;
   }).join('');
+  
+  // Re-observe new elements
+  if (window.initScrollReveal) setTimeout(initScrollReveal, 100);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -655,6 +687,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initNav();
   initSearch();
   initI18n();
+  initScrollReveal();
   renderNews();
   renderConditions();
   renderTools();
