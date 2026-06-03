@@ -1242,6 +1242,57 @@ function buildFeedbackSection() {
     </div>`;
 }
 
+function buildNLPDebugView(fullResponse) {
+  if (!fullResponse || !fullResponse.nlp_pipeline) return '';
+  
+  // Cek apakah URL sudah mengandung nlp
+  const url = window.location.href.toLowerCase();
+  const isDebug = url.includes('#nlp') || url.includes('?nlp') || url.includes('/nlp');
+  
+  const pipe = fullResponse.nlp_pipeline;
+  
+  // Bungkus dalam div ber-ID agar bisa di-toggle tanpa reload
+  return `
+    <div id="nlp-debug-container" class="${isDebug ? '' : 'hidden'} bg-slate-900 text-green-400 p-6 rounded-2xl mb-6 font-mono text-xs overflow-x-auto shadow-inner border border-slate-700 animate-fade relative">
+      
+      <!-- Tombol Close -->
+      <button onclick="document.getElementById('nlp-debug-container').classList.add('hidden'); history.replaceState(null, '', window.location.pathname + window.location.search);" 
+              class="absolute top-4 right-4 text-slate-400 hover:text-red-400 font-bold bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600 transition-colors flex items-center gap-2">
+        <span>Tutup Debug</span>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+
+      <div class="text-white font-bold mb-3 uppercase tracking-widest text-sm border-b border-slate-700 pb-2 pr-32">🛠️ Debug: NLP Pipeline Process</div>
+      
+      <div class="mb-3"><strong class="text-blue-400">1. Original Text:</strong> <span class="text-slate-300">"${pipe.original}"</span></div>
+      
+      <div class="mb-3"><strong class="text-blue-400">2. Cleaned Text:</strong> <span class="text-slate-300">"${pipe.cleaned}"</span></div>
+      
+      <div class="mb-3"><strong class="text-blue-400">3. Tokenization (${pipe.token_count_original} kata):</strong> 
+        <div class="mt-1 flex flex-wrap gap-1">
+          ${pipe.tokens.map(t => `<span class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-yellow-300">${t}</span>`).join('')}
+        </div>
+      </div>
+      
+      <div class="mb-3"><strong class="text-blue-400">4. Stopword Removal (-${pipe.stopwords_removed} kata tidak penting):</strong>
+        <div class="mt-1 flex flex-wrap gap-1">
+          ${pipe.tokens_after_stopword_removal.map(t => `<span class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-orange-300">${t}</span>`).join('')}
+        </div>
+      </div>
+      
+      <div class="mb-3"><strong class="text-blue-400">5. Stemming (Kata Dasar by PySastrawi):</strong>
+        <div class="mt-1 flex flex-wrap gap-1">
+          ${pipe.tokens_after_stemming.map(t => `<span class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-green-300">${t}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="mb-1 mt-4 border-t border-slate-700 pt-3"><strong class="text-purple-400">6. Ekstraksi ID Gejala Akhir:</strong> 
+        <span class="text-white font-bold text-sm bg-purple-900/50 px-2 py-1 rounded ml-2">${fullResponse.all_symptom_ids.join(', ')}</span>
+      </div>
+    </div>
+  `;
+}
+
 function buildResultsUI(fullResponse) {
   const el = document.getElementById('results-content');
   if (!fullResponse || !fullResponse.results || !fullResponse.results.length) {
@@ -1294,6 +1345,7 @@ function buildResultsUI(fullResponse) {
         
         <!-- Header Banner & Warning -->
         ${nlpBanner}
+        ${buildNLPDebugView(fullResponse)}
 
         <!-- Compact Context Header -->
         <div class="flex justify-center mb-8">
@@ -1833,3 +1885,14 @@ function buildNLPResultsBanner(fullResponse) {
     </div>`;
 }
 
+// Event listener agar panel debug muncul langsung tanpa reload saat URL ditambah #nlp
+window.addEventListener('hashchange', () => {
+  const container = document.getElementById('nlp-debug-container');
+  if (container) {
+    if (window.location.hash.toLowerCase().includes('nlp')) {
+      container.classList.remove('hidden');
+    } else {
+      container.classList.add('hidden');
+    }
+  }
+});
