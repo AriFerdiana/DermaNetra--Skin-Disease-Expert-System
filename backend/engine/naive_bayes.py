@@ -97,6 +97,30 @@ def _get_confidence(probability: float) -> str:
         return "low"
 
 
+def _generate_explanation(did: str, symptom_ids: list[str], symptom_map: dict, likelihood_map: dict) -> str:
+    """Generate XAI (Explainable AI) string explaining why the disease was chosen."""
+    symptom_probs = []
+    for gid in symptom_ids:
+        prob = likelihood_map.get((did, gid), EPSILON)
+        if prob > EPSILON:
+            symptom_probs.append((gid, symptom_map.get(gid, {}).get("name", gid), prob))
+            
+    # Sort descending based on probability
+    symptom_probs.sort(key=lambda x: x[2], reverse=True)
+    
+    if not symptom_probs:
+        return "Penyakit ini terdeteksi dari pola umum riwayat/gejala Anda, meskipun tidak ada gejala spesifik (patognomonik) yang sangat menonjol."
+        
+    top_symptoms = [s[1] for s in symptom_probs[:3]]
+    
+    if len(top_symptoms) == 1:
+        return f"Sistem cukup yakin karena Anda mengalami '{top_symptoms[0]}', yang merupakan ciri spesifik dan sering ditemukan pada penyakit ini."
+    elif len(top_symptoms) == 2:
+        return f"Kombinasi antara gejala '{top_symptoms[0]}' dan '{top_symptoms[1]}' sangat spesifik dan merujuk kuat pada pola diagnosis ini."
+    else:
+        return f"Gejala '{top_symptoms[0]}', '{top_symptoms[1]}', serta '{top_symptoms[2]}' secara bersama-sama membentuk probabilitas klinis yang kuat untuk penyakit ini."
+
+
 def diagnose(symptom_ids: list[str], patient: dict | None = None) -> list[dict]:
     """
     Run Naive Bayes diagnosis given selected symptom IDs.
@@ -190,6 +214,7 @@ def diagnose(symptom_ids: list[str], patient: dict | None = None) -> list[dict]:
     for r in top5:
         r["confidence_level"] = _get_confidence(top_prob)
         r["is_conclusive"] = top_prob >= 0.20
+        r["explanation"] = _generate_explanation(r["disease_id"], symptom_ids, symptom_map, likelihood_map)
 
     return top5
 

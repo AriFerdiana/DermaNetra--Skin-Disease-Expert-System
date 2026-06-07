@@ -7,6 +7,7 @@ Strategi 2 lapis: Keyword Match + Phrase Detection.
 
 import json
 import math
+import difflib
 from pathlib import Path
 from functools import lru_cache
 from .preprocessor import preprocess, get_pipeline_steps, _stemmer
@@ -14,105 +15,16 @@ from .preprocessor import preprocess, get_pipeline_steps, _stemmer
 KB_DIR = Path(__file__).parent.parent / "knowledge_base"
 
 # ── Keyword dictionary per symptom ─────────────────────────────────────────
-# Kunci: symptom_id, Nilai: set kata kunci (sudah di-stem)
-SYMPTOM_KEYWORDS: dict[str, list[str]] = {
-    "G001": ["gatal", "kepala", "wajah", "hebat", "parah", "kulit kepala"],
-    "G002": ["gatal", "malam", "buruk", "meningkat", "malam hari"],
-    "G003": ["sisik", "putih", "ketombe", "rontok", "kepala", "bersisik"],
-    "G004": ["sisik", "tebal", "berlapis", "perak", "keperakan"],
-    "G005": ["bercak", "merah", "wajah", "dahi", "leher", "kemerahan"],
-    "G006": ["bintik", "benjolan", "nanah", "pustul"],
-    "G007": ["keropeng", "kerak", "kuning", "madu", "krusta"],
-    "G008": ["rambut", "rontok", "botak", "pitak", "kebotakan"],
-    "G009": ["rambut", "rapuh", "patah", "mudah patah"],
-    "G010": ["kutu", "rambut", "telur kutu", "nits"],
-    "G011": ["bintik", "merah", "perih", "keringat", "biang"],
-    "G012": ["wajah", "kering", "kasar", "kulit kering"],
-    "G013": ["benjolan", "merah", "nyeri", "komedo", "nanah", "jerawat"],
-    "G014": ["bercak", "cokelat", "gelap", "tidak gatal", "hiperpigmentasi"],
-    "G015": ["merah", "kronis", "pembuluh", "telangiektasia", "rosacea"],
-    "G016": ["bercak", "putih", "cokelat muda", "sisik halus", "panu"],
-    "G017": ["gatal", "keringat", "memburuk", "berkeringat", "parah"],
-    "G018": ["ruam", "merah", "gatal", "kalung", "parfum", "kimia", "alergi"],
-    "G019": ["bintik", "putih", "keras", "mutiara", "milia"],
-    "G020": ["lepuh", "air", "berkelompok", "perih", "panas", "vesikel"],
-    "G021": ["bentol", "merah", "menonjol", "tebal", "tiba", "urtikaria"],
-    "G022": ["bentol", "gatal", "berpindah", "pindah", "biduran"],
-    "G023": ["keropeng", "kuning", "madu", "kerak", "kering"],
-    "G024": ["bintik", "keras", "kubah", "lekukan", "umbilikasi", "moluskum"],
-    "G025": ["bercak", "putih", "cokelat", "dada", "bersisik", "panu"],
-    "G026": ["jerawat", "bisul", "dada", "punggung", "berjerawat"],
-    "G027": ["ruam", "gatal", "kering", "menebal", "puting", "ketiak"],
-    "G028": ["bercak", "merah", "tebal", "sisik", "perak", "dada"],
-    "G029": ["bercak", "merah", "cincin", "tepi", "menonjol", "kurap"],
-    "G030": ["ruam", "merah", "basah", "lecet", "lipatan", "bintik", "satelit"],
-    "G031": ["bintik", "gatal", "pusar", "malam hari", "kudis"],
-    "G032": ["ruam", "gatal", "kemerahan", "kancing", "celana", "sabuk"],
-    "G033": ["plak", "merah", "tebal", "sisik", "keperakan", "pusar", "psoriasis"],
-    "G034": ["bintik", "kemerahan", "perut", "keringat", "biang keringat"],
-    "G035": ["bercak", "merah", "gatal", "bulan sabit", "paha", "selangkangan"],
-    "G036": ["ruam", "lecet", "kemerahan", "bintik", "satelit", "lipatan"],
-    "G037": ["bercak", "merah", "cokelat", "lipatan", "paha"],
-    "G038": ["bisul", "bernanah", "nyeri", "kambuh", "abses"],
-    "G039": ["kemerahan", "lecet", "gesekan", "paha"],
-    "G040": ["luka", "borok", "ulkus", "keropeng", "keras"],
-    "G041": ["bintik", "gatal", "malam", "bokong", "kemaluan", "kudis"],
-    "G042": ["benjolan", "keras", "mutiara", "lekukan", "putih", "moluskum"],
-    "G043": ["luka", "terbuka", "borok", "tidak sakit", "berdarah", "membesar"],
-    "G044": ["sisik", "kuning", "berminyak", "kelamin"],
-    "G045": ["bintik", "berair", "gatal", "telapak", "jari tangan", "vesikel"],
-    "G046": ["bercak", "putih", "mati rasa", "tidak terasa", "baal", "lepra"],
-    "G047": ["lengan", "bengkak", "merah", "panas", "nyeri", "berdenyut"],
-    "G048": ["ruam", "merah", "oval", "bersisik", "pohon cemara", "pityriasis"],
-    "G049": ["benjolan", "keras", "kasar", "kembang kol", "kutil"],
-    "G050": ["bengkak", "merah", "nyeri", "nanah", "kuku"],
-    "G051": ["garis", "terowongan", "jari", "gatal", "malam", "kudis", "skabies"],
-    "G052": ["telapak", "kering", "menebal", "bersisik", "pecah"],
-    "G053": ["tangan", "gatal", "bruntusan", "sabun", "kimia", "deterjen"],
-    "G054": ["sela jari", "kaki", "mengelupas", "pecah", "putih", "basah", "gatal"],
-    "G055": ["garis", "merah", "berkelok", "cacing", "bawah kulit", "larva"],
-    "G056": ["kuku", "kaki", "menebal", "rapuh", "hancur", "kuning", "cokelat"],
-    "G057": ["telapak", "kaki", "berbau", "bau", "lubang", "pitted keratolysis"],
-    "G058": ["penebalan", "keras", "menonjol", "telapak", "nyeri", "berjalan", "kapalan"],
-    "G059": ["bentol", "merah", "berkelompok", "gatal", "gigitan", "serangga"],
-    "G060": ["ruam", "merah", "bulat", "koin", "gatal", "berair", "berkerak"],
-    "G061": ["tungkai", "bengkak", "merah", "panas", "nyeri", "demam", "selulitis"],
-    "G062": ["ruam", "merah", "gatal", "lecet", "sandal", "sepatu", "alergi"],
-    "G063": ["lepuh", "berair", "menjalar", "melingkar", "satu sisi", "nyeri saraf", "herpes zoster", "cacar ular"],
-    "G064": ["jerawat", "meradang", "komedo", "nanah", "punggung", "atas"],
-    "G065": ["bercak", "panu", "lebar", "punggung", "gatal", "berkeringat"],
-    "G066": ["gatal", "ruam", "kemerahan", "karet", "celana", "sabuk", "pinggang"],
-    "G067": ["demam", "menggigil", "lemas", "sistemik"],
-    "G068": ["bengkak", "kelenjar", "getah bening", "lipatan", "paha", "ketiak", "leher"],
-    "G069": ["kulit", "menebal", "kasar", "kayu", "garis kulit", "likenifikasi"],
-    "G070": ["panas", "terbakar", "hebat", "kulit", "sebelum ruam"],
-    "G071": ["nanah", "kental", "kuning", "hijau", "berbau", "busuk"],
-    "G072": ["alergi", "asma", "bersin", "rinitis", "debu", "riwayat alergi"],
-    "G073": ["ruam", "hewan", "kucing", "anjing", "peliharaan", "tidur"],
-    "G074": ["ruam", "flek", "memburuk", "matahari", "sinar", "UV"],
-    "G075": ["bintik", "perdarahan", "sisik", "dikelupas", "Auspitz"],
-    "G076": ["luka", "kambuh", "berulang", "sama", "lokasi", "bulan"],
-    "G077": ["ruam", "melepuh", "menyebar", "cepat", "seluruh tubuh", "24 jam"],
-    "G078": ["bengkak", "wajah", "bibir", "kelopak mata", "sesak napas", "angioedema"],
-    "G079": ["nyeri", "panas", "bengkak", "keras", "demam", "mendadak"],
-    "G080": ["luka", "nanah", "parah", "meluas", "garis merah", "jantung"],
-    "G081": ["keringat", "malam", "berlebih", "tanpa alasan"],
-    "G082": ["nyeri", "sendi", "berpindah", "pegal"],
-    "G083": ["berat badan", "turun", "drastis", "tanpa diet"],
-    "G084": ["lemas", "lelah", "berkepanjangan", "malaise"],
-    "G085": ["gatal", "ringan", "stres", "pikiran"],
-    "G086": ["gatal", "parah", "mengganggu", "tidur", "malam"],
-    "G087": ["ditusuk", "jarum", "keringat", "mulai berkeringat"],
-    "G088": ["tebal", "baal", "mati rasa", "tidak peka", "sentuhan"],
-    "G089": ["ruam", "memburuk", "telur", "seafood", "kacang", "makanan"],
-    "G090": ["ruam", "perhiasan", "jam tangan", "sabuk", "logam", "nikel"],
-    "G091": ["gatal", "dingin", "mandi", "air dingin", "cuaca dingin"],
-    "G092": ["memburuk", "pakaian", "ketat", "sintetis", "wol"],
-    "G093": ["warna", "gelap", "hitam", "lipatan", "menghitam"],
-    "G094": ["sisik", "rontok", "beterbangan", "digaruk", "ketombe kering"],
-    "G095": ["luka", "basah", "sulit kering", "dua minggu"],
-    "G096": ["bintik", "merah", "kecil", "merata", "digigit nyamuk", "sekujur"],
-}
+@lru_cache(maxsize=1)
+def _get_symptom_keywords() -> dict[str, list[str]]:
+    """Load symptom keywords dynamically from KB."""
+    with open(KB_DIR / "symptoms.json", encoding="utf-8") as f:
+        symptoms = json.load(f)
+    result = {}
+    for s in symptoms:
+        if "keywords" in s:
+            result[s["id"]] = s["keywords"]
+    return result
 
 # ── Phrase detection map ─────────────────────────────────────────────────────
 # Frasa multi-kata yang sangat spesifik ke gejala tertentu
@@ -194,6 +106,21 @@ PHRASE_SYMPTOM_MAP: list[tuple[str, list[str]]] = [
     ("gatal stres", ["G085"]),
     ("ruam sabun", ["G053"]),
     ("kulit pecah", ["G052", "G054"]),
+    ("keringat berlebih", ["G097", "G081"]),
+    ("kulit mengelupas", ["G098", "G054"]),
+    ("kena air", ["G099"]),
+    ("kena sabun", ["G099", "G053"]),
+    ("wajah memerah", ["G100", "G005"]),
+    ("komedo hitam", ["G101", "G013"]),
+    ("komedo putih", ["G101", "G013"]),
+    ("nular keluarga", ["G102"]),
+    ("ketombe membandel", ["G103"]),
+    ("bekas menghitam", ["G104", "G093"]),
+    ("sebelum ruam", ["G105", "G070"]),
+    ("kulit kaku", ["G106"]),
+    ("nanah hijau", ["G107", "G071"]),
+    ("kuku rapuh", ["G108", "G056"]),
+    ("habis makan", ["G109", "G089"]),
 ]
 
 
@@ -258,6 +185,21 @@ def _is_negated(tokens: list[str], target_tokens: list[str]) -> bool:
     return all_negated
 
 
+def _is_fuzzy_match(word: str, token_set: set[str], threshold: float = 0.80) -> str | None:
+    """Cek apakah word ada di token_set secara exact atau fuzzy.
+    Returns: matched_token dari token_set, atau None.
+    """
+    if word in token_set:
+        return word
+    for token in token_set:
+        # Skip perbandingan difflib jika beda panjang lebih dari 2 karakter (efisiensi)
+        if abs(len(word) - len(token)) > 2:
+            continue
+        if difflib.SequenceMatcher(None, word, token).ratio() >= threshold:
+            return token
+    return None
+
+
 def _detect_phrases(tokens: list[str]) -> dict[str, float]:
     """
     Deteksi frasa multi-kata dalam token list.
@@ -267,9 +209,19 @@ def _detect_phrases(tokens: list[str]) -> dict[str, float]:
     token_set = set(tokens)
 
     for phrase_tokens, sids in _STEMMED_PHRASE_MAP:
-        # Cek apakah semua token frasa ada di token list
-        if all(pt in token_set for pt in phrase_tokens):
-            if _is_negated(tokens, phrase_tokens):
+        # Cek apakah semua token frasa ada di token list (bisa exact / fuzzy)
+        matched_tokens_for_phrase = []
+        is_match = True
+        for pt in phrase_tokens:
+            m_token = _is_fuzzy_match(pt, token_set)
+            if m_token:
+                matched_tokens_for_phrase.append(m_token)
+            else:
+                is_match = False
+                break
+                
+        if is_match:
+            if _is_negated(tokens, matched_tokens_for_phrase):
                 continue
             for sid in sids:
                 scores[sid] = scores.get(sid, 0) + 1.5  # Phrase match lebih kuat
@@ -283,28 +235,42 @@ def _match_keywords(tokens: list[str]) -> dict[str, float]:
     """
     token_set = set(tokens)
     scores: dict[str, float] = {}
+    symptom_keywords = _get_symptom_keywords()
 
-    for sid, keywords in SYMPTOM_KEYWORDS.items():
+    for sid, keywords in symptom_keywords.items():
         score = 0.0
         for kw in keywords:
             kw_tokens = kw.split()
             if len(kw_tokens) == 1:
                 # Single word match
                 kw_stemmed = _stem_word(kw)
-                if kw_stemmed in token_set or kw in token_set:
-                    matched_token = kw_stemmed if kw_stemmed in token_set else kw
-                    if not _is_negated(tokens, [matched_token]):
+                matched_token_stemmed = _is_fuzzy_match(kw_stemmed, token_set)
+                matched_token_raw = _is_fuzzy_match(kw, token_set)
+                
+                if matched_token_stemmed or matched_token_raw:
+                    actual_match = matched_token_stemmed if matched_token_stemmed else matched_token_raw
+                    if not _is_negated(tokens, [actual_match]):
                         score += 1.0
             else:
                 # Multi-word keyword: cek semua token ada
                 kw_stemmed = [_stem_word(w) for w in kw_tokens]
-                if all(w in token_set for w in kw_stemmed):
-                    if not _is_negated(tokens, kw_stemmed):
+                matched_multi = []
+                is_match = True
+                for w in kw_stemmed:
+                    m_token = _is_fuzzy_match(w, token_set)
+                    if m_token:
+                        matched_multi.append(m_token)
+                    else:
+                        is_match = False
+                        break
+                        
+                if is_match:
+                    if not _is_negated(tokens, matched_multi):
                         score += 1.5
 
         if score > 0:
             # Normalize by number of keywords untuk menghindari bias gejala dengan banyak keyword
-            normalized = score / math.sqrt(len(SYMPTOM_KEYWORDS[sid]))
+            normalized = score / math.sqrt(len(symptom_keywords[sid]))
             scores[sid] = normalized
 
     return scores
@@ -382,3 +348,79 @@ def get_pipeline_info(text: str) -> dict:
         "matched_count": len(matched),
         "symptom_ids": [m["symptom_id"] for m in matched],
     }
+
+def get_dynamic_suggestions(text: str, max_count: int = 7) -> list[str]:
+    """
+    Generate dynamic suggestions based on partial keyword matches.
+    Even if the score < min_score, it will be used to prompt the user.
+    """
+    if not text or not text.strip():
+        return _get_fallback_suggestions(max_count)
+
+    tokens = preprocess(text)
+    if not tokens:
+        return _get_fallback_suggestions(max_count)
+
+    # Dapatkan raw keyword scores tanpa memfilter min_score
+    kw_scores = _match_keywords(tokens)
+    phrase_scores = _detect_phrases(tokens)
+
+    combined: dict[str, float] = {}
+    for sid, score in kw_scores.items():
+        combined[sid] = score
+    for sid, boost in phrase_scores.items():
+        combined[sid] = combined.get(sid, 0) + boost
+
+    # Jika benar-benar tidak ada yang nyangkut satupun (0)
+    if not combined:
+        return _get_fallback_suggestions(max_count)
+
+    valid_ids = _load_symptom_ids()
+    
+    # Load symptom names
+    try:
+        with open(KB_DIR / "symptoms.json", encoding="utf-8") as f:
+            symptoms = json.load(f)
+        symptom_name_map = {s["id"]: s["name"] for s in symptoms}
+    except Exception:
+        symptom_name_map = {}
+
+    # Ambil yang > 0 dan sort
+    valid_scores = [(sid, score) for sid, score in combined.items() if sid in valid_ids and score > 0]
+    valid_scores.sort(key=lambda x: x[1], reverse=True)
+
+    suggestions = []
+    for sid, score in valid_scores[:max_count]:
+        name = symptom_name_map.get(sid)
+        if name:
+            suggestions.append(name)
+            
+    if not suggestions:
+        return _get_fallback_suggestions(max_count)
+        
+    return suggestions
+
+def _get_fallback_suggestions(max_count: int) -> list[str]:
+    # Instead of hardcoded, return random interesting symptoms to prompt the user
+    # to provide more diverse inputs.
+    try:
+        import random
+        with open(KB_DIR / "symptoms.json", encoding="utf-8") as f:
+            symptoms = json.load(f)
+        
+        # Filter out some very generic ones if we want, or just pick random names
+        # Let's pick random names but ensure they are diverse
+        names = [s["name"] for s in symptoms if "name" in s and len(s["name"]) > 5]
+        if len(names) >= max_count:
+            return random.sample(names, max_count)
+        return names
+    except Exception:
+        # Fallback to hardcoded if file fails
+        fallbacks = [
+            "Gatal memburuk di malam hari", "Kulit kemerahan bersisik", 
+            "Bintik berair berkelompok", "Terasa panas seperti terbakar", 
+            "Bengkak dan bernanah", "Nyeri saat disentuh",
+            "Keringat berlebih", "Menyebar dengan cepat", "Stres atau banyak pikiran"
+        ]
+        return fallbacks[:max_count]
+

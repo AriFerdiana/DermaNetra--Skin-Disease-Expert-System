@@ -114,6 +114,7 @@ def diagnose(symptom_ids, patient_info):
 1. **Akurasi Teoritis:** Sistem mampu memberikan diagnosis yang didasarkan pada perhitungan matematis yang objektif.
 2. **Aksesibilitas:** Dengan format aplikasi web, diagnosa pakar dapat diakses kapan saja dan di mana saja.
 3. **Penyuluhan Medis:** Selain diagnosis, sistem memberikan edukasi mengenai pencegahan penularan (Contagious status) dan kode ICD-10 untuk rujukan medis lebih lanjut.
+4. **Kecerdasan NLP & Kelengkapan Medis:** Sistem telah dioptimasi dengan algoritma *Dynamic NLP Follow-up* yang adaptif terhadap frasa keseharian (slang), serta dilengkapi pemetaan probabilitas masif terhadap **139 gejala klinis** untuk mendiagnosis **42 penyakit kulit** dengan akurasi tinggi.
 
 ---
 

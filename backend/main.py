@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
 from engine import naive_bayes as nb
+import database as db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,12 +34,15 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    """Validasi KB saat server start."""
+    """Validasi KB saat server start dan init DB."""
     result = nb.validate_kb()
     if not result["valid"]:
         logger.warning(f"KB validation issues: {result['issues']}")
     else:
         logger.info("KB validation passed.")
+    
+    # Init SQLite DB for logging
+    db.init_db()
 
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
@@ -82,6 +86,7 @@ class DiseaseResult(BaseModel):
     regions: list[str]
     confidence_level: str = "low"
     is_conclusive: bool = False
+    explanation: str = ""
 
 
 class DiagnoseResponse(BaseModel):
@@ -92,6 +97,7 @@ class DiagnoseResponse(BaseModel):
     has_red_flag: bool
     red_flag_symptoms: list[str]
     disclaimer: str
+    log_id: int = -1
 
 
 class MatchedSymptom(BaseModel):
@@ -124,6 +130,11 @@ class NLPDiagnoseResponse(BaseModel):
     has_red_flag: bool
     red_flag_symptoms: list[str]
     disclaimer: str
+    log_id: int = -1
+
+class FeedbackReq(BaseModel):
+    log_id: int
+    feedback: int
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -177,6 +188,14 @@ async def diagnose(req: DiagnoseRequest):
     results = [DiseaseResult(**r) for r in raw_results]
     has_red_flag, red_flag_symptoms = _build_red_flag_list(req.symptom_ids)
 
+    log_id = db.save_log(
+        patient=req.patient.model_dump(),
+        nlp_text="",
+        symptoms=req.symptom_ids,
+        predicted_disease=results[0].disease_id if results else "",
+        probability=results[0].probability if results else 0.0
+    )
+
     return DiagnoseResponse(
         status="success",
         method="naive_bayes",
@@ -185,6 +204,7 @@ async def diagnose(req: DiagnoseRequest):
         has_red_flag=has_red_flag,
         red_flag_symptoms=red_flag_symptoms,
         disclaimer=DISCLAIMER,
+        log_id=log_id,
     )
 
 
@@ -199,7 +219,7 @@ async def nlp_diagnose(req: NLPDiagnoseRequest):
     """
     # Import NLP di sini untuk lazy loading (cegah crash startup jika library belum ada)
     try:
-        from nlp.symptom_matcher import match_symptoms, get_pipeline_info
+        from nlp.symptom_matcher import match_symptoms, get_pipeline_info, get_dynamic_suggestions
         from nlp.preprocessor import get_pipeline_steps
     except ImportError as e:
         raise HTTPException(
@@ -207,23 +227,37 @@ async def nlp_diagnose(req: NLPDiagnoseRequest):
             detail=f"NLP module tidak tersedia: {e}. Pastikan PySastrawi terinstall."
         )
 
-    # 1. Jalankan NLP pipeline
+    # 1. Validasi minimal karakter
+    if len(req.text) < 50:
+        dynamic_suggestions = get_dynamic_suggestions(req.text)
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "Keluhan terlalu singkat (minimal 50 karakter).",
+                "suggestion": "Silakan ceritakan lebih detail (kapan mulai, di bagian mana, rasanya seperti apa?).",
+                "suggestions": dynamic_suggestions,
+                "pipeline": {"original": req.text, "cleaned": "", "token_count_original": 0, "tokens": [], "stopwords_removed": 0, "tokens_after_stopword_removal": [], "tokens_after_stemming": []},
+            }
+        )
+
+    # 2. Jalankan NLP pipeline
     steps = get_pipeline_steps(req.text)
     matched = match_symptoms(req.text)
 
     nlp_symptom_ids = [m["symptom_id"] for m in matched]
 
-    # 2. Gabungkan dengan extra symptoms (hybrid mode)
+    # 3. Gabungkan dengan extra symptoms (hybrid mode)
     all_ids = list(set(nlp_symptom_ids + req.extra_symptom_ids))
 
     # 3. Validasi: minimal 1 gejala terdeteksi
     if not all_ids:
+        dynamic_suggestions = get_dynamic_suggestions(req.text)
         raise HTTPException(
             status_code=422,
             detail={
-                "error": "Informasi belum cukup spesifik.",
-                "suggestion": "Apakah ada gejala lain yang Anda rasakan seperti di bawah ini?",
-                "suggestions": ["Terasa gatal", "Kemerahan", "Bersisik", "Terasa panas/perih", "Bintik-bintik", "Bengkak", "Nyeri"],
+                "error": "Informasi belum cukup spesifik untuk diagnosis yang aman.",
+                "suggestion": "Apakah keluhan Anda berkaitan dengan hal-hal spesifik berikut?",
+                "suggestions": dynamic_suggestions,
                 "pipeline": steps,
             }
         )
@@ -240,6 +274,14 @@ async def nlp_diagnose(req: NLPDiagnoseRequest):
     # 5. Tentukan method
     method = "nlp_hybrid_naive_bayes" if req.extra_symptom_ids else "nlp_naive_bayes"
 
+    log_id = db.save_log(
+        patient=req.patient.model_dump(),
+        nlp_text=req.text,
+        symptoms=all_ids,
+        predicted_disease=results[0].disease_id if results else "",
+        probability=results[0].probability if results else 0.0
+    )
+
     return NLPDiagnoseResponse(
         status="success",
         method=method,
@@ -252,7 +294,15 @@ async def nlp_diagnose(req: NLPDiagnoseRequest):
         has_red_flag=has_red_flag,
         red_flag_symptoms=red_flag_symptoms,
         disclaimer=DISCLAIMER,
+        log_id=log_id,
     )
+
+@app.post("/api/feedback")
+async def submit_feedback(req: FeedbackReq):
+    success = db.update_feedback(req.log_id, req.feedback)
+    if not success:
+        raise HTTPException(status_code=500, detail="Gagal menyimpan feedback")
+    return {"status": "success", "message": "Feedback disimpan."}
 
 
 # ── NLP Preview (Dry Run — tanpa diagnosa) ────────────────────────────────────

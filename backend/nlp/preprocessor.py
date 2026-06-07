@@ -63,6 +63,26 @@ MEDICAL_KEEP = {
     "berulang", "kambuh", "sembuh",
 }
 
+# Slang / Informal words mapping
+SLANG_DICT = {
+    "keringetan": "keringat",
+    "gatel": "gatal",
+    "nular": "menular",
+    "nyut-nyutan": "berdenyut",
+    "nyut": "denyut",
+    "bentol-bentol": "bentol",
+    "bintik-bintik": "bintik",
+    "ketombean": "ketombe",
+    "borokan": "borok",
+    "bisulan": "bisul",
+    "jerawatan": "jerawat",
+    "panuan": "panu",
+    "korengan": "koreng",
+    "cantengan": "cantengan",
+    "ngelupas": "mengelupas",
+    "perih": "perih",
+}
+
 # Hilangkan dari stopwords kata yang ada di MEDICAL_KEEP
 ID_STOPWORDS = ID_STOPWORDS - MEDICAL_KEEP
 
@@ -79,6 +99,12 @@ def clean_text(text: str) -> str:
     text = re.sub(r"[^a-z\s/]", " ", text)
     # Ganti slash dengan spasi
     text = text.replace("/", " ")
+    
+    # Replace slang words
+    words = text.split()
+    words = [SLANG_DICT.get(w, w) for w in words]
+    text = " ".join(words)
+    
     # Hapus whitespace berlebih
     text = re.sub(r"\s+", " ", text).strip()
     return text

@@ -1751,3 +1751,11 @@ input[type="checkbox"]:checked + .disc-box .disc-check-icon {
   transition: var(--transition);
 }
 
+
+@media print {
+  body * { visibility: hidden; }
+  #page-results, #page-results * { visibility: visible; }
+  #page-results { position: absolute; left: 0; top: 0; width: 100%; }
+  .no-print { display: none !important; }
+  .print\:hidden { display: none !important; }
+}

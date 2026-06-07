@@ -1371,8 +1371,9 @@ function buildResultsUI(fullResponse) {
                   <div>
                     <div class="flex items-center gap-2 mb-3">
                        <span class="text-xs uppercase font-black tracking-widest bg-white/20 px-3 py-1 rounded-full">${dict.topMatch}</span>
-                       <button onclick="saveToHistory()" class="bg-white text-primary text-xs font-black px-4 py-1 rounded-full shadow-lg hover:scale-105 transition-all">
-                          SIMPAN
+                       <button onclick="window.print()" class="no-print bg-white text-primary text-xs font-black px-4 py-1 rounded-full shadow-lg hover:scale-105 transition-all flex items-center gap-1">
+                          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                          CETAK LAPORAN
                        </button>
                     </div>
                     <h1 class="text-2xl lg:text-3xl font-black tracking-tight leading-snug">${state.language === 'en' ? (p.disease_name_en || p.disease_name) : (p.disease_name_id || p.disease_name)}</h1>
@@ -1387,6 +1388,15 @@ function buildResultsUI(fullResponse) {
                   </div>
                   <div class="mb-6">${getTriageBadge(p.disease_id, p.percentage, hasRedFlag)}</div>
                   <p class="text-slate-600 text-sm font-medium leading-relaxed">${state.language === 'en' ? (p.description_en || p.description) : (p.description_id || p.description)}</p>
+                  ${p.explanation ? `
+                  <div class="mt-5 p-5 bg-blue-50/50 border border-blue-100/50 rounded-2xl">
+                     <div class="text-[10px] font-black uppercase text-blue-800 tracking-widest mb-2 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ALASAN DIAGNOSIS (XAI)
+                     </div>
+                     <p class="text-blue-900 text-sm font-medium leading-relaxed">${p.explanation}</p>
+                  </div>
+                  ` : ''}
                </div>
             </div>
 
@@ -1518,9 +1528,21 @@ function buildResultsUI(fullResponse) {
         </div> <!-- flex flex-col gap-8 -->
 
         <!-- FINAL FEEDBACK -->
-        <div class="w-full max-w-4xl mx-auto mt-8 py-6 border-t border-slate-200/50 flex flex-col items-center">
-           ${buildFeedbackSection()}
+        ${fullResponse.log_id !== undefined && fullResponse.log_id !== -1 ? `
+        <div class="no-print w-full max-w-4xl mx-auto mt-8 py-8 border-t border-slate-200/50 flex flex-col items-center animate-fade delay-300">
+           <h3 class="text-sm font-bold text-slate-700 mb-4">Apakah diagnosis ini sesuai dengan kondisi Anda?</h3>
+           <div class="flex gap-4">
+              <button onclick="submitFeedback(${fullResponse.log_id}, 1, this)" class="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors shadow-sm text-sm font-bold text-slate-600">
+                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.514"></path></svg>
+                 Ya, Sesuai
+              </button>
+              <button onclick="submitFeedback(${fullResponse.log_id}, -1, this)" class="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-colors shadow-sm text-sm font-bold text-slate-600">
+                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.514"></path></svg>
+                 Tidak Sesuai
+              </button>
+           </div>
         </div>
+        ` : ''}
 
         <div class="mt-4 p-8 bg-slate-900 text-white rounded-[2rem] text-center max-w-4xl mx-auto shadow-xl relative overflow-hidden animate-fade">
            <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/10 pointer-events-none"></div>
@@ -1591,6 +1613,25 @@ async function fetchNLPPreview(text) {
   return await resp.json();
 }
 
+window.submitFeedback = async function(logId, feedbackValue, btn) {
+  const parent = btn.parentElement;
+  try {
+    const resp = await fetch(`${API_BASE}/api/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ log_id: logId, feedback: feedbackValue })
+    });
+    if (resp.ok) {
+      parent.innerHTML = `<span class="text-sm font-bold text-teal-600 flex items-center gap-1">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        Terima kasih atas tanggapan Anda!
+      </span>`;
+    }
+  } catch (err) {
+    console.error('Feedback error:', err);
+  }
+};
+
 // ═══════════════════════════════════════════════════════════
 //  NLP MODE — All Functions
 // ═══════════════════════════════════════════════════════════
@@ -1645,13 +1686,32 @@ let _nlpPreviewTimer = null;
 
 function onNLPTextInput(text) {
   state.nlpText = text;
+  const len = text ? text.length : 0;
   const btn = document.getElementById('btn-nlp-analyze');
-  if (btn) btn.disabled = !text || text.trim().length < 10;
+  const countEl = document.getElementById('nlp-char-count');
+  const warnEl = document.getElementById('nlp-char-warning');
+
+  // Update char count UI
+  if (countEl) {
+    countEl.textContent = `${len} / 50 min`;
+    if (len > 0 && len < 50) {
+      countEl.className = 'text-xs font-bold ml-auto text-red-500';
+      if (warnEl) warnEl.classList.remove('hidden');
+    } else if (len >= 50) {
+      countEl.className = 'text-xs font-bold ml-auto text-green-500';
+      if (warnEl) warnEl.classList.add('hidden');
+    } else {
+      countEl.className = 'text-xs font-bold ml-auto text-slate-400';
+      if (warnEl) warnEl.classList.add('hidden');
+    }
+  }
+
+  if (btn) btn.disabled = !text || len < 50;
 
   // Clear previous timer
   clearTimeout(_nlpPreviewTimer);
 
-  if (!text || text.trim().length < 5) {
+  if (!text || len < 5) {
     document.getElementById('nlp-preview-panel').classList.add('hidden');
     return;
   }
@@ -1739,7 +1799,7 @@ function setNLPExample(btn) {
 // Analyze via NLP endpoint
 async function analyzeNLP() {
   const text = state.nlpText;
-  if (!text || text.trim().length < 10) return;
+  if (!text || text.length < 50) return;
 
   // Collect extra (hybrid) manual symptom IDs
   const extraIds = [];

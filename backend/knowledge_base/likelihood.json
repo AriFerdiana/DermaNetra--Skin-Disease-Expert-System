@@ -13798,5 +13798,1810 @@
     "G094": 0.11,
     "G095": 0.12,
     "G096": 0.05
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G097",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G097",
+    "probability": 0.7
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G098",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G098",
+    "probability": 0.7
+  },
+  {
+    "disease_id": "D015",
+    "symptom_id": "G099",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G099",
+    "probability": 0.6
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G100",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G100",
+    "probability": 0.5
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G101",
+    "probability": 0.9
+  },
+  {
+    "disease_id": "D004",
+    "symptom_id": "G102",
+    "probability": 0.9
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G102",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D001",
+    "symptom_id": "G103",
+    "probability": 0.9
+  },
+  {
+    "disease_id": "D007",
+    "symptom_id": "G103",
+    "probability": 0.7
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G104",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G104",
+    "probability": 0.6
+  },
+  {
+    "disease_id": "D042",
+    "symptom_id": "G105",
+    "probability": 0.9
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G105",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G106",
+    "probability": 0.8
+  },
+  {
+    "disease_id": "D009",
+    "symptom_id": "G107",
+    "probability": 0.9
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G108",
+    "probability": 0.9
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G109",
+    "probability": 0.9
+  },
+  {
+    "disease_id": "D001",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D001",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D001",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D001",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D001",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G207",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G211",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D002",
+    "symptom_id": "G222",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G218",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D003",
+    "symptom_id": "G224",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D004",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D004",
+    "symptom_id": "G213",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D004",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D004",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D004",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G218",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D005",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D006",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D006",
+    "symptom_id": "G207",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D006",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D006",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D006",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D006",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D006",
+    "symptom_id": "G225",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D007",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D007",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D007",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D007",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D007",
+    "symptom_id": "G224",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G213",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D008",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D009",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D009",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D009",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D009",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D009",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D009",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G224",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D010",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G218",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D011",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D012",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D013",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G218",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D014",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D015",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D015",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D015",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D015",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D015",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G217",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D016",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D017",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D018",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D019",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D020",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D021",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D022",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G229",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D023",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G210",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D024",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D025",
+    "symptom_id": "G229",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G229",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D026",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G219",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D027",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G213",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G222",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D028",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G222",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D029",
+    "symptom_id": "G225",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G224",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D030",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D031",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D031",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D031",
+    "symptom_id": "G210",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D031",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G210",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G218",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D032",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G226",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G211",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D033",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G223",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G225",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D034",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G222",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D035",
+    "symptom_id": "G229",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G213",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D036",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G207",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G212",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G222",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D037",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G213",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D038",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G209",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G225",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G221",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D039",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G206",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G222",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G229",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G211",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D040",
+    "symptom_id": "G215",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G203",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G208",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G211",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G220",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G222",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G230",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G202",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G216",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G205",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D041",
+    "symptom_id": "G226",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D042",
+    "symptom_id": "G201",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D042",
+    "symptom_id": "G204",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D042",
+    "symptom_id": "G210",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D042",
+    "symptom_id": "G214",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D042",
+    "symptom_id": "G228",
+    "probability": 0.45
+  },
+  {
+    "disease_id": "D031",
+    "symptom_id": "G201",
+    "probability": 0.45
   }
 ]

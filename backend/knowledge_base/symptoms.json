@@ -1545,5 +1545,717 @@
       "merata",
       "sekujur"
     ]
+  },
+  {
+    "id": "G097",
+    "name": "Keringat berlebih di area lipatan kulit",
+    "regions": [
+      "abdomen",
+      "pelvis"
+    ],
+    "keywords": [
+      "keringat",
+      "berlebih",
+      "lipatan",
+      "paha",
+      "ketiak"
+    ]
+  },
+  {
+    "id": "G098",
+    "name": "Kulit mengelupas tebal dan bersisik",
+    "regions": [
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "kulit",
+      "kelupas",
+      "mengelupas",
+      "tebal"
+    ]
+  },
+  {
+    "id": "G099",
+    "name": "Rasa terbakar / perih tajam saat terkena air atau sabun",
+    "regions": [
+      "head",
+      "arms",
+      "chest"
+    ],
+    "keywords": [
+      "perih",
+      "terbakar",
+      "air",
+      "sabun",
+      "mandi"
+    ]
+  },
+  {
+    "id": "G100",
+    "name": "Wajah memerah dan terasa panas terutama saat cuaca terik",
+    "regions": [
+      "head",
+      "neck"
+    ],
+    "keywords": [
+      "wajah",
+      "memerah",
+      "panas",
+      "cuaca",
+      "terik"
+    ]
+  },
+  {
+    "id": "G101",
+    "name": "Komedo hitam / putih yang menumpuk di hidung atau wajah",
+    "regions": [
+      "head",
+      "neck"
+    ],
+    "keywords": [
+      "komedo",
+      "hitam",
+      "putih",
+      "hidung",
+      "wajah"
+    ]
+  },
+  {
+    "id": "G102",
+    "name": "Gatal tak tertahankan yang menyebar ke anggota keluarga lain",
+    "regions": [
+      "head",
+      "chest",
+      "abdomen",
+      "pelvis",
+      "arms",
+      "legs",
+      "back"
+    ],
+    "keywords": [
+      "gatal",
+      "menyebar",
+      "keluarga",
+      "nular",
+      "menular"
+    ]
+  },
+  {
+    "id": "G103",
+    "name": "Ketombe membandel yang berjatuhan hingga ke bahu/baju",
+    "regions": [
+      "head"
+    ],
+    "keywords": [
+      "ketombe",
+      "membandel",
+      "jatuh",
+      "bahu",
+      "baju"
+    ]
+  },
+  {
+    "id": "G104",
+    "name": "Bekas luka atau gigitan yang menghitam dan sulit hilang",
+    "regions": [
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "bekas",
+      "luka",
+      "gigitan",
+      "menghitam",
+      "hitam"
+    ]
+  },
+  {
+    "id": "G105",
+    "name": "Rasa nyeri / perih berdenyut tepat sebelum ruam atau lepuh muncul",
+    "regions": [
+      "back",
+      "chest"
+    ],
+    "keywords": [
+      "nyeri",
+      "perih",
+      "berdenyut",
+      "sebelum",
+      "ruam"
+    ]
+  },
+  {
+    "id": "G106",
+    "name": "Kulit terasa sangat kaku, tegang, dan tertarik sehabis mandi",
+    "regions": [
+      "arms",
+      "legs",
+      "abdomen"
+    ],
+    "keywords": [
+      "kulit",
+      "kaku",
+      "tegang",
+      "tertarik",
+      "mandi"
+    ]
+  },
+  {
+    "id": "G107",
+    "name": "Nanah kuning kehijauan yang pecah dan mengering jadi kerak",
+    "regions": [
+      "head",
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "nanah",
+      "kuning",
+      "hijau",
+      "pecah",
+      "kerak"
+    ]
+  },
+  {
+    "id": "G108",
+    "name": "Kuku kaki tampak berongga, kusam, dan sangat rapuh",
+    "regions": [
+      "legs"
+    ],
+    "keywords": [
+      "kuku",
+      "kaki",
+      "berongga",
+      "kusam",
+      "rapuh"
+    ]
+  },
+  {
+    "id": "G109",
+    "name": "Bintik bentol kemerahan yang muncul khusus setelah memakan sesuatu",
+    "regions": [
+      "chest",
+      "abdomen"
+    ],
+    "keywords": [
+      "bentol",
+      "merah",
+      "muncul",
+      "makan",
+      "makanan"
+    ]
+  },
+  {
+    "id": "G201",
+    "name": "Stres atau banyak pikiran memperburuk keluhan",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest"
+    ],
+    "keywords": [
+      "stres",
+      "pikiran",
+      "memburuk",
+      "kambuh"
+    ]
+  },
+  {
+    "id": "G202",
+    "name": "Terasa gatal ringan namun sangat mengganggu",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest",
+      "pelvis"
+    ],
+    "keywords": [
+      "gatal",
+      "ringan",
+      "mengganggu",
+      "risih"
+    ]
+  },
+  {
+    "id": "G203",
+    "name": "Rasa tidak nyaman atau perih saat bergesekan dengan pakaian",
+    "regions": [
+      "chest",
+      "abdomen",
+      "back",
+      "pelvis",
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "perih",
+      "gesek",
+      "pakaian",
+      "baju",
+      "celana"
+    ]
+  },
+  {
+    "id": "G204",
+    "name": "Kulit di sekitar area yang sakit terasa lebih hangat",
+    "regions": [
+      "arms",
+      "legs",
+      "head",
+      "chest"
+    ],
+    "keywords": [
+      "hangat",
+      "panas",
+      "sekitar",
+      "sakit"
+    ]
+  },
+  {
+    "id": "G205",
+    "name": "Keluhan menyebar secara perlahan dalam beberapa minggu",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest",
+      "pelvis"
+    ],
+    "keywords": [
+      "menyebar",
+      "luas",
+      "perlahan",
+      "minggu"
+    ]
+  },
+  {
+    "id": "G206",
+    "name": "Gejala terasa memburuk saat cuaca panas atau berkeringat",
+    "regions": [
+      "head",
+      "chest",
+      "back",
+      "pelvis",
+      "arms"
+    ],
+    "keywords": [
+      "memburuk",
+      "panas",
+      "keringat",
+      "cuaca"
+    ]
+  },
+  {
+    "id": "G207",
+    "name": "Gejala terasa memburuk saat cuaca dingin atau udara kering",
+    "regions": [
+      "head",
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "memburuk",
+      "dingin",
+      "kering",
+      "cuaca"
+    ]
+  },
+  {
+    "id": "G208",
+    "name": "Keluhan ini sering hilang timbul berulang kali",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest",
+      "pelvis"
+    ],
+    "keywords": [
+      "hilang",
+      "timbul",
+      "kambuh",
+      "berulang",
+      "sering"
+    ]
+  },
+  {
+    "id": "G209",
+    "name": "Ada anggota keluarga yang memiliki keluhan kulit serupa",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest",
+      "pelvis"
+    ],
+    "keywords": [
+      "keluarga",
+      "serupa",
+      "sama",
+      "turunan",
+      "nular"
+    ]
+  },
+  {
+    "id": "G210",
+    "name": "Disertai demam ringan atau badan terasa lemas",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest"
+    ],
+    "keywords": [
+      "demam",
+      "lemas",
+      "meriang",
+      "menggigil"
+    ]
+  },
+  {
+    "id": "G211",
+    "name": "Kulit terasa menebal kasar akibat sering digaruk",
+    "regions": [
+      "arms",
+      "legs",
+      "back",
+      "head"
+    ],
+    "keywords": [
+      "menebal",
+      "kasar",
+      "garuk",
+      "digaruk",
+      "tebal"
+    ]
+  },
+  {
+    "id": "G212",
+    "name": "Timbul bercak kemerahan yang berbatas tegas",
+    "regions": [
+      "arms",
+      "legs",
+      "abdomen",
+      "chest",
+      "back",
+      "head",
+      "pelvis"
+    ],
+    "keywords": [
+      "bercak",
+      "merah",
+      "batas",
+      "tegas",
+      "kemerahan"
+    ]
+  },
+  {
+    "id": "G213",
+    "name": "Terasa gatal hebat yang meningkat di malam hari",
+    "regions": [
+      "arms",
+      "legs",
+      "abdomen",
+      "pelvis"
+    ],
+    "keywords": [
+      "gatal",
+      "hebat",
+      "malam",
+      "tidur"
+    ]
+  },
+  {
+    "id": "G214",
+    "name": "Muncul bintik-bintik kecil berisi air atau cairan bening",
+    "regions": [
+      "arms",
+      "legs",
+      "chest",
+      "back",
+      "head"
+    ],
+    "keywords": [
+      "bintik",
+      "air",
+      "bening",
+      "cairan",
+      "lepuh"
+    ]
+  },
+  {
+    "id": "G215",
+    "name": "Timbul sisik halus yang mudah mengelupas seperti bedak",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "back",
+      "chest"
+    ],
+    "keywords": [
+      "sisik",
+      "halus",
+      "kelupas",
+      "bedak",
+      "rontok"
+    ]
+  },
+  {
+    "id": "G216",
+    "name": "Kulit sangat pecah-pecah hingga kadang berdarah tipis",
+    "regions": [
+      "arms",
+      "legs",
+      "head"
+    ],
+    "keywords": [
+      "pecah",
+      "berdarah",
+      "kering",
+      "tipis"
+    ]
+  },
+  {
+    "id": "G217",
+    "name": "Keluhan dominan berpusat di area wajah atau leher",
+    "regions": [
+      "head",
+      "neck"
+    ],
+    "keywords": [
+      "wajah",
+      "leher",
+      "muka",
+      "dominan"
+    ]
+  },
+  {
+    "id": "G218",
+    "name": "Keluhan dominan berpusat di area punggung atau dada",
+    "regions": [
+      "back",
+      "chest"
+    ],
+    "keywords": [
+      "punggung",
+      "dada",
+      "dominan"
+    ]
+  },
+  {
+    "id": "G219",
+    "name": "Keluhan berpusat di area lipatan (ketiak, selangkangan, leher)",
+    "regions": [
+      "pelvis",
+      "arms",
+      "head",
+      "legs"
+    ],
+    "keywords": [
+      "lipatan",
+      "ketiak",
+      "selangkangan",
+      "leher"
+    ]
+  },
+  {
+    "id": "G220",
+    "name": "Keluhan terjadi khusus di area telapak tangan atau telapak kaki",
+    "regions": [
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "telapak",
+      "tangan",
+      "kaki",
+      "khusus"
+    ]
+  },
+  {
+    "id": "G221",
+    "name": "Area yang sakit berubah warna menjadi lebih gelap/hitam",
+    "regions": [
+      "arms",
+      "legs",
+      "head",
+      "abdomen",
+      "back",
+      "chest",
+      "pelvis"
+    ],
+    "keywords": [
+      "gelap",
+      "hitam",
+      "berubah",
+      "warna",
+      "bekas"
+    ]
+  },
+  {
+    "id": "G222",
+    "name": "Kulit terasa sangat kering, kaku, dan tertarik",
+    "regions": [
+      "arms",
+      "legs",
+      "head",
+      "chest",
+      "abdomen",
+      "back"
+    ],
+    "keywords": [
+      "kering",
+      "kaku",
+      "tarik",
+      "tertarik"
+    ]
+  },
+  {
+    "id": "G223",
+    "name": "Terdapat sisa cairan kuning bening yang mengering/kerak",
+    "regions": [
+      "head",
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "cairan",
+      "kuning",
+      "kerak",
+      "kering",
+      "sisa"
+    ]
+  },
+  {
+    "id": "G224",
+    "name": "Rambut atau bulu halus mudah rontok di area yang sakit",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "chest"
+    ],
+    "keywords": [
+      "rambut",
+      "bulu",
+      "rontok",
+      "mudah",
+      "sakit"
+    ]
+  },
+  {
+    "id": "G225",
+    "name": "Kuku di dekat area sakit tampak berubah warna atau menebal",
+    "regions": [
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "kuku",
+      "warna",
+      "menebal",
+      "dekat"
+    ]
+  },
+  {
+    "id": "G226",
+    "name": "Kulit tampak menonjol kasar seperti kembang kol",
+    "regions": [
+      "arms",
+      "legs",
+      "head",
+      "pelvis"
+    ],
+    "keywords": [
+      "menonjol",
+      "kasar",
+      "kembang",
+      "kol",
+      "kutil"
+    ]
+  },
+  {
+    "id": "G227",
+    "name": "Terasa nyeri atau pegal pada sendi di sekitar ruam",
+    "regions": [
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "nyeri",
+      "pegal",
+      "sendi",
+      "ruam"
+    ]
+  },
+  {
+    "id": "G228",
+    "name": "Keluhan muncul mendadak secara cepat dalam 24 jam",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest",
+      "pelvis"
+    ],
+    "keywords": [
+      "mendadak",
+      "cepat",
+      "jam",
+      "tiba-tiba"
+    ]
+  },
+  {
+    "id": "G229",
+    "name": "Berbau agak menyengat atau tidak sedap di area lipatan/tertutup",
+    "regions": [
+      "pelvis",
+      "arms",
+      "legs"
+    ],
+    "keywords": [
+      "bau",
+      "menyengat",
+      "sedap",
+      "tertutup"
+    ]
+  },
+  {
+    "id": "G230",
+    "name": "Bekas penyakit lama yang mudah kambuh di posisi yang sama persis",
+    "regions": [
+      "head",
+      "arms",
+      "legs",
+      "abdomen",
+      "back",
+      "chest",
+      "pelvis"
+    ],
+    "keywords": [
+      "bekas",
+      "lama",
+      "kambuh",
+      "persis",
+      "posisi"
+    ]
   }
 ]
