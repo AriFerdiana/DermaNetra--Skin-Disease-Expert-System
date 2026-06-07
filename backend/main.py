@@ -221,8 +221,9 @@ async def nlp_diagnose(req: NLPDiagnoseRequest):
         raise HTTPException(
             status_code=422,
             detail={
-                "error": "Tidak ada gejala yang terdeteksi dari teks yang diberikan.",
-                "suggestion": "Coba deskripsikan keluhan lebih spesifik, misalnya: 'kulit gatal parah di malam hari', 'muncul bintik merah di lengan', dll.",
+                "error": "Informasi belum cukup spesifik.",
+                "suggestion": "Apakah ada gejala lain yang Anda rasakan seperti di bawah ini?",
+                "suggestions": ["Terasa gatal", "Kemerahan", "Bersisik", "Terasa panas/perih", "Bintik-bintik", "Bengkak", "Nyeri"],
                 "pipeline": steps,
             }
         )

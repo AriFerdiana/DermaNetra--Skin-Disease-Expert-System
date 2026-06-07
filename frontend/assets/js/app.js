@@ -1571,7 +1571,12 @@ async function fetchNLPDiagnosis(text, extraSymptomIds = []) {
   });
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({ detail: 'Unknown error' }));
-    throw new Error(typeof err.detail === 'object' ? err.detail.error : err.detail);
+    const errObj = new Error(typeof err.detail === 'object' ? err.detail.error : err.detail);
+    if (typeof err.detail === 'object' && err.detail.suggestions) {
+      errObj.suggestions = err.detail.suggestions;
+      errObj.suggestionMsg = err.detail.suggestion;
+    }
+    throw errObj;
   }
   return await resp.json();
 }
@@ -1740,10 +1745,14 @@ async function analyzeNLP() {
   const extraIds = [];
   Object.values(state.nlpHybridSymptoms).forEach(s => s.forEach(id => extraIds.push(id)));
 
-  const pill = document.querySelector('.floating-pill-wrap');
-  if (pill) pill.classList.remove('visible');
+  const btn = document.getElementById('btn-nlp-analyze');
+  const originalBtnContent = btn.innerHTML;
+  btn.innerHTML = `<svg class="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Menganalisis...</span>`;
+  btn.disabled = true;
 
-  showPage('diagnosis', 'results');
+  // Clear existing inline error if any
+  const existingErr = document.getElementById('nlp-inline-error');
+  if (existingErr) existingErr.remove();
 
   let fullResponse = null;
   try {
@@ -1751,32 +1760,74 @@ async function analyzeNLP() {
     if (resp && resp.results) fullResponse = resp;
   } catch (e) {
     console.error('[DermaNetra NLP] Error:', e);
-    // Show error in results
-    setTimeout(() => {
-      const loadEl = document.getElementById('results-loading');
-      const contentEl = document.getElementById('results-content');
-      if (loadEl) loadEl.classList.add('hidden');
-      if (contentEl) {
-        contentEl.classList.remove('hidden');
-        contentEl.innerHTML = `
-          <div class="max-w-lg mx-auto mt-12 p-8 bg-red-50 border border-red-100 rounded-2xl text-center">
-            <div class="text-3xl mb-3">⚠️</div>
-            <h3 class="font-black text-red-700 mb-2">Gejala Tidak Terdeteksi</h3>
-            <p class="text-sm text-red-600 mb-4">${e.message}</p>
-            <p class="text-xs text-slate-500 mb-6">Coba gunakan kalimat yang lebih deskriptif seperti: "kulit gatal parah di malam hari", "muncul bercak merah bersisik", dll.</p>
-            <button onclick="goBackToDiagnosis()" class="px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:opacity-90 transition-all">
-              ← Kembali & Perbaiki Keluhan
-            </button>
-          </div>`;
-      }
-    }, 500);
+    btn.innerHTML = originalBtnContent;
+    btn.disabled = false;
+    
+    // Render inline error
+    let chipsHtml = '';
+    if (e.suggestions && e.suggestions.length > 0) {
+      chipsHtml = `
+        <div class="mt-2.5 flex flex-wrap gap-2">
+          ${e.suggestions.map(s => `<button type="button" onclick="addNLPSuggestion('${s}')" class="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 rounded-full text-xs font-bold hover:bg-blue-100 hover:border-blue-300 transition-colors shadow-sm cursor-pointer">+ ${s}</button>`).join('')}
+        </div>
+      `;
+    }
+
+    const errHtml = `
+      <div id="nlp-inline-error" class="mt-3 mb-1 p-4 bg-blue-50 border border-blue-100 rounded-xl animate-fade-in text-left">
+        <div class="flex items-start gap-3">
+          <div class="text-xl mt-0.5">👨‍⚕️</div>
+          <div>
+            <h4 class="text-sm font-bold text-blue-800 mb-1">Pertanyaan Dokter</h4>
+            <p class="text-xs text-blue-700 font-medium leading-relaxed">${e.suggestionMsg || "Apakah ada gejala lain yang Anda rasakan seperti di bawah ini?"}</p>
+            ${chipsHtml}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    const ta = document.getElementById('nlp-complaint-text');
+    if (ta) ta.insertAdjacentHTML('afterend', errHtml);
     return;
   }
+  
+  // SUCCESS
+  btn.innerHTML = originalBtnContent;
+  btn.disabled = false;
 
+  const pill = document.querySelector('.floating-pill-wrap');
+  if (pill) pill.classList.remove('visible');
+
+  showPage('diagnosis', 'results');
+  
   state.nlpFullResponse = fullResponse;
   state.results = fullResponse ? fullResponse.results : null;
   state.fullResponse = fullResponse;
-  setTimeout(() => renderResults(fullResponse), 380);
+  
+  // Need to ensure loading screen is visible while we transition
+  const loadEl = document.getElementById('results-loading');
+  const contentEl = document.getElementById('results-content');
+  if (loadEl) loadEl.classList.remove('hidden');
+  if (contentEl) contentEl.classList.add('hidden');
+
+  setTimeout(() => renderResults(fullResponse), 400);
+}
+
+window.addNLPSuggestion = function(word) {
+  const ta = document.getElementById('nlp-complaint-text');
+  if (ta) {
+    const currentVal = ta.value.trim();
+    if (!currentVal.toLowerCase().includes(word.toLowerCase())) {
+      ta.value = currentVal ? `${currentVal}. ${word}` : word;
+    }
+    ta.dispatchEvent(new Event('input'));
+    onNLPTextInput(ta.value);
+    ta.focus();
+    
+    // Auto-remove error box after adding a chip
+    const errBox = document.getElementById('nlp-inline-error');
+    if (errBox) errBox.remove();
+  }
 }
 
 // Open side drawer for hybrid manual symptom selection
